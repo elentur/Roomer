@@ -14,7 +14,7 @@ public class KD3D_Search {
 
     public static void main(String args[]) throws IOException {
 
-        int numpoints = 10;
+        int numpoints = 20;
 
         kdt = new KD3DTree(numpoints + 1);
 
@@ -24,11 +24,13 @@ public class KD3D_Search {
 
         //list = randomList(numpoints);
         //list = zChainList(2,2,numpoints);
-        //list = zweiDList(numpoints);
-        list = handMadeList();
+        list = zweiDList(numpoints);
+        //list = handMadeList();
 
 
         System.out.println("Setting points");
+
+        drawCoordinatenSys(list);
 
         for(double[] d : list){
             kdt.add(d);
@@ -37,10 +39,12 @@ public class KD3D_Search {
         // getting two points of the list
         ArrayList<KD3DNode> inOrderList = kdt.inorder();
 
-        double[] d0 = {0,0,0};
-        KD3DNode start = new KD3DNode(d0, 0);
-        double[] d1 = {5,2,0};
-        KD3DNode end = new KD3DNode(d1, 0);
+
+
+        double[] d0 = {-10,-10,0};
+        KD3DNode start = kdt.find_nearest(d0);
+        double[] d1 = {10,10,0};
+        KD3DNode end = kdt.find_nearest(d1);
 
         ArrayList<KD3DNode> way = findShortestWay(start,end);
         System.out.println("sortest Way");
@@ -49,9 +53,27 @@ public class KD3D_Search {
         }
     }
 
+    private static void drawCoordinatenSys(ArrayList<double[]> list) {
+        for(double y =10;y >= -10; y--){
+            for(double x=-10;x <= 10; x++){
+                String str = "| ";
+
+                if(x==0 && y==0)
+                    str = "|o";
+
+                for(double[] d : list){
+                    if(d[0] == x && d[1] == y)
+                        str = "|x";
+                }
+
+                System.out.print(str);
+            }
+            System.out.println("|");
+        }
+    }
+
     private static ArrayList<double[]> handMadeList() {
         ArrayList<double[]> list = new ArrayList<double[]>();
-
 
         double[] d1 = {0,0,0};
         list.add(d1);
@@ -65,8 +87,23 @@ public class KD3D_Search {
         double[] d4 = {3,5,0};
         list.add(d4);
 
-        double[] d5 = {5,2,0};
+        double[] d5 = {5,3,0};
         list.add(d5);
+
+        double[] d6 = {2,3,0};
+        list.add(d6);
+
+        double[] d7 = {4,1,0};
+        list.add(d7);
+
+        double[] d8 = {2,5,0};
+        list.add(d8);
+
+        double[] d9 = {1,5,0};
+        list.add(d9);
+
+        double[] d10 = {2,2,0};
+        list.add(d10);
 
 
         return list;
@@ -100,8 +137,6 @@ public class KD3D_Search {
                 if(node.checked) continue;
 
                 d = next.distance2(node.x, next.x, 3);
-
-                //System.out.println("distance: " + d + " node: " + node);
 
                 if (d <= min_d && isCloserToEnd(node,next,end)) {
                         min_d = d;
@@ -153,7 +188,7 @@ public class KD3D_Search {
 
         for (int i = 0; i < num; i++) {
 
-            double[] d = { -10.0 + r.nextDouble() * 20.0, -10.0 + r.nextDouble() * 20.0, 2};
+            double[] d = { Math.floor(-10.0 + r.nextDouble() * 20.0 ) / 1, Math.floor(-10.0 + r.nextDouble() * 20.0 ) / 1 , 0};
 
             System.out.println(d[0] + ", " + d[1] + ", " + d[2]);
 
