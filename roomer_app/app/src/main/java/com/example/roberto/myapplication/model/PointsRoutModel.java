@@ -5,7 +5,6 @@ import com.example.roberto.myapplication.KDTree.KD3DTree;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by
@@ -46,9 +45,9 @@ public class PointsRoutModel {
 
         kdt = new KD3DTree(numpoints + 1);
 
-        double zero[] = {0,0,0};
+        /*double zero[] = {0,0,0};
 
-        kdt.add(zero);
+        kdt.add(zero);*/
 
         for(Vector3 point : pointList){
 
@@ -105,7 +104,7 @@ public class PointsRoutModel {
         return new Vector3();
     }
 
-    public ArrayList<Vector3> getShortesWay(Vector3 start, Vector3 end){
+    public ArrayList<Vector3> getShortestWay(Vector3 start, Vector3 end){
 
         ArrayList<Vector3> way = new ArrayList<Vector3>();
         ArrayList<KD3DNode> list = kdt.inorder();
@@ -118,26 +117,40 @@ public class PointsRoutModel {
 
 
         KD3DNode nextNode = startNode;
+        KD3DNode bestNode = endNode;
 
         do {
 
-            double dist = 99999999;
+            double dist = startNode.distance2(startNode.x, endNode.x, 3);
 
             for (KD3DNode node : list) {
 
                 double distance = nextNode.distance2(nextNode.x, node.x, 3);
                 if (distance < dist && !node.checked) {
-                    dist = distance;
-                    nextNode = node;
+                    if(isCloserToEnd(node,nextNode,endNode)) {
+                        dist = distance;
+                        bestNode = node;
+                    }
                 }
             }
 
-            nextNode.checked = true;
-            way.add(new Vector3(nextNode.x[0],nextNode.x[1],nextNode.x[2]));
+            bestNode.checked = true;
+            way.add(new Vector3(bestNode.x[0],bestNode.x[1],bestNode.x[2]));
+            nextNode = bestNode;
 
         }while(!nextNode.equal(nextNode.x,endNode.x,3));
 
         return way;
+    }
+
+    private static boolean isCloserToEnd(KD3DNode node, KD3DNode next, KD3DNode end) {
+
+        if(end.equal(end.x,next.x,3)) return true;
+
+        double distNode = end.distance2(node.x,end.x,3);
+        double distNext = end.distance2(next.x,end.x,3);
+
+        return distNode < distNext;
     }
 
     @Override

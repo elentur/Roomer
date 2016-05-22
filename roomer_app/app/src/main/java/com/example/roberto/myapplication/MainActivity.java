@@ -113,10 +113,10 @@ public class MainActivity extends Activity {
 
         Log.i("List", inOrderList.toString());
 
-        Vector3 start = inOrderList.get(2);
-        Vector3 end = inOrderList.get(6);
+        Vector3 start = inOrderList.get(4);
+        Vector3 end = inOrderList.get(7);
 
-        ArrayList<Vector3> shortesWayList = p.getShortesWay(start,end);
+        ArrayList<Vector3> shortesWayList = p.getShortestWay(start,end);
 
         text = new TextView(this);
         text.setText("kürzester Weg");
