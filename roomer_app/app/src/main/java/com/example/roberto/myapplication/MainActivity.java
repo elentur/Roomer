@@ -16,6 +16,8 @@
 
 package com.example.roberto.myapplication;
 
+import android.widget.*;
+import com.example.roberto.myapplication.model.PointsRoutModel;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
 import com.google.atap.tangoservice.TangoConfig;
@@ -29,14 +31,16 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
+import org.rajawali3d.math.vector.Vector3;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Main Activity for the Tango Java Quickstart. Demonstrates establishing a
- * connection to the {@link Tango} service and printing the {@link TangoPose}
+ * connection to the {@link Tango} service and printing the {@link }
  * data to the LogCat. Also demonstrates Tango lifecycle management through
  * {@link TangoConfig}.
  */
@@ -65,6 +69,65 @@ public class MainActivity extends Activity {
 
         mTranslationTextView = (TextView) findViewById(R.id.translation_textview);
         mRotationTextView = (TextView) findViewById(R.id.rotation_textview);
+
+        LinearLayout left = (LinearLayout) findViewById(R.id.left);
+        LinearLayout middle = (LinearLayout) findViewById(R.id.middle);
+        LinearLayout right = (LinearLayout) findViewById(R.id.right);
+
+        ArrayList<Vector3> list = new ArrayList<Vector3>();
+
+        TextView text = new TextView(this);
+
+        DecimalFormat df = new DecimalFormat("####0.00");
+
+        text.setText("ungeordnete Werte");
+        for (int i = 0; i < 10; i++){
+            Random r = new Random();
+
+
+
+            double x = -10.0 + r.nextDouble() * 20.0;
+            double y = -10.0 + r.nextDouble() * 20.0;
+            double z = -10.0 + r.nextDouble() * 20.0;
+
+            list.add(new Vector3(x,y,z));
+
+            text.setText(text.getText() + "\n" +df.format(x)+","+df.format(y)+","+df.format(z));
+        }
+
+        left.addView(text);
+
+
+        Log.i("List", list.toString());
+
+        PointsRoutModel p = new PointsRoutModel(list);
+
+        ArrayList<Vector3> inOrderList = p.listInOrder();
+
+        text = new TextView(this);
+        text.setText("geordnete Werte");
+
+        for(Vector3 vec : inOrderList){
+            text.setText(text.getText() + "\n" +df.format(vec.x)+","+df.format(vec.y)+","+df.format(vec.z));
+        }
+
+        middle.addView(text);
+
+        Log.i("List", inOrderList.toString());
+
+        ArrayList<Vector3> shortesWayList = p.getShortesWay(inOrderList.get(3),inOrderList.get(7));
+
+        text = new TextView(this);
+        text.setText("kürzester Weg");
+
+        for(Vector3 vec : shortesWayList){
+
+            text.setText(text.getText() + "\n" +df.format(vec.x)+","+df.format(vec.y)+","+df.format(vec.z));
+        }
+
+        right.addView(text);
+
+        Log.i("List", shortesWayList.toString());
 
     }
 
@@ -166,8 +229,8 @@ public class MainActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mRotationTextView.setText(rotationMsg);
-                            mTranslationTextView.setText(translationMsg);
+                            /*mRotationTextView.setText(rotationMsg);
+                            mTranslationTextView.setText(translationMsg);*/
                         }
                     });
                 }
