@@ -14,7 +14,7 @@ public class KD3D_Search {
 
         Random r = new Random();
 
-        int numpoints = 10;
+        int numpoints = 20;
 
         KD3DTree kdt = new KD3DTree(numpoints + 1);
 
@@ -25,8 +25,9 @@ public class KD3D_Search {
         double[] zero = {0,0,0};
         kdt.add(zero);
 
-        list = randomList(numpoints);
+        //list = randomList(numpoints);
         //list = zChainList(2,2,numpoints);
+        list= ZweiDList(numpoints);
 
         for(double[] d : list){
             kdt.add(d);
@@ -41,7 +42,7 @@ public class KD3D_Search {
 
 
         KD3DNode start = inOrderList.get(2);
-        KD3DNode end = inOrderList.get(8);
+        KD3DNode end = inOrderList.get(9);
 
 
 
@@ -111,6 +112,23 @@ public class KD3D_Search {
         for (int i = 0; i < num; i++) {
 
             double[] d = { x, y, i  - num/2};
+
+            System.out.println(d[0] + ", " + d[1] + ", " + d[2]);
+
+            list.add(d);
+        }
+
+        return list;
+    }
+
+    private static ArrayList<double[]> ZweiDList(int num) {
+        ArrayList<double[]> list = new ArrayList<double[]>();
+
+        Random r = new Random();
+
+        for (int i = 0; i < num; i++) {
+
+            double[] d = { -10.0 + r.nextDouble() * 20.0, -10.0 + r.nextDouble() * 20.0, 2};
 
             System.out.println(d[0] + ", " + d[1] + ", " + d[2]);
 
