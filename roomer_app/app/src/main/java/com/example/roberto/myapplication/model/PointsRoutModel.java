@@ -171,16 +171,17 @@ public class PointsRoutModel {
 
         do {
 
-            double dist = startNode.distance2(startNode.x, endNode.x, 3);
+            double d_min = startNode.distance2(startNode.x, endNode.x, 3);
 
             for (KD3DNode node : list) {
 
-                double distance = nextNode.distance2(nextNode.x, node.x, 3);
-                if (distance < dist && !node.checked) {
-                    if(isCloserToEnd(node,nextNode,endNode)) {
-                        dist = distance;
+                if(node.checked) continue;
+
+                double d = nextNode.distance2(nextNode.x, node.x, 3);
+
+                if (d <= d_min && isCloserToEnd(node,nextNode,endNode)) {
+                        d_min = d;
                         bestNode = node;
-                    }
                 }
             }
 

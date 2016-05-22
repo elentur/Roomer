@@ -14,7 +14,7 @@ public class KD3D_Search {
 
     public static void main(String args[]) throws IOException {
 
-        int numpoints = 20;
+        int numpoints = 10;
 
         kdt = new KD3DTree(numpoints + 1);
 
@@ -24,12 +24,11 @@ public class KD3D_Search {
 
         //list = randomList(numpoints);
         //list = zChainList(2,2,numpoints);
-        list = ZweiDList(numpoints);
+        //list = zweiDList(numpoints);
+        list = handMadeList();
+
 
         System.out.println("Setting points");
-
-        double[] zero = {0,0,0};
-        kdt.add(zero);
 
         for(double[] d : list){
             kdt.add(d);
@@ -38,14 +37,39 @@ public class KD3D_Search {
         // getting two points of the list
         ArrayList<KD3DNode> inOrderList = kdt.inorder();
 
-        KD3DNode start = inOrderList.get(2);
-        KD3DNode end = inOrderList.get(9);
+        double[] d0 = {0,0,0};
+        KD3DNode start = new KD3DNode(d0, 0);
+        double[] d1 = {5,2,0};
+        KD3DNode end = new KD3DNode(d1, 0);
 
         ArrayList<KD3DNode> way = findShortestWay(start,end);
         System.out.println("sortest Way");
         for(KD3DNode node : way){
             System.out.println(node);
         }
+    }
+
+    private static ArrayList<double[]> handMadeList() {
+        ArrayList<double[]> list = new ArrayList<double[]>();
+
+
+        double[] d1 = {0,0,0};
+        list.add(d1);
+
+        double[] d2 = {1,1,0};
+        list.add(d2);
+
+        double[] d3 = {4,2,0};
+        list.add(d3);
+
+        double[] d4 = {3,5,0};
+        list.add(d4);
+
+        double[] d5 = {5,2,0};
+        list.add(d5);
+
+
+        return list;
     }
 
     private static ArrayList<KD3DNode> findShortestWay(KD3DNode start , KD3DNode end){
@@ -73,15 +97,15 @@ public class KD3D_Search {
 
             for (KD3DNode node : inOrderList) {
 
+                if(node.checked) continue;
+
                 d = next.distance2(node.x, next.x, 3);
 
                 //System.out.println("distance: " + d + " node: " + node);
 
-                if (d <= min_d && !node.checked) {
-                    min_d = d;
-                    if(isCloserToEnd(node,next,end)) {
+                if (d <= min_d && isCloserToEnd(node,next,end)) {
+                        min_d = d;
                         bestNode = node;
-                    }
                 }
             }
 
@@ -122,7 +146,7 @@ public class KD3D_Search {
         return list;
     }
 
-    private static ArrayList<double[]> ZweiDList(int num) {
+    private static ArrayList<double[]> zweiDList(int num) {
         ArrayList<double[]> list = new ArrayList<double[]>();
 
         Random r = new Random();
