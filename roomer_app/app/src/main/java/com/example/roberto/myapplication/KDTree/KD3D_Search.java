@@ -40,8 +40,8 @@ public class KD3D_Search {
         }*/
 
 
-        KD3DNode start = inOrderList.get(5);
-        KD3DNode end = inOrderList.get(2);
+        KD3DNode start = inOrderList.get(2);
+        KD3DNode end = inOrderList.get(8);
 
 
 
@@ -49,6 +49,7 @@ public class KD3D_Search {
         KD3DNode bestNode = end;
 
         ArrayList<KD3DNode> way = new ArrayList<KD3DNode>();
+
         next.checked = true;
         way.add(next);
 
@@ -68,7 +69,7 @@ public class KD3D_Search {
 
                 d = next.distance2(node.x, next.x, 3);
 
-                System.out.println("distance: " + d + " node: " + node);
+                //System.out.println("distance: " + d + " node: " + node);
 
                 if (d <= min_d && !node.checked) {
                     min_d = d;
@@ -81,10 +82,10 @@ public class KD3D_Search {
             bestNode.checked = true;
             way.add(bestNode);
             next = bestNode;
-            System.out.println("min dist: " + min_d);
+            /*System.out.println("min dist: " + min_d);
             System.out.println("Next Node: " + next);
             System.out.println("is equal to end: " + next.equal(next.x,end.x,3));
-            System.out.println("*******************");
+            System.out.println("*******************");*/
 
 
         }while(!next.equal(next.x,end.x,3));

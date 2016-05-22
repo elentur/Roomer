@@ -77,7 +77,7 @@ public class MainActivity extends Activity {
 
         ArrayList<Vector3> list = new ArrayList<Vector3>();
 
-        int numpoints = 10;
+        int numpoints = 20;
 
         //list = randomList(numpoints);
         list = zChainList(2,2,numpoints);
