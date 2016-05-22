@@ -7,23 +7,39 @@ import org.rajawali3d.math.vector.Vector3;
 import java.util.ArrayList;
 
 /**
+ * Modal-Object of the Vector3 Point Data.
+ * Creates a KD-Tree and can be use to get ordered lists, search Vector3 Point in list and find shortest way
  * Created by
  * @author roberto on 21.05.16.
  */
 public class PointsRoutModel {
 
+    // the list of raw Vector3 points
     private ArrayList<Vector3> pointList;
 
+    // KD-tree
     private KD3DTree kdt;
 
+    /**
+     * Gets the Modal from database by id
+     * @param id database id
+     */
     public PointsRoutModel(int id) {
         searchPointListById(id);
     }
 
+    /**
+     * Gets the Modal from database by name
+     * @param name modal name
+     */
     public PointsRoutModel(String name) {
         searchPointListByName(name);
     }
 
+    /**
+     * Starts Model with a given ector3 points list
+     * @param pointList list of Vector3 points
+     */
     public PointsRoutModel(ArrayList<Vector3> pointList) {
         if(pointList == null || pointList.size() < 1) throw new IllegalArgumentException("The PointList cannot be empty!");
 
@@ -31,14 +47,25 @@ public class PointsRoutModel {
         buildKDTree();
     }
 
+    /**
+     * Has to be implemented
+     * @param id
+     */
     private void searchPointListById(int id) {
         //TODO creating a Database query to the pointList by Id
     }
 
+    /**
+     * Has to be implemented
+     * @param name
+     */
     private void searchPointListByName(String name) {
         //TODO creating a Database query to the pointList by Name
     }
 
+    /**
+     * Creates the KD-Tree based of the given Vector3 point list.
+     */
     private void buildKDTree(){
 
         int numpoints = pointList.size();
@@ -57,6 +84,10 @@ public class PointsRoutModel {
         }
     }
 
+    /**
+     * Gives back a List of Vector3 Vector3 like the KD-Tree
+     * @return ArrayList<Vector3>
+     */
     public ArrayList<Vector3> listInOrder(){
 
         ArrayList<Vector3> inOrderList = new ArrayList<Vector3>();
@@ -71,6 +102,10 @@ public class PointsRoutModel {
         return inOrderList;
     }
 
+    /**
+     * Gives back a List of Vector3 ordered from the beginning of the KD-Tree
+     * @return ArrayList<Vector3>
+     */
     public ArrayList<Vector3> listPreOrder(){
         ArrayList<Vector3> preOrderList = new ArrayList<Vector3>();
 
@@ -84,6 +119,10 @@ public class PointsRoutModel {
         return preOrderList;
     }
 
+    /**
+     * Gives back a List of Vector3 ordered from the ending of the KD-Tree
+     * @return ArrayList<Vector3>
+     */
     public ArrayList<Vector3> listPostOrder(){
         ArrayList<Vector3> postOrderList = new ArrayList<Vector3>();
 
@@ -97,6 +136,11 @@ public class PointsRoutModel {
         return postOrderList;
     }
 
+    /**
+     * Checks, if a specific Vector3 is in the tree
+     * @param vec searched Vector3
+     * @return Vector3
+     */
     public Vector3 searchInList(Vector3 vec){
 
         kdt.search(vec.x,vec.y,vec.z);
@@ -104,6 +148,13 @@ public class PointsRoutModel {
         return new Vector3();
     }
 
+    /**
+     * gives a Vector3 list of the shortest way between start and end.
+     * start and end are included in the list!
+     * @param start beginning of the way
+     * @param end ending of the way
+     * @return ArrayList<Vector3>
+     */
     public ArrayList<Vector3> getShortestWay(Vector3 start, Vector3 end){
 
         ArrayList<Vector3> way = new ArrayList<Vector3>();
@@ -114,7 +165,6 @@ public class PointsRoutModel {
         KD3DNode startNode = kdt.find_nearest(startPoint);
         double[] endPoint = {end.x,end.y,end.z};
         KD3DNode endNode = kdt.find_nearest(endPoint);
-
 
         KD3DNode nextNode = startNode;
         KD3DNode bestNode = endNode;
@@ -143,12 +193,19 @@ public class PointsRoutModel {
         return way;
     }
 
-    private static boolean isCloserToEnd(KD3DNode node, KD3DNode next, KD3DNode end) {
+    /**
+     * Checks if the first note is closer to end than the second
+     * @param first Node
+     * @param second Node
+     * @param end Node
+     * @return boolean
+     */
+    private static boolean isCloserToEnd(KD3DNode first, KD3DNode second, KD3DNode end) {
 
-        if(end.equal(end.x,next.x,3)) return true;
+        if(end.equal(end.x,second.x,3)) return true;
 
-        double distNode = end.distance2(node.x,end.x,3);
-        double distNext = end.distance2(next.x,end.x,3);
+        double distNode = end.distance2(first.x,end.x,3);
+        double distNext = end.distance2(second.x,end.x,3);
 
         return distNode < distNext;
     }

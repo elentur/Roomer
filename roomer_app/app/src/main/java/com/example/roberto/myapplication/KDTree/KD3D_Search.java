@@ -8,48 +8,53 @@ import java.util.Random;
  * This Klass ist only for debugging of the KD-Tree
  */
 public class KD3D_Search {
-    public static void main(String args[]) throws IOException
 
-    {
 
-        Random r = new Random();
+    private static KD3DTree kdt;
+
+    public static void main(String args[]) throws IOException {
 
         int numpoints = 20;
 
-        KD3DTree kdt = new KD3DTree(numpoints + 1);
-
-        System.out.println("Creating points");
+        kdt = new KD3DTree(numpoints + 1);
 
         ArrayList<double[]> list;
 
-        double[] zero = {0,0,0};
-        kdt.add(zero);
+        /* different lists to choose */
 
         //list = randomList(numpoints);
         //list = zChainList(2,2,numpoints);
-        list= ZweiDList(numpoints);
+        list = ZweiDList(numpoints);
+
+        System.out.println("Setting points");
+
+        double[] zero = {0,0,0};
+        kdt.add(zero);
 
         for(double[] d : list){
             kdt.add(d);
         }
 
-        //System.out.println("Order List");
+        // getting two points of the list
         ArrayList<KD3DNode> inOrderList = kdt.inorder();
-
-        /*for(KD3DNode node : inOrderList){
-            System.out.println(node);
-        }*/
-
 
         KD3DNode start = inOrderList.get(2);
         KD3DNode end = inOrderList.get(9);
 
+        ArrayList<KD3DNode> way = findShortestWay(start,end);
+        System.out.println("sortest Way");
+        for(KD3DNode node : way){
+            System.out.println(node);
+        }
+    }
 
+    private static ArrayList<KD3DNode> findShortestWay(KD3DNode start , KD3DNode end){
+
+        ArrayList<KD3DNode> inOrderList = kdt.inorder();
+        ArrayList<KD3DNode> way = new ArrayList<KD3DNode>();
 
         KD3DNode next = start;
         KD3DNode bestNode = end;
-
-        ArrayList<KD3DNode> way = new ArrayList<KD3DNode>();
 
         next.checked = true;
         way.add(next);
@@ -91,11 +96,7 @@ public class KD3D_Search {
 
         }while(!next.equal(next.x,end.x,3));
 
-
-        System.out.println("sortest Way");
-        for(KD3DNode node : way){
-            System.out.println(node);
-        }
+        return way;
     }
 
     private static boolean isCloserToEnd(KD3DNode node, KD3DNode next, KD3DNode end) {
