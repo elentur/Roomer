@@ -12,9 +12,12 @@ public class KD3D_Search {
 
     private static KD3DTree kdt;
 
+    private static Random r = new Random();
+
+
     public static void main(String args[]) throws IOException {
 
-        int numpoints = 20;
+        int numpoints = 100000;
 
         kdt = new KD3DTree(numpoints + 1);
 
@@ -22,15 +25,13 @@ public class KD3D_Search {
 
         /* different lists to choose */
 
-        //list = randomList(numpoints);
+        list = randomList(numpoints);
         //list = zChainList(2,2,numpoints);
-        list = zweiDList(numpoints);
+        //list = zweiDList(numpoints);
         //list = handMadeList();
 
 
         System.out.println("Setting points");
-
-        drawCoordinatenSys(list);
 
         for(double[] d : list){
             kdt.add(d);
@@ -41,13 +42,31 @@ public class KD3D_Search {
 
 
 
-        double[] d0 = {-10,-10,0};
+        /*double[] d0 = {
+                Math.floor((numpoints * -1) + r.nextDouble() * (numpoints * 2)) / 1,
+                Math.floor((numpoints * -1) + r.nextDouble() * (numpoints * 2)) / 1,
+                Math.floor((numpoints * -1) + r.nextDouble() * (numpoints * 2)) / 1
+        };*/
+        double[] d0 = {
+                numpoints * -1,
+                numpoints * -1,
+                numpoints * -1
+        };
         KD3DNode start = kdt.find_nearest(d0);
-        double[] d1 = {10,10,0};
+        /*double[] d1 = {
+                Math.floor((numpoints * -1) + r.nextDouble() * (numpoints * 2)) / 1,
+                Math.floor((numpoints * -1) + r.nextDouble() * (numpoints * 2)) / 1,
+                Math.floor((numpoints * -1) + r.nextDouble() * (numpoints * 2)) / 1
+        };*/
+        double[] d1 = {
+                numpoints,
+                numpoints,
+                numpoints
+        };
         KD3DNode end = kdt.find_nearest(d1);
 
         ArrayList<KD3DNode> way = findShortestWay(start,end);
-        System.out.println("sortest Way");
+        System.out.println("sortest Way in " + way.size() + " steps.");
         for(KD3DNode node : way){
             System.out.println(node);
         }
@@ -105,6 +124,7 @@ public class KD3D_Search {
         double[] d10 = {2,2,0};
         list.add(d10);
 
+        drawCoordinatenSys(list);
 
         return list;
     }
@@ -178,13 +198,13 @@ public class KD3D_Search {
             list.add(d);
         }
 
+        drawCoordinatenSys(list);
+
         return list;
     }
 
     private static ArrayList<double[]> zweiDList(int num) {
         ArrayList<double[]> list = new ArrayList<double[]>();
-
-        Random r = new Random();
 
         for (int i = 0; i < num; i++) {
 
@@ -195,23 +215,29 @@ public class KD3D_Search {
             list.add(d);
         }
 
+        drawCoordinatenSys(list);
+
         return list;
     }
 
     private static ArrayList<double[]> randomList(int num){
         ArrayList<double[]> list = new ArrayList<double[]>();
 
-        Random r = new Random();
-
         for (int i = 0; i < num; i++) {
 
+            /*double[] d = {
+                    Math.floor((num * -1) + r.nextDouble() * (num * 2)) / 1,
+                    Math.floor((num * -1) + r.nextDouble() * (num * 2)) / 1,
+                    Math.floor((num * -1) + r.nextDouble() * (num * 2)) / 1
+            };
+*/
             double[] d = {
-                    -10.0 + r.nextDouble() * 20.0,
-                    -10.0 + r.nextDouble() * 20.0,
-                    -10.0 + r.nextDouble() * 20.0
+                    (num * -1) + r.nextDouble() * (num * 2),
+                    (num * -1) + r.nextDouble() * (num * 2),
+                    (num * -1) + r.nextDouble() * (num * 2)
             };
 
-            System.out.println(d[0] + ", " + d[1] + ", " + d[2]);
+            System.out.println(i +": "+d[0] + ", " + d[1] + ", " + d[2]);
 
             list.add(d);
         }
