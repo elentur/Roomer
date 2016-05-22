@@ -17,9 +17,9 @@ public class KD3DNode {
     // Obj id
     int id;
     // Checkes if we already have been here
-    boolean checked;
+    public boolean checked;
     // left or right
-    private boolean orientation;
+    boolean orientation;
     // Parent Node
     KD3DNode Parent;
     // Left knot
@@ -105,7 +105,7 @@ public class KD3DNode {
      * @param dim which dimension have to be checked.
      * @return boolean
      */
-    boolean equal(double[] x1, double[] x2, int dim) {
+    public boolean equal(double[] x1, double[] x2, int dim) {
         for (int k = 0; k < dim; k++) {
             if (x1[k] != x2[k])
                 return false;
@@ -121,7 +121,7 @@ public class KD3DNode {
      * @param dim which dimension have to be checked.
      * @return double which contains the distance.
      */
-    double distance2(double[] x1, double[] x2, int dim) {
+    public double distance2(double[] x1, double[] x2, int dim) {
 
         double S = 0;
         for (int k = 0; k < dim; k++)

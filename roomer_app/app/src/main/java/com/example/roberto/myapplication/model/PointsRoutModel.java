@@ -105,27 +105,37 @@ public class PointsRoutModel {
         return new Vector3();
     }
 
-    public ArrayList<Vector3> getShortesWay(Vector3 vecStart, Vector3 vecEnd){
+    public ArrayList<Vector3> getShortesWay(Vector3 start, Vector3 end){
 
         ArrayList<Vector3> way = new ArrayList<Vector3>();
-
-        boolean writable = false;
-
         ArrayList<KD3DNode> list = kdt.inorder();
 
-        double[] start = {vecStart.x,vecStart.y,vecStart.z};
+        // find the nearest Nodes - start and end do not have to be in the list
+        double[] startPoint = {start.x,start.y,start.z};
+        KD3DNode startNode = kdt.find_nearest(startPoint);
+        double[] endPoint = {end.x,end.y,end.z};
+        KD3DNode endNode = kdt.find_nearest(endPoint);
 
-        KD3DNode nearestToStart = kdt.find_nearest(start);
 
-        start = nearestToStart.x;
+        KD3DNode nextNode = startNode;
 
-        double[] end = {vecEnd.x,vecEnd.y,vecEnd.z};
+        do {
 
-        KD3DNode nearestToEnd = kdt.find_nearest(end);
+            double dist = 99999999;
 
-        end = nearestToEnd.x;
+            for (KD3DNode node : list) {
 
-        // TODO search nearest neighbor list
+                double distance = nextNode.distance2(nextNode.x, node.x, 3);
+                if (distance < dist && !node.checked) {
+                    dist = distance;
+                    nextNode = node;
+                }
+            }
+
+            nextNode.checked = true;
+            way.add(new Vector3(nextNode.x[0],nextNode.x[1],nextNode.x[2]));
+
+        }while(!nextNode.equal(nextNode.x,endNode.x,3));
 
         return way;
     }

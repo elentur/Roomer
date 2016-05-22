@@ -17,6 +17,7 @@
 package com.example.roberto.myapplication;
 
 import android.widget.*;
+import com.example.roberto.myapplication.KDTree.KD3DNode;
 import com.example.roberto.myapplication.model.PointsRoutModel;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
@@ -76,23 +77,20 @@ public class MainActivity extends Activity {
 
         ArrayList<Vector3> list = new ArrayList<Vector3>();
 
+        int numpoints = 10;
+
+        //list = randomList(numpoints);
+        list = zChainList(2,2,numpoints);
+
         TextView text = new TextView(this);
 
         DecimalFormat df = new DecimalFormat("####0.00");
 
         text.setText("ungeordnete Werte");
-        for (int i = 0; i < 10; i++){
-            Random r = new Random();
 
+        for (Vector3 vec : list){
 
-
-            double x = -10.0 + r.nextDouble() * 20.0;
-            double y = -10.0 + r.nextDouble() * 20.0;
-            double z = -10.0 + r.nextDouble() * 20.0;
-
-            list.add(new Vector3(x,y,z));
-
-            text.setText(text.getText() + "\n" +df.format(x)+","+df.format(y)+","+df.format(z));
+            text.setText(text.getText() + "\n" +df.format(vec.x)+","+df.format(vec.y)+","+df.format(vec.z));
         }
 
         left.addView(text);
@@ -115,10 +113,16 @@ public class MainActivity extends Activity {
 
         Log.i("List", inOrderList.toString());
 
-        ArrayList<Vector3> shortesWayList = p.getShortesWay(inOrderList.get(3),inOrderList.get(7));
+        Vector3 start = inOrderList.get(2);
+        Vector3 end = inOrderList.get(6);
+
+        ArrayList<Vector3> shortesWayList = p.getShortesWay(start,end);
 
         text = new TextView(this);
         text.setText("kürzester Weg");
+
+        text.setText(text.getText() + "\nStart: " +df.format(start.x)+","+df.format(start.y)+","+df.format(start.z));
+        text.setText(text.getText() + "\nEnd: " +df.format(end.x)+","+df.format(end.y)+","+df.format(end.z));
 
         for(Vector3 vec : shortesWayList){
 
@@ -129,6 +133,36 @@ public class MainActivity extends Activity {
 
         Log.i("List", shortesWayList.toString());
 
+    }
+
+    private static ArrayList<Vector3> zChainList(int x, int y, int num) {
+        ArrayList<Vector3> list = new ArrayList<Vector3>();
+
+        for (int i = 0; i < num; i++) {
+
+            list.add(new Vector3(x, y, i  - num/2));
+        }
+
+        return list;
+    }
+
+    private static ArrayList<Vector3> randomList(int num){
+        ArrayList<Vector3> list = new ArrayList<Vector3>();
+
+        Random r = new Random();
+
+        for (int i = 0; i < num; i++) {
+
+            list.add(
+                    new Vector3(
+                            -10.0 + r.nextDouble() * 20.0,
+                            -10.0 + r.nextDouble() * 20.0,
+                            -10.0 + r.nextDouble() * 20.0
+                    )
+            );
+        }
+
+        return list;
     }
 
     @Override
