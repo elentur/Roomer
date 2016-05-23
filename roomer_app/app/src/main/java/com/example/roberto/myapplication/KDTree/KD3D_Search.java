@@ -17,7 +17,7 @@ public class KD3D_Search {
 
     public static void main(String args[]) throws IOException {
 
-        int numpoints = 100000;
+        int numpoints = 10;
 
         kdt = new KD3DTree(numpoints + 1);
 
@@ -25,9 +25,9 @@ public class KD3D_Search {
 
         /* different lists to choose */
 
-        list = randomList(numpoints);
+        //list = randomList(numpoints);
         //list = zChainList(2,2,numpoints);
-        //list = zweiDList(numpoints);
+        list = zweiDList(numpoints);
         //list = handMadeList();
 
 
