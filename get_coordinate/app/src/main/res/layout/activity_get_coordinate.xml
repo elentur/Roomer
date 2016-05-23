@@ -14,13 +14,19 @@
    limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:surfaceview="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.projecttango.examples.java.getCoordinate.GetCoordinateActivity">
 
     <org.rajawali3d.surface.RajawaliSurfaceView
         android:id="@+id/gl_surface_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        surfaceview:frameRate="30.0"
+
+        surfaceview:renderMode="RENDER_WHEN_DIRTY"
         android:layout_gravity="top" />
 
     <TextView
@@ -29,6 +35,24 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/txtLocalized"
         android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="addNavPoint"
+        android:text="Add Navigation Point"
+        android:id="@+id/btnAddNavPoint"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="addDestPoint"
+        android:text="Add Destination Point"
+        android:id="@+id/btnAddDestination"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>

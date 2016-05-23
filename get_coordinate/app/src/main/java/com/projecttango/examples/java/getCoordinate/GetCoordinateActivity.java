@@ -31,7 +31,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +62,8 @@ public class GetCoordinateActivity extends Activity {
     private final Object mSharedLock = new Object();
     private boolean mIsRelocalized;
 
+    private Button btnAddNavigation;
+
     private TextView txtLocalized;
     private TangoPoseData poseData = new TangoPoseData();
     // Handles the debug text UI update loop.
@@ -69,6 +73,8 @@ public class GetCoordinateActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_coordinate);
+
+        btnAddNavigation = (Button)findViewById(R.id.btnAddNavPoint);
 
         mRenderer = setupGLViewAndRenderer();
 
@@ -92,6 +98,7 @@ public class GetCoordinateActivity extends Activity {
         // OpenGL view where all of the graphics are drawn
         RajawaliSurfaceView glView = (RajawaliSurfaceView) findViewById(R.id.gl_surface_view);
         glView.setEGLContextClientVersion(2);
+        glView.setZOrderOnTop(false);
         glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
         glView.setSurfaceRenderer(renderer);
         return renderer;
@@ -254,6 +261,12 @@ public class GetCoordinateActivity extends Activity {
         }
     };
 
+    public synchronized void addNavPoint(View view){
+            mRenderer.addNavPoint();
+    }
+    public synchronized void addDestPoint(View view){
+        mRenderer.addDestPoint();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
