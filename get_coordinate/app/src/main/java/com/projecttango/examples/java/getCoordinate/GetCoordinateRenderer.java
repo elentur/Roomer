@@ -39,10 +39,15 @@ import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
+import com.projecttango.examples.java.getCoordinate.DataStructure.DestinationPoint;
+import com.projecttango.examples.java.getCoordinate.DataStructure.NavigationPoint;
+import com.projecttango.examples.java.getCoordinate.DataStructure.Point;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.renderables.Grid;
 
 import com.projecttango.tangosupport.TangoSupport;
+
+import java.util.ArrayList;
 
 /**
  * This class implements the rendering logic for the Motion Tracking application using Rajawali.
@@ -63,6 +68,12 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
 
     private boolean addNavPoint =true;
     private boolean addDestPoint =true;
+    private int countDestPoints = 0;
+    private int countNavPoints =0;
+
+    public boolean reloadList = false;
+
+    public ArrayList<Point> points = new ArrayList<Point>();
 
     public GetCoordinateRenderer(Context context) {
         super(context);
@@ -120,6 +131,11 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
 
                 getCurrentScene().addChild(s);
                 s.setPosition(p);
+
+                Point point = new NavigationPoint(p,null,"NavPoint" +countNavPoints);
+                countNavPoints++;
+                points.add(point);
+                reloadList=true;
             }
             if(!addDestPoint){
                 addDestPoint = true;
@@ -137,29 +153,40 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
 
                 getCurrentScene().addChild(s);
                 s.setPosition(p);
+                Point point = new DestinationPoint(p,null,"DestPoint" +countDestPoints);
+                countDestPoints++;
+                points.add(point);
+                reloadList=true;
             }
 
 
 
-            TangoPoseData pose =
-                TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
-                                     TangoPoseData.COORDINATE_FRAME_DEVICE,
-                                     TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
-                                     mCurrentScreenRotation);
-            if (pose.statusCode == TangoPoseData.POSE_VALID) {
-                getCurrentCamera().setPosition((float) pose.translation[0],
-                                               (float) pose.translation[1],
-                                               (float) pose.translation[2]);
-            
-        
-                Quaternion invOrientation = new Quaternion((float) pose.rotation[3],
-                                                            (float) pose.rotation[0],
-                                                            (float) pose.rotation[1],
-                                                            (float) pose.rotation[2]);
+            TangoPoseData pose =null;
+            try {
+                pose =
+                        TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
+                                TangoPoseData.COORDINATE_FRAME_DEVICE,
+                                TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
+                                mCurrentScreenRotation);
+            }catch (Exception e){
+                Log.e("Render_Pose_error", "Keine Pose Daten");
+            }
+            if(pose !=null) {
+                if (pose.statusCode == TangoPoseData.POSE_VALID) {
+                    getCurrentCamera().setPosition((float) pose.translation[0],
+                            (float) pose.translation[1],
+                            (float) pose.translation[2]);
 
-                // For some reason, rajawalli's orientation is inversed.
-                Quaternion orientation = invOrientation.inverse();
-                getCurrentCamera().setOrientation(orientation);   
+
+                    Quaternion invOrientation = new Quaternion((float) pose.rotation[3],
+                            (float) pose.rotation[0],
+                            (float) pose.rotation[1],
+                            (float) pose.rotation[2]);
+
+                    // For some reason, rajawalli's orientation is inversed.
+                    Quaternion orientation = invOrientation.inverse();
+                    getCurrentCamera().setOrientation(orientation);
+                }
             }
         } catch (TangoErrorException e) {
             Log.e(TAG, "TangoSupport.getPoseAtTime error", e);

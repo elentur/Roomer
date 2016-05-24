@@ -16,6 +16,13 @@
 
 package com.projecttango.examples.java.getCoordinate;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.atap.tango.ux.TangoUx;
+import com.google.atap.tango.ux.TangoUxLayout;
+import com.google.atap.tango.ux.UxExceptionEvent;
+import com.google.atap.tango.ux.UxExceptionEventListener;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
 import com.google.atap.tangoservice.TangoConfig;
@@ -25,22 +32,33 @@ import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
+import com.projecttango.examples.java.getCoordinate.DataStructure.Point;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Main Activity class for the Motion Tracking API Sample. Handles the connection to the Tango
@@ -53,40 +71,52 @@ public class GetCoordinateActivity extends Activity {
     private static final int SECS_TO_MILLISECS = 1000;
     private static final double UPDATE_INTERVAL_MS = 100.0;
 
-    private double mPreviousPoseTimeStamp;
+    private double mXyIjPreviousTimeStamp;;
     private double mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
     private Tango mTango;
+
+    private TangoUx mTangoUx;
     private TangoConfig mConfig;
     private GetCoordinateRenderer mRenderer;
     private final Object mSharedLock = new Object();
     private boolean mIsRelocalized;
 
-    private Button btnAddNavigation;
+    private AtomicBoolean mIsConnected = new AtomicBoolean(false);
+
 
     private TextView txtLocalized;
+    private EditText txtName;
+    private ListView lstPoints;
+    private ArrayAdapter<Point> adapter;
     private TangoPoseData poseData = new TangoPoseData();
     // Handles the debug text UI update loop.
-    private Handler mHandler = new Handler();
+
+    private Context that;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_coordinate);
+        txtName = (EditText)findViewById(R.id.txtPointName);
+        lstPoints = (ListView)findViewById(R.id.lstPoints);
 
-        btnAddNavigation = (Button)findViewById(R.id.btnAddNavPoint);
+        adapter = new ArrayAdapter<Point>(this,
+                android.R.layout.simple_list_item_multiple_choice, android.R.id.text1);
 
+        lstPoints.setAdapter(adapter);
+        that = this;
         mRenderer = setupGLViewAndRenderer();
+        mTangoUx = setupTangoUxAndLayout();
 
-        // Check the current screen rotation and set it to the renderer.
-        WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        Display mDisplay = mWindowManager.getDefaultDisplay();
-        mRenderer.setCurrentScreenRotation(mDisplay.getRotation());
-        txtLocalized = (TextView) findViewById(R.id.txtLocalized);
         startActivityForResult(
                 Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
-
-
+        txtLocalized = (TextView) findViewById(R.id.txtLocalized);
     }
 
     /**
@@ -98,96 +128,92 @@ public class GetCoordinateActivity extends Activity {
         // OpenGL view where all of the graphics are drawn
         RajawaliSurfaceView glView = (RajawaliSurfaceView) findViewById(R.id.gl_surface_view);
         glView.setEGLContextClientVersion(2);
-        glView.setZOrderOnTop(false);
-        glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
+       // glView.setZOrderOnTop(false);
+       // glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
         glView.setSurfaceRenderer(renderer);
         return renderer;
 
     }
 
-    /**
-     * Sets up the tango configuration object. Make sure mTango object is initialized before
-     * making this call.
-     */
-    private TangoConfig setupTangoConfig(Tango tango) {
-        // Create a new Tango Configuration and enable the GetCoordinateActivity API
-        TangoConfig config;
-        config = tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
 
-        // Tango service should automatically attempt to recover when it enters an invalid state.
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
-
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
-        config.putBoolean(
-                TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
-
-        ArrayList<String> fullUuidList;
-        // Returns a list of ADFs with their UUIDs
-        fullUuidList = tango.listAreaDescriptions();
-        // Load the latest ADF if ADFs are found.
-        if (fullUuidList.size() > 0) {
-            config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
-                    fullUuidList.get(fullUuidList.size() - 1));
-        }
-
-        return config;
-    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mIsRelocalized = false;
-        mRenderer.onPause();
-        try {
-            mTango.disconnect();
-        } catch (TangoErrorException e) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.exception_tango_error, Toast.LENGTH_SHORT).show();
+        if (mIsConnected.compareAndSet(true, false)) {
+            mTangoUx.stop();
+            mIsRelocalized = false;
+            mRenderer.onPause();
+            mRenderer.getCurrentScene().clearFrameCallbacks();
+            try {
+                mTango.disconnect();
+            } catch (TangoErrorException e) {
+                Toast.makeText(getApplicationContext(),
+                        R.string.exception_tango_error, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mRenderer.onResume();
-        // Initialize Tango Service as a normal Android Service, since we call 
-        // mTango.disconnect() in onPause, this will unbind Tango Service, so
-        // everytime when onResume get called, we should create a new Tango object.
-
-        mTango = new Tango(GetCoordinateActivity.this, new Runnable() {
-            // Pass in a Runnable to be called from UI thread when Tango is ready,
-            // this Runnable will be running on a new thread.
-            // When Tango is ready, we can call Tango functions safely here only
-            // when there is no UI thread changes involved.
-            @Override
-            public void run() {
-                mConfig = setupTangoConfig(mTango);
-
-                try {
-                    setUpTangoListeners();
-                } catch (TangoErrorException e) {
-                    Log.e(TAG, "Tango Error", e);
-                } catch (SecurityException e) {
-                    Log.e(TAG, "No Permission", e);
+        if (mIsConnected.compareAndSet(false, true)) {
+            // Initialize Tango Service as a normal Android Service, since we call
+            // mTango.disconnect() in onPause, this will unbind Tango Service, so
+            // everytime when onResume get called, we should create a new Tango object.
+            mTangoUx.start(new TangoUx.StartParams());
+            mTango = new Tango(GetCoordinateActivity.this, new Runnable() {
+                // Pass in a Runnable to be called from UI thread when Tango is ready,
+                // this Runnable will be running on a new thread.
+                // When Tango is ready, we can call Tango functions safely here only
+                // when there is no UI thread changes involved.
+                @Override
+                public void run() {
+                    try {
+                        connectTango();
+                        mRenderer.onResume();
+                        connectRenderer();
+                    } catch (TangoOutOfDateException outDateEx) {
+                        if (mTangoUx != null) {
+                            mTangoUx.showTangoOutOfDate();
+                        }
+                    } catch (TangoErrorException e) {
+                        Log.e(TAG, getString(R.string.exception_tango_error), e);
+                    } catch (SecurityException e) {
+                        Log.e(TAG, getString(R.string.permission_motion_tracking), e);
+                    }
                 }
-                try {
-                    mTango.connect(mConfig);
-                } catch (TangoOutOfDateException e) {
-                    Log.e(TAG, getString(R.string.exception_out_of_date), e);
-                } catch (TangoErrorException e) {
-                    Log.e(TAG, getString(R.string.exception_tango_error), e);
-                }
-            }
-        });
-        mHandler.post(mUpdateUiLoopRunnable);
+            });
+        }
     }
 
     /**
      * Set up the callback listeners for the Tango service, then begin using the Motion
      * Tracking API. This is called in response to the user clicking the 'Start' Button.
      */
-    private void setUpTangoListeners() {
+    private void connectTango() {
+        // Create a new Tango Configuration and enable the GetCoordinateActivity API
+        TangoConfig config;
+        config = mTango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT);
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
+
+        // Tango service should automatically attempt to recover when it enters an invalid state.
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
+
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
+           config.putBoolean(
+                  TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
+
+        ArrayList<String> fullUuidList;
+        // Returns a list of ADFs with their UUIDs
+        fullUuidList = mTango.listAreaDescriptions();
+        // Load the latest ADF if ADFs are found.
+        if (fullUuidList.size() > 0) {
+            config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
+                    fullUuidList.get(fullUuidList.size() - 1));
+        }
+        mTango.connect(config);
+
         // Set Tango Listeners for Poses Device wrt Start of Service, Device wrt
         // ADF and Start of Service wrt ADF
         ArrayList<TangoCoordinateFramePair> framePairs = new ArrayList<TangoCoordinateFramePair>();
@@ -204,18 +230,47 @@ public class GetCoordinateActivity extends Activity {
         mTango.connectListener(framePairs, new OnTangoUpdateListener() {
             @Override
             public void onXyzIjAvailable(TangoXyzIjData xyzij) {
-                if (mIsRelocalized) {
-                    Log.i("Debugg", "xyz-Count: " + xyzij.xyzCount + "");
+                final double currentTimeStamp = xyzij.timestamp;
+                final double pointCloudFrameDelta = (currentTimeStamp - mXyIjPreviousTimeStamp)
+                        * SECS_TO_MILLISECS;
+                mXyIjPreviousTimeStamp = currentTimeStamp;
+
+
+                mTimeToNextUpdate -= pointCloudFrameDelta;
+
+                if (mTimeToNextUpdate < 0.0) {
+                    mTimeToNextUpdate = UPDATE_INTERVAL_MS;
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                         if(mIsRelocalized)txtLocalized.setText( "Localized");
+
+                        if(mRenderer.reloadList) {
+
+                            mRenderer.reloadList=false;
+                            adapter.clear();
+                            adapter.addAll(mRenderer.points);
+                        }
+
+                    }
+                });
                 }
             }
 
             // Listen to Tango Events
             @Override
             public void onTangoEvent(final TangoEvent event) {
+                if (mTangoUx != null) {
+                    mTangoUx.updateTangoEvent(event);
+                }
             }
 
             @Override
             public void onPoseAvailable(TangoPoseData pose) {
+                if (mTangoUx != null) {
+                    mTangoUx.updatePoseStatus(pose.statusCode);
+                }
                 poseData = pose;
                 // Make sure to have atomic access to Tango Data so that
                 // UI loop doesn't interfere while Pose call back is updating
@@ -230,6 +285,8 @@ public class GetCoordinateActivity extends Activity {
                         mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
 
                     }
+
+
                 }
 
             }
@@ -241,34 +298,98 @@ public class GetCoordinateActivity extends Activity {
         });
     }
 
-    private Runnable mUpdateUiLoopRunnable = new Runnable() {
-        public void run() {
-            final double deltaTime = (poseData.timestamp - mPreviousPoseTimeStamp) *
-                    SECS_TO_MILLISECS;
-            mPreviousPoseTimeStamp = poseData.timestamp;
-            mTimeToNextUpdate -= deltaTime;
-
-            if (mTimeToNextUpdate < 0.0) {
-                mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
 
-                if (mIsRelocalized) txtLocalized.setText(
-                        "Localized");
-            }
+    public synchronized void addNavPoint(View view) {
 
-
-            mHandler.postDelayed(this, 100);
-        }
-    };
-
-    public synchronized void addNavPoint(View view){
-            mRenderer.addNavPoint();
+        mRenderer.addNavPoint();
     }
-    public synchronized void addDestPoint(View view){
+
+    public synchronized void addDestPoint(View view) {
         mRenderer.addDestPoint();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+    /**
+     * Sets up TangoUX layout and sets its listener.
+     */
+    private TangoUx setupTangoUxAndLayout() {
+        TangoUxLayout uxLayout = (TangoUxLayout) findViewById(R.id.layout_tango);
+        TangoUx tangoUx = new TangoUx(this);
+        tangoUx.setLayout(uxLayout);
+        tangoUx.setUxExceptionEventListener(mUxExceptionListener);
+        return tangoUx;
+    }
+
+    private UxExceptionEventListener mUxExceptionListener = new UxExceptionEventListener() {
+
+        @Override
+        public void onUxExceptionEvent(UxExceptionEvent uxExceptionEvent) {
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_LYING_ON_SURFACE) {
+                Log.i(TAG, "Device lying on surface ");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_FEW_DEPTH_POINTS) {
+                Log.i(TAG, "Very few depth points in mPoint cloud ");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_FEW_FEATURES) {
+                Log.i(TAG, "Invalid poses in MotionTracking ");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_INCOMPATIBLE_VM) {
+                Log.i(TAG, "Device not running on ART");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_MOTION_TRACK_INVALID) {
+                Log.i(TAG, "Invalid poses in MotionTracking ");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_MOVING_TOO_FAST) {
+                Log.i(TAG, "Invalid poses in MotionTracking ");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_OVER_EXPOSED) {
+                Log.i(TAG, "Camera Over Exposed");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_TANGO_SERVICE_NOT_RESPONDING) {
+                Log.i(TAG, "TangoService is not responding ");
+            }
+            if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_UNDER_EXPOSED) {
+                Log.i(TAG, "Camera Under Exposed ");
+            }
+
+        }
+    };
+
+    public void connectRenderer() {
+        mRenderer.getCurrentScene().registerFrameCallback(new ASceneFrameCallback() {
+            @Override
+            public void onPreFrame(long sceneTime, double deltaTime) {
+                // NOTE: This will be executed on each cycle before rendering, called from the
+                // OpenGL rendering thread
+
+                // NOTE: Sometimes a pre-frame call will already be scheduled by the time the Tango
+                // service is disconnected, so we need to check for service connection here just
+                // in case. This avoid crashes when pausing the application.
+                if (!mIsConnected.get()) {
+                    return;
+                }
+
+
+            }
+
+            @Override
+            public boolean callPreFrame() {
+                return true;
+            }
+
+            @Override
+            public void onPreDraw(long sceneTime, double deltaTime) {
+
+            }
+
+            @Override
+            public void onPostFrame(long sceneTime, double deltaTime) {
+
+            }
+        });
     }
 }
