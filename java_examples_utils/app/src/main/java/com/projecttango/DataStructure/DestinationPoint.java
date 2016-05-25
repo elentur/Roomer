@@ -1,4 +1,4 @@
-package com.projecttango.examples.java.getCoordinate.DataStructure;
+package com.projecttango.DataStructure;
 
 import org.rajawali3d.math.vector.Vector3;
 

@@ -16,9 +16,6 @@
 
 package com.projecttango.examples.java.getCoordinate;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.atap.tango.ux.TangoUx;
 import com.google.atap.tango.ux.TangoUxLayout;
 import com.google.atap.tango.ux.UxExceptionEvent;
@@ -32,32 +29,32 @@ import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
-import com.projecttango.examples.java.getCoordinate.DataStructure.Point;
+import com.projecttango.DataStructure.DestinationPoint;
+import com.projecttango.DataStructure.NavigationPoint;
+import com.projecttango.DataStructure.Point;
+import com.projecttango.DataStructure.RoomerDB;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.Display;
+import android.util.SparseBooleanArray;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
-import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -84,39 +81,48 @@ public class GetCoordinateActivity extends Activity {
 
     private AtomicBoolean mIsConnected = new AtomicBoolean(false);
 
-
+    private LinearLayout lltSavePoint;
     private TextView txtLocalized;
+    private Button btnNavPoint;
+    private Button btnDestPoint;
     private EditText txtName;
     private ListView lstPoints;
     private ArrayAdapter<Point> adapter;
     private TangoPoseData poseData = new TangoPoseData();
+    private String uuid;
+    private ArrayList<Point> savePointList = new ArrayList<Point>();
+    private RoomerDB db;
+
     // Handles the debug text UI update loop.
 
-    private Context that;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_coordinate);
+        Intent i = getIntent();
+        uuid = i.getStringExtra("uuid");
         txtName = (EditText)findViewById(R.id.txtPointName);
         lstPoints = (ListView)findViewById(R.id.lstPoints);
+        lltSavePoint = (LinearLayout)findViewById(R.id.lltSavePoint);
+        lltSavePoint.setVisibility(View.INVISIBLE);
+
+        btnDestPoint =  (Button)findViewById(R.id.btnAddDestination);
+        btnNavPoint =  (Button)findViewById(R.id.btnAddNavPoint);
 
         adapter = new ArrayAdapter<Point>(this,
                 android.R.layout.simple_list_item_multiple_choice, android.R.id.text1);
 
         lstPoints.setAdapter(adapter);
-        that = this;
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = setupTangoUxAndLayout();
 
-        startActivityForResult(
-                Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
+     //  startActivityForResult(
+      //          Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
+
+        db = new RoomerDB(this,uuid);
     }
 
     /**
@@ -140,6 +146,7 @@ public class GetCoordinateActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        db.exportDB(getBaseContext());
         if (mIsConnected.compareAndSet(true, false)) {
             mTangoUx.stop();
             mIsRelocalized = false;
@@ -204,14 +211,12 @@ public class GetCoordinateActivity extends Activity {
            config.putBoolean(
                   TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
 
-        ArrayList<String> fullUuidList;
-        // Returns a list of ADFs with their UUIDs
-        fullUuidList = mTango.listAreaDescriptions();
-        // Load the latest ADF if ADFs are found.
-        if (fullUuidList.size() > 0) {
+
+
+   //Set adf file
             config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
-                    fullUuidList.get(fullUuidList.size() - 1));
-        }
+                    uuid);
+
         mTango.connect(config);
 
         // Set Tango Listeners for Poses Device wrt Start of Service, Device wrt
@@ -247,10 +252,7 @@ public class GetCoordinateActivity extends Activity {
                          if(mIsRelocalized)txtLocalized.setText( "Localized");
 
                         if(mRenderer.reloadList) {
-
-                            mRenderer.reloadList=false;
-                            adapter.clear();
-                            adapter.addAll(mRenderer.points);
+                            setUpSavePoinInterface();
                         }
 
                     }
@@ -297,6 +299,7 @@ public class GetCoordinateActivity extends Activity {
             }
         });
     }
+
 
 
 
@@ -391,5 +394,59 @@ public class GetCoordinateActivity extends Activity {
 
             }
         });
+    }
+    private void setUpSavePoinInterface() {
+
+        lltSavePoint.setVisibility(View.VISIBLE);
+        btnDestPoint.setEnabled(false);
+        btnNavPoint.setEnabled(false);
+        mRenderer.reloadList=false;
+        adapter.clear();
+        ArrayList<Point> points = ( ArrayList<Point>) mRenderer.points.clone();
+        Collections.reverse(points);
+        Point point = points.remove(0);
+        ((TextView)findViewById(R.id.txtPointCord)).setText(point.toString());
+        adapter.addAll(points);
+        if(!points.isEmpty())lstPoints.setItemChecked(0,true);
+        if(point instanceof NavigationPoint){
+            txtName.setText(point.getTag());
+            txtName.setEnabled(false);
+        }else{
+            txtName.setText("");
+            txtName.setEnabled(true);
+            txtName.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(txtName, InputMethodManager.SHOW_IMPLICIT);
+
+        }
+    }
+    public void savePoint(View view){
+        ArrayList<Point> points =  ( ArrayList<Point>) mRenderer.points.clone();
+        Collections.reverse(points);
+        Point point = points.remove(0);
+        if(point instanceof DestinationPoint){
+            if(txtName.getText().equals(""))return;
+            point.setTag(txtName.getText().toString());
+        }
+        SparseBooleanArray checked = lstPoints.getCheckedItemPositions();
+
+        final int checkedItemCount = checked.size();
+        for (int i = 0; i < checkedItemCount; i++) {
+            int key = checked.keyAt(i);
+            if (checked.get(key)) {
+                lstPoints.setItemChecked(i,false);
+                point.addNeighhbour(points.get(i));
+                points.get(i).addNeighhbour(point);
+            }
+        }
+        savePointList.add(point);
+        db.insert(point);
+        db.update(mRenderer.points);
+
+
+        btnDestPoint.setEnabled(true);
+        btnNavPoint.setEnabled(true);
+        lltSavePoint.setVisibility(View.INVISIBLE);
+        mRenderer.reDraw = true;
     }
 }

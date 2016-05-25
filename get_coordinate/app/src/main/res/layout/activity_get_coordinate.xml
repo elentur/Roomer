@@ -21,7 +21,7 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toEndOf="@+id/linearLayout">
+        android:layout_toEndOf="@+id/lltSavePoint">
 
         <org.rajawali3d.surface.RajawaliSurfaceView
             android:id="@+id/gl_surface_view"
@@ -79,7 +79,7 @@
         android:orientation="vertical"
         android:layout_width="100pt"
         android:layout_height="match_parent"
-        android:id="@+id/linearLayout">
+        android:id="@+id/lltSavePoint">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -96,6 +96,17 @@
             android:lines="1"
             android:linksClickable="false" />
 
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/txtPointCord"
+            android:hint="point string"
+            android:textColor="@color/tango_blue"
+            android:textStyle="bold"
+            android:layout_marginBottom="8pt"
+            android:textAlignment="center" />
 
         <ListView
             android:layout_width="wrap_content"

@@ -20,34 +20,31 @@ import com.google.atap.tangoservice.TangoErrorException;
 import com.google.atap.tangoservice.TangoPoseData;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.primitives.Cube;
+import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
-import com.projecttango.examples.java.getCoordinate.DataStructure.DestinationPoint;
-import com.projecttango.examples.java.getCoordinate.DataStructure.NavigationPoint;
-import com.projecttango.examples.java.getCoordinate.DataStructure.Point;
+import com.projecttango.DataStructure.DestinationPoint;
+import com.projecttango.DataStructure.NavigationPoint;
+import com.projecttango.DataStructure.Point;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.renderables.Grid;
 
 import com.projecttango.tangosupport.TangoSupport;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * This class implements the rendering logic for the Motion Tracking application using Rajawali.
@@ -74,6 +71,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
     public boolean reloadList = false;
 
     public ArrayList<Point> points = new ArrayList<Point>();
+    public boolean reDraw = false;
 
     public GetCoordinateRenderer(Context context) {
         super(context);
@@ -120,7 +118,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
                 addNavPoint = true;
 
 
-                Vector3 p = new Vector3(getCurrentCamera().getPosition().x,-1,getCurrentCamera().getPosition().z);
+                Vector3 p = new Vector3(getCurrentCamera().getPosition().x,getCurrentCamera().getPosition().y-1,getCurrentCamera().getPosition().z);
 
                 Sphere s = new Sphere(0.1f, 20, 20);
                 Material mSphereMaterial = new Material();
@@ -141,7 +139,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
                 addDestPoint = true;
 
 
-                Vector3 p = new Vector3(getCurrentCamera().getPosition().x,-1,getCurrentCamera().getPosition().z);
+                Vector3 p = new Vector3(getCurrentCamera().getPosition().x,getCurrentCamera().getPosition().y-1,getCurrentCamera().getPosition().z);
 
                 Sphere s = new Sphere(0.1f, 20, 20);
                 Material mSphereMaterial = new Material();
@@ -159,6 +157,21 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
                 reloadList=true;
             }
 
+            if(reDraw){
+                reDraw=false;
+                Point p = points.get(points.size()-1);
+
+                for(Point n : p.getNeighbours().keySet()){
+                    Stack<Vector3> stack = new Stack<Vector3>();
+                    stack.add(p.getPosition());
+                    stack.add(n.getPosition());
+                    Object3D line = new Line3D(stack,50,Color.RED);
+                    Material m = new Material();
+                    m.setColor(Color.RED);
+                    line.setMaterial(m);
+                    getCurrentScene().addChild(line);
+                }
+            }
 
 
             TangoPoseData pose =null;
