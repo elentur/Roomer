@@ -1,10 +1,13 @@
-package com.example.roberto.myapplication.Dijkstra;
+package com.example.roberto.myapplication;
 
-import com.example.roberto.myapplication.DataStructure.NavigationPoint;
-import com.example.roberto.myapplication.DataStructure.Point;
+import com.projecttango.DataStructure.NavigationPoint;
+import com.projecttango.DataStructure.Point;
+import com.projecttango.Dijkstra.VectorGraph;
 import org.rajawali3d.math.vector.Vector3;
 
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -64,14 +67,14 @@ public class Main {
         pF.addNeighhbour(pD);
         pF.addNeighhbour(pE);
 
+        ArrayList<Point> pointList = new ArrayList<Point>(Arrays.asList(new Point[] {pA,pB,pC,pD,pE,pF}));
 
-        Point[] pointList = {pA,pB,pC,pD,pE,pF};
+       /* for(Point p : pointList){
+            for(Point neighbour : p.getNeighbours().keySet()){
+                System.out.println(p.getTag() + " -> " + neighbour.getTag() + "(" + p.getNeighbours().get(neighbour) + ")");
+            }
+        }*/
 
-        VectorGraph g = new VectorGraph(pointList);
-        g.dijkstra(pA);
-        g.printPath(pD);
-        //g.printAllPaths();
-
-
+        System.out.println(VectorGraph.getPath(pA,pF,pointList));
     }
 }
