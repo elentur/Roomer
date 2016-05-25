@@ -8,6 +8,7 @@ import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.projecttango.examples.java.pointVisualisation.DataStructure.NavigationPoint;
 import com.projecttango.examples.java.pointVisualisation.DataStructure.Point;
+import com.projecttango.examples.java.pointVisualisation.visualisationTools.DefineNav;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
@@ -61,6 +62,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     public ArrayList<Point> points = new ArrayList<Point>();
 
+    private DefineNav defineNav = new DefineNav(points,this);
 
     // Rajawali texture used to render the Tango color camera
     private ATexture mTangoCameraTexture;
@@ -71,9 +73,15 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     public RoomerRenderer(Context context) { super(context);}
 
-    public void setCurrentScreenRotation(int currentRotation) {
-        mCurrentScreenRotation = currentRotation;
-        //Zeigt an ob Tablet in Hoch oder querformat und wie herum
+
+    /**
+     * This consructor gets the contect and the list with the points to render.
+     * @param context
+     * @param points The ArrayList whit the points for the navigation.
+     */
+    public RoomerRenderer(Context context,ArrayList<Point> points){
+        super(context);
+        this.points = points;
     }
 
     @Override
@@ -106,14 +114,16 @@ public class RoomerRenderer extends RajawaliRenderer {
         light.setPower(0.8f);
         light.setPosition(3, 3, 3);
         getCurrentScene().addLight(light2);
+
     }
 
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
 
 
+        Vector3 position = getCurrentCamera().getPosition();
+        defineNav.getPositionVector();
 
-        Vector3 p = new Vector3(getCurrentCamera().getPosition().x,-1,getCurrentCamera().getPosition().z);
 
         Sphere s = new Sphere(0.1f, 20, 20);
         Material mSphereMaterial = new Material();
@@ -123,9 +133,9 @@ public class RoomerRenderer extends RajawaliRenderer {
         s.setMaterial(mSphereMaterial);
 
         getCurrentScene().addChild(s);
-        s.setPosition(p);
+        s.setPosition(position);
 
-        Point point = new NavigationPoint(p,null,"NavPoint" +countNavPoints);
+        Point point = new NavigationPoint(position,null,"NavPoint" +countNavPoints);
         countNavPoints++;
         points.add(point);
         reloadList=true;
@@ -202,5 +212,6 @@ public class RoomerRenderer extends RajawaliRenderer {
     public int getTextureId() {
         return mTangoCameraTexture == null ? -1 : mTangoCameraTexture.getTextureId();
     }
+
 
 }
