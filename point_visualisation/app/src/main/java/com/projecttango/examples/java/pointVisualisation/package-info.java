@@ -16,4 +16,4 @@
 /**
  * A sample showing how to build an Augmented Reality app using Tango and Rajawali.
  */
-package com.projecttango.examples.java.augmentedreality;
+package com.projecttango.examples.java.pointVisualisation;

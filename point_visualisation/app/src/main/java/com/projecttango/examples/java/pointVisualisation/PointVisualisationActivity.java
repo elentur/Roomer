@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.projecttango.examples.java.augmentedreality;
+package com.projecttango.examples.java.pointVisualisation;
 
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
@@ -29,7 +29,6 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
@@ -45,7 +44,7 @@ import com.projecttango.rajawali.DeviceExtrinsics;
  *
  * This example uses Rajawali for the OpenGL rendering. This includes the color camera image in the
  * background and a 3D sphere with a texture of the earth floating in space three meter forward.
- * This part is implemented in the {@code AugmentedRealityRenderer} class, like a regular Rajawali
+ * This part is implemented in the {@code RoomerRenderer} class, like a regular Rajawali
  * application.
  *
  * This example focuses on how to use the Tango APIs to get the color camera data into an OpenGL
@@ -56,11 +55,9 @@ import com.projecttango.rajawali.DeviceExtrinsics;
  * parameter in order to achieve best results synchronizing the Rajawali virtual world with the
  * RGB camera.
  *
- * If you're looking for a more stripped down example that doesn't use a rendering library like
- * Rajawali, see java_hello_video_example.
  */
-public class AugmentedRealityActivity extends Activity {
-    private static final String TAG = AugmentedRealityActivity.class.getSimpleName();
+public class PointVisualisationActivity extends Activity {
+    private static final String TAG = PointVisualisationActivity.class.getSimpleName();
     private static final TangoCoordinateFramePair FRAME_PAIR = new TangoCoordinateFramePair(
             TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
             TangoPoseData.COORDINATE_FRAME_DEVICE);
@@ -68,6 +65,7 @@ public class AugmentedRealityActivity extends Activity {
 
     private RajawaliSurfaceView mSurfaceView;
     private AugmentedRealityRenderer mRenderer;
+    private RoomerRenderer mRoomerRenderer;
     private TangoCameraIntrinsics mIntrinsics;
     private DeviceExtrinsics mExtrinsics;
     private Tango mTango;
@@ -84,8 +82,9 @@ public class AugmentedRealityActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSurfaceView = new RajawaliSurfaceView(this);
-        mRenderer = new AugmentedRealityRenderer(this);
-        mSurfaceView.setSurfaceRenderer(mRenderer);
+        mRoomerRenderer = new RoomerRenderer(this);
+       // mRenderer = new AugmentedRealityRenderer(this);
+        mSurfaceView.setSurfaceRenderer(mRoomerRenderer);
         mTango = new Tango(this);
         setContentView(mSurfaceView);
     }
@@ -100,7 +99,7 @@ public class AugmentedRealityActivity extends Activity {
             // Initialize Tango Service as a normal Android Service, since we call
             // mTango.disconnect() in onPause, this will unbind Tango Service, so
             // everytime when onResume get called, we should create a new Tango object.
-            mTango = new Tango(AugmentedRealityActivity.this, new Runnable() {
+            mTango = new Tango(PointVisualisationActivity.this, new Runnable() {
                 // Pass in a Runnable to be called from UI thread when Tango is ready,
                 // this Runnable will be running on a new thread.
                 // When Tango is ready, we can call Tango functions safely here only
@@ -130,7 +129,7 @@ public class AugmentedRealityActivity extends Activity {
         synchronized (this) {
             if (mIsConnected) {
                 mIsConnected = false;
-                mRenderer.getCurrentScene().clearFrameCallbacks();
+                mRoomerRenderer.getCurrentScene().clearFrameCallbacks();
                 mTango.disconnectCamera(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
                 // We need to invalidate the connected texture ID so that we cause a re-connection
                 // in the OpenGL thread after resume
@@ -200,7 +199,7 @@ public class AugmentedRealityActivity extends Activity {
         // Register a Rajawali Scene Frame Callback to update the scene camera pose whenever a new
         // RGB frame is rendered.
         // (@see https://github.com/Rajawali/Rajawali/wiki/Scene-Frame-Callbacks)
-        mRenderer.getCurrentScene().registerFrameCallback(new ASceneFrameCallback() {
+        mRoomerRenderer.getCurrentScene().registerFrameCallback(new ASceneFrameCallback() {
             @Override
             public void onPreFrame(long sceneTime, double deltaTime) {
                 // NOTE: This is called from the OpenGL render thread, after all the renderer
@@ -209,25 +208,25 @@ public class AugmentedRealityActivity extends Activity {
 
                 // Prevent concurrent access to {@code mIsFrameAvailableTangoThread} from the Tango
                 // callback thread and service disconnection from an onPause event.
-                synchronized (AugmentedRealityActivity.this) {
+                synchronized (PointVisualisationActivity.this) {
                     // Don't execute any tango API actions if we're not connected to the service
                     if (!mIsConnected) {
                         return;
                     }
 
                     // Set-up scene camera projection to match RGB camera intrinsics
-                    if (!mRenderer.isSceneCameraConfigured()) {
-                        mRenderer.setProjectionMatrix(mIntrinsics);
+                    if (!mRoomerRenderer.isSceneCameraConfigured()) {
+                        mRoomerRenderer.setProjectionMatrix(mIntrinsics);
                     }
 
                     // Connect the camera texture to the OpenGL Texture if necessary
                     // NOTE: When the OpenGL context is recycled, Rajawali may re-generate the
                     // texture with a different ID.
-                    if (mConnectedTextureIdGlThread != mRenderer.getTextureId()) {
+                    if (mConnectedTextureIdGlThread != mRoomerRenderer.getTextureId()) {
                         mTango.connectTextureId(TangoCameraIntrinsics.TANGO_CAMERA_COLOR,
-                                mRenderer.getTextureId());
-                        mConnectedTextureIdGlThread = mRenderer.getTextureId();
-                        Log.d(TAG, "connected to texture id: " + mRenderer.getTextureId());
+                                mRoomerRenderer.getTextureId());
+                        mConnectedTextureIdGlThread = mRoomerRenderer.getTextureId();
+                        Log.d(TAG, "connected to texture id: " + mRoomerRenderer.getTextureId());
                     }
 
                     // If there is a new RGB camera frame available, update the texture with it
@@ -243,7 +242,7 @@ public class AugmentedRealityActivity extends Activity {
                                 FRAME_PAIR);
                         if (lastFramePose.statusCode == TangoPoseData.POSE_VALID) {
                             // Update the camera pose from the renderer
-                            mRenderer.updateRenderCameraPose(lastFramePose, mExtrinsics);
+                            mRoomerRenderer.updateRenderCameraPose(lastFramePose, mExtrinsics);
                             mCameraPoseTimestamp = lastFramePose.timestamp;
                         } else {
                             Log.w(TAG, "Can't get device pose at time: " + mRgbTimestampGlThread);
