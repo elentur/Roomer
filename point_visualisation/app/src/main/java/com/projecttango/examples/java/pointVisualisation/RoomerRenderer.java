@@ -1,11 +1,13 @@
 package com.projecttango.examples.java.pointVisualisation;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoPoseData;
+import com.projecttango.examples.java.pointVisualisation.DataStructure.DestinationPoint;
 import com.projecttango.examples.java.pointVisualisation.DataStructure.NavigationPoint;
 import com.projecttango.examples.java.pointVisualisation.DataStructure.Point;
 import com.projecttango.examples.java.pointVisualisation.visualisationTools.DefineNav;
@@ -41,28 +43,17 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     private static final String TAG = AugmentedRealityRenderer.class.getSimpleName();
 
+    ScreenQuad backgroundQuad;
     private static final float CAMERA_NEAR = 0.01f;
     private static final float CAMERA_FAR = 200f;
-
-    // Latest available device pose;
-    private Pose mDevicePose = new Pose(Vector3.ZERO, Quaternion.getIdentity());
-    private boolean mPoseUpdated = false;
-
     // The current screen rotation index. The index value follow the Android surface rotation enum:
     // http://developer.android.com/reference/android/view/Surface.html#ROTATION_0
     private int mCurrentScreenRotation = 0;
 
-    private boolean addNavPoint =true;
-    private boolean addDestPoint =true;
-    private int countDestPoints = 0;
-    private int countNavPoints =0;
-
-    public boolean reloadList = false;
-
-
+    private boolean draw = false;
     public ArrayList<Point> points = new ArrayList<Point>();
 
-    private DefineNav defineNav = new DefineNav(points,this);
+
 
     // Rajawali texture used to render the Tango color camera
     private ATexture mTangoCameraTexture;
@@ -71,23 +62,23 @@ public class RoomerRenderer extends RajawaliRenderer {
     private boolean mSceneCameraConfigured;
 
 
-    public RoomerRenderer(Context context) { super(context);}
-
-
-    /**
-     * This consructor gets the contect and the list with the points to render.
-     * @param context
-     * @param points The ArrayList whit the points for the navigation.
-     */
-    public RoomerRenderer(Context context,ArrayList<Point> points){
+    public RoomerRenderer(Context context) {
         super(context);
+
+    }
+
+    public void setPoints(ArrayList<Point> points){
+
+        draw = true;
         this.points = points;
+
+
     }
 
     @Override
     protected void initScene() {
 
-        ScreenQuad backgroundQuad = new ScreenQuad();
+        backgroundQuad = new ScreenQuad();
         Material tangoCameraMaterial = new Material();
         tangoCameraMaterial.setColorInfluence(0);
 
@@ -115,32 +106,23 @@ public class RoomerRenderer extends RajawaliRenderer {
         light.setPosition(3, 3, 3);
         getCurrentScene().addLight(light2);
 
+        getCurrentCamera().setNearPlane(CAMERA_NEAR);
+        getCurrentCamera().setFarPlane(CAMERA_FAR);
+
     }
+
+
 
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
 
+        if (draw) {
+            pointsFromList();
 
-        Vector3 position = getCurrentCamera().getPosition();
-        defineNav.getPositionVector();
+            draw = false;
+        }
 
-
-        Sphere s = new Sphere(0.1f, 20, 20);
-        Material mSphereMaterial = new Material();
-        mSphereMaterial.enableLighting(true);
-        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
-        s.setMaterial(mSphereMaterial);
-
-        getCurrentScene().addChild(s);
-        s.setPosition(position);
-
-        Point point = new NavigationPoint(position,null,"NavPoint" +countNavPoints);
-        countNavPoints++;
-        points.add(point);
-        reloadList=true;
-
-        TangoPoseData pose =null;
+        TangoPoseData pose = null;
         try {
             pose =
                     TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
@@ -173,6 +155,32 @@ public class RoomerRenderer extends RajawaliRenderer {
 
         super.onRender(ellapsedRealtime, deltaTime);
     }
+
+    private void pointsFromList() {
+
+        getCurrentScene().clearChildren();
+        getCurrentScene().addChildAt(backgroundQuad,0);
+
+        for (Point point : points) {
+
+            Sphere s = new Sphere(0.1f, 10, 10);
+            Material mSphereMaterial = new Material();
+            mSphereMaterial.enableLighting(true);
+            mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+            mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
+            s.setMaterial(mSphereMaterial);
+
+            getCurrentScene().addChild(s);
+            s.setPosition(point.getPosition());
+            break;
+
+        }
+
+    }
+
+
+
+
 
     @Override
     public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
@@ -212,6 +220,8 @@ public class RoomerRenderer extends RajawaliRenderer {
     public int getTextureId() {
         return mTangoCameraTexture == null ? -1 : mTangoCameraTexture.getTextureId();
     }
+
+
 
 
 }

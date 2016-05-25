@@ -30,12 +30,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.projecttango.examples.java.pointVisualisation.DataStructure.NavigationPoint;
+import com.projecttango.examples.java.pointVisualisation.DataStructure.Point;
 import com.projecttango.rajawali.DeviceExtrinsics;
 
 /**
@@ -116,8 +119,31 @@ public class PointVisualisationActivity extends Activity {
                 }
             });
         }
+
+        fillPoints();
     }
 
+
+    private void fillPoints() {
+
+        ArrayList<Point> points = new ArrayList<Point>();
+
+        points.add(new NavigationPoint(new Vector3(1,1,-10),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-9),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-8),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-7),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-6),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-5),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-4),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-3),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-2),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-1),null,"Nav"));
+        points.add(new NavigationPoint(new Vector3(1,1,-0),null,"Nav"));
+
+        mRoomerRenderer.setPoints(points);
+
+
+    }
     @Override
     protected void onPause() {
         super.onPause();
