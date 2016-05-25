@@ -10,6 +10,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.projecttango.tangoutils.R;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -133,8 +135,51 @@ public class RoomerDB extends SQLiteOpenHelper {
             File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
-                String  currentDBPath= "/data/com.projecttango.experiments.getCoordinate/databases/roomer1.db";
+                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer1.db";
                 String backupDBPath  = "/roomerDBBackups/roomer1.db";
+
+                File currentDB = new File(data, currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+                Log.d("DEBUGGER", "BackupPath: " + backupDB.toString());
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                Toast.makeText(context, backupDB.toString(),
+                        Toast.LENGTH_LONG).show();
+
+            }
+        } catch (Exception e) {
+
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
+                    .show();
+
+            Log.e("DEBUGGER",  e.toString());
+
+        }
+    }
+
+    public void importDB(Context context) {
+
+        File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
+
+        if(!direct.exists())
+        {
+            if(direct.mkdir())
+            {
+                Log.d("DEBUGGER", "Directory is created");
+            }
+
+        }
+
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                String  backupDBPath= "/data/" +context.getPackageName() + "/databases/roomer1.db";
+                String  currentDBPath = "/roomerDBBackups/roomer1.db";
 
                 File currentDB = new File(data, currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
