@@ -1,5 +1,5 @@
-package com.example.roberto.myapplication.Dijkstra;
-import com.example.roberto.myapplication.DataStructure.Point;
+package com.projecttango.Dijkstra;
+import com.projecttango.DataStructure.Point;
 
 
 import java.util.*;
@@ -13,10 +13,19 @@ public class VectorGraph {
 
     private final Map<Point, Vertex> graph; // mapping of vertex names to Vertex objects, built from a set of Edges
 
+    private final static ArrayList<Point> path = new ArrayList<Point>();
+
+    public static ArrayList<Point> getPath(Point start,Point end, ArrayList<Point> pointList) {
+        VectorGraph g = new VectorGraph(pointList);
+        g.dijkstra(start);
+        g.printPath(end);
+        return path;
+    }
+
     /**
      * One vertex of the graph, complete with mappings to neighbouring vertices
      */
-    public static class Vertex implements Comparable<Vertex> {
+    public class Vertex implements Comparable<Vertex> {
         public final Point p;
         public double dist = Double.MAX_VALUE; // MAX_VALUE assumed to be infinity
         public Vertex previous = null;
@@ -28,11 +37,13 @@ public class VectorGraph {
 
         private void printPath() {
             if (this == this.previous) {
+                path.add(this.p);
                 System.out.printf("%s", this.p.getTag());
             } else if (this.previous == null) {
                 System.out.printf("%s(unreached)", this.p.getTag());
             } else {
                 this.previous.printPath();
+                path.add(this.p);
                 System.out.printf(" -> %s(%f)", this.p.getTag(), this.dist);
             }
         }
@@ -54,8 +65,8 @@ public class VectorGraph {
     /**
      * Builds a graph from a set of points
      */
-    public VectorGraph(Point[] points) {
-        graph = new HashMap<Point, Vertex>(points.length);
+    public VectorGraph(ArrayList<Point> points) {
+        graph = new HashMap<Point, Vertex>(points.size());
 
         //one pass to find all vertices
         for (Point p : points) {
@@ -63,11 +74,8 @@ public class VectorGraph {
         }
 
         for (Point p : points) {
-            HashMap<Point, Double> neighbours = p.getNeighbours();
-            Iterator it = neighbours.entrySet().iterator();
-            while (it.hasNext()) {
-                HashMap.Entry pair = (HashMap.Entry)it.next();
-                graph.get(p).neighbours.put(graph.get((Point) pair.getKey()), (Double) pair.getValue());
+            for(Point neighbour : p.getNeighbours().keySet()){
+                graph.get(p).neighbours.put(graph.get(neighbour), p.getNeighbours().get(neighbour));
             }
         }
     }
@@ -136,4 +144,6 @@ public class VectorGraph {
             System.out.println();
         }
     }
+
+
 }
