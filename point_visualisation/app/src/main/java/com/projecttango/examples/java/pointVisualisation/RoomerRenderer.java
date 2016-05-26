@@ -41,7 +41,7 @@ import java.util.ArrayList;
  */
 public class RoomerRenderer extends RajawaliRenderer {
 
-    private static final String TAG = AugmentedRealityRenderer.class.getSimpleName();
+    private static final String TAG = RoomerRenderer.class.getSimpleName();
 
     ScreenQuad backgroundQuad;
     private static final float CAMERA_NEAR = 0.01f;
@@ -122,36 +122,7 @@ public class RoomerRenderer extends RajawaliRenderer {
             draw = false;
         }
 
-        TangoPoseData pose = null;
-        try {
-            pose =
-                    TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
-                            TangoPoseData.COORDINATE_FRAME_DEVICE,
-                            TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
-                            mCurrentScreenRotation);
-        }catch (Exception e){
-            Log.e("Render_Pose_error", "Keine Pose Daten");
-        }
-        if (pose !=null) {
 
-            if (pose.statusCode == TangoPoseData.POSE_VALID) {
-
-                getCurrentCamera().setPosition((float) pose.translation[0],
-                        (float) pose.translation[1],
-                        (float) pose.translation[2]);
-
-
-                Quaternion invOrientation = new Quaternion((float) pose.rotation[3],
-                        (float) pose.rotation[0],
-                        (float) pose.rotation[1],
-                        (float) pose.rotation[2]);
-
-                // For some reason, rajawalli's orientation is inversed.
-                Quaternion orientation = invOrientation.inverse();
-                getCurrentCamera().setOrientation(orientation);
-
-            }
-        }
 
         super.onRender(ellapsedRealtime, deltaTime);
     }
