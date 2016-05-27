@@ -120,6 +120,15 @@ public class RoomerMainActivity extends Activity {
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
 
         db = new RoomerDB(this,uuid);
+        try {
+            db.importDB(getBaseContext());
+
+            mRenderer.setPoints(db.loadPoints());
+        }catch (Exception e){
+            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
+                    .show();
+        }
+
     }
 
     /**

@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.projecttango.tangoutils.R;
 
+import org.rajawali3d.math.vector.Vector3;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,10 +30,10 @@ public class RoomerDB extends SQLiteOpenHelper {
     public final String CREATE_TABLE;
     private boolean isCreating;
     public RoomerDB(Context context, String  adf) {
-        super(context, "roomer1.db", null, 1);
+        super(context, "roomer_"+ adf +".db", null, 1);
         this.adf = adf;
         CREATE_TABLE = "CREATE TABLE Points (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "TAG TEXT, POSX REAL, POSY REAL, POSZ REAL, NEIGHBOURS TEXT);";
+                "iSNAV STRING, TAG TEXT, POSX REAL, POSY REAL, POSZ REAL, NEIGHBOURS TEXT);";
         isCreating=true;
     }
 
@@ -65,6 +67,7 @@ public class RoomerDB extends SQLiteOpenHelper {
             }
             Log.d("DEBUGGER","Pfad: " + db.getPath());
             ContentValues ct = new ContentValues();
+            ct.put("ISNAV",(p instanceof NavigationPoint)+"");
             ct.put("TAG",p.getTag());
             ct.put("POSX",p.getPosition().x);
             ct.put("POSY",p.getPosition().y);
@@ -135,8 +138,8 @@ public class RoomerDB extends SQLiteOpenHelper {
             File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
-                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer1.db";
-                String backupDBPath  = "/roomerDBBackups/roomer1.db";
+                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer_"+ adf +".db";
+                String backupDBPath  = "/roomerDBBackups/roomer_"+ adf +".db";
 
                 File currentDB = new File(data, currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
@@ -161,7 +164,6 @@ public class RoomerDB extends SQLiteOpenHelper {
     }
 
     public void importDB(Context context) {
-
         File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
 
         if(!direct.exists())
@@ -175,15 +177,14 @@ public class RoomerDB extends SQLiteOpenHelper {
 
         try {
             File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
+            File data  = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
-                String  backupDBPath= "/data/" +context.getPackageName() + "/databases/roomer1.db";
-                String  currentDBPath = "/roomerDBBackups/roomer1.db";
+                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer_"+ adf +".db";;
+                String backupDBPath  = "/roomerDBBackups/roomer_"+ adf +".db";
+                File  backupDB= new File(data, currentDBPath);
+                File currentDB  = new File(sd, backupDBPath);
 
-                File currentDB = new File(data, currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
-                Log.d("DEBUGGER", "BackupPath: " + backupDB.toString());
                 FileChannel src = new FileInputStream(currentDB).getChannel();
                 FileChannel dst = new FileOutputStream(backupDB).getChannel();
                 dst.transferFrom(src, 0, src.size());
@@ -198,8 +199,52 @@ public class RoomerDB extends SQLiteOpenHelper {
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
                     .show();
 
-            Log.e("DEBUGGER",  e.toString());
-
         }
+    }
+
+    public ArrayList<Point> loadPoints(){
+        ArrayList<Point> points = new ArrayList<Point>();
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            Cursor c = db.rawQuery("select * from Points", null);
+            if (c.moveToFirst()) {
+
+                while (!c.isAfterLast()) {
+                    String isNav = c.getString(c.getColumnIndex("iSNAV"));
+                    String tag = c.getString(c.getColumnIndex("TAG"));
+                    double posx = c.getDouble(c.getColumnIndex("POSX"));
+                    double posy = c.getDouble(c.getColumnIndex("POSY"));
+                    double posz = c.getDouble(c.getColumnIndex("POSZ"));
+                    Point point;
+                    if(isNav.equals("true")){
+                        point = new NavigationPoint(new Vector3(posx,posy,posz),null,tag);
+                    }else{
+                        point = new DestinationPoint(new Vector3(posx,posy,posz),null,tag);
+                    }
+                    points.add(point);
+                    c.moveToNext();
+                }
+            }
+            //db = getReadableDatabase();
+            //c = db.rawQuery("select * from Points", null);
+            if (c.moveToFirst()) {
+
+                while (!c.isAfterLast()) {
+                    int id = c.getInt(c.getColumnIndex("ID"));
+                    String n = c.getString(c.getColumnIndex("NEIGHBOURS"));
+                    String[] ids = n.split(";");
+                    for(String s: ids){
+                        int i = Integer.parseInt(s);
+                        points.get(id-1).addNeighhbour(points.get(i-1));
+                        Log.d("DEBUGGER","Add Neighbour");
+                    }
+                    c.moveToNext();
+                }
+            }
+        }catch  (SQLiteException e){
+                Log.e("DEBUGGER", e.getMessage());
+        }
+        Log.d("DEBUGGER",points.toString());
+        return points;
     }
 }

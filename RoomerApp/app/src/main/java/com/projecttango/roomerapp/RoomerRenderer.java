@@ -27,6 +27,8 @@ import com.google.atap.tangoservice.TangoPoseData;
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.DataStructure.RoomerDB;
+import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
@@ -78,7 +80,7 @@ public class RoomerRenderer extends RajawaliRenderer {
     public boolean reloadList = false;
 
     public ArrayList<Point> points = new ArrayList<Point>();
-    public boolean reDraw = false;
+    private boolean reDraw = false;
 
     public RoomerRenderer(Context context) {
         super(context);
@@ -92,9 +94,6 @@ public class RoomerRenderer extends RajawaliRenderer {
   
     @Override
     protected void initScene() {
-       // Grid grid = new Grid(100, 1, 1, 0xFFCCCCCC);
-       // grid.setPosition(0, -1.3f, 0);
-       // getCurrentScene().addChild(grid);
 
         // Create a quad covering the whole background and assign a texture to it where the
         // Tango color camera contents will be rendered.
@@ -125,9 +124,9 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentScene().addLight(light2);
 
 
+        Visualize.setPoints(new ArrayList<Point>());
 
 
-        getCurrentScene().setBackgroundColor(Color.WHITE);
 
 
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
@@ -137,42 +136,11 @@ public class RoomerRenderer extends RajawaliRenderer {
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
 
+        try{
+            if(reDraw)Visualize.draw(getCurrentScene());
+        }catch (Exception e){
 
-
-
-
-         /*
-            try{
-         TangoPoseData pose =null;
-            try {
-                pose =
-                        TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
-                                TangoPoseData.COORDINATE_FRAME_DEVICE,
-                                TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
-                                mCurrentScreenRotation);
-            }catch (Exception e){
-                Log.e("Render_Pose_error", "Keine Pose Daten");
-            }
-            if(pose !=null) {
-                if (pose.statusCode == TangoPoseData.POSE_VALID) {
-                    getCurrentCamera().setPosition((float) pose.translation[0],
-                            (float) pose.translation[1],
-                            (float) pose.translation[2]);
-
-
-                    Quaternion invOrientation = new Quaternion((float) pose.rotation[3],
-                            (float) pose.rotation[0],
-                            (float) pose.rotation[1],
-                            (float) pose.rotation[2]);
-
-                    // For some reason, rajawalli's orientation is inversed.
-                    Quaternion orientation = invOrientation.inverse();
-                    getCurrentCamera().setOrientation(orientation);
-                }
-            }
-        } catch (TangoErrorException e) {
-            Log.e(TAG, "TangoSupport.getPoseAtTime error", e);
-        }*/
+        }
 
         // Perform the actual OpenGL rendering of the updated objects
         super.onRender(ellapsedRealtime, deltaTime);
@@ -232,4 +200,9 @@ public class RoomerRenderer extends RajawaliRenderer {
     }
 
 
+    public void setPoints(ArrayList<Point> points) {
+        this.points = points;
+        Visualize.setPoints(points);
+        reDraw =true;
+    }
 }
