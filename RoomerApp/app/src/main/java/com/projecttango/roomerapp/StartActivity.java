@@ -20,6 +20,7 @@ public class StartActivity extends Activity {
     private ListView lstView;
     private ArrayAdapter<String> adapter;
     ArrayList<String> fullUuidList;
+    ArrayList<String> adfNames;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -32,13 +33,14 @@ public class StartActivity extends Activity {
             @Override
             public void run() {
                 try {
+
                     TangoConfig config;
                     config = mTango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT);
 
                     mTango.connect(config);
                    fullUuidList = mTango.listAreaDescriptions();
                     Collections.reverse(fullUuidList);
-                    ArrayList<String> adfNames = new ArrayList<String>();
+                    adfNames = new ArrayList<String>();
                     for(String uuid: fullUuidList){
                         adfNames.add(new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")));
                     }
@@ -69,9 +71,6 @@ public class StartActivity extends Activity {
         startActivityForResult(
                 Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
 
-
-
-
     }
 
     @Override
@@ -83,7 +82,7 @@ public class StartActivity extends Activity {
     public void start(View view){
         mTango.disconnect();
         Intent i = new Intent(this, RoomerMainActivity.class);
-        i.putExtra("uuid",fullUuidList.get(lstView.getCheckedItemPosition()));
+        i.putExtra(new String("uuid"),fullUuidList.get(lstView.getCheckedItemPosition()));
         startActivity(i);
 
 

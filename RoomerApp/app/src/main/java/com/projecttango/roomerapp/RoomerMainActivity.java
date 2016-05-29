@@ -77,6 +77,7 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
      */
 
     NavigationDrawerFragment mNavigationDrawerFragment;
+    private AlertListDialog alertListDialog;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -103,6 +104,7 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
     private TextView txtLocalized;
     private String uuid;
     private RoomerDB db;
+    private Button adfList;
 
     private static final TangoCoordinateFramePair FRAME_PAIR = new TangoCoordinateFramePair(
             TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
@@ -136,6 +138,18 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
      //  startActivityForResult(
       //          Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
+        adfList = (Button) findViewById(R.id.openListFragment);
+
+        final FragmentManager fragmentManager  =getFragmentManager();
+        alertListDialog = new AlertListDialog();
+
+        adfList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertListDialog.show(fragmentManager,"ADF Files");
+
+            }
+        });
 
         db = new RoomerDB(this,uuid);
         try {
@@ -157,6 +171,8 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+
 
     }
 
@@ -330,7 +346,7 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
 
 
 
-   //Set adf file
+         //Set adf file
             config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
                     uuid);
 
@@ -491,6 +507,7 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
     }
 
     public void onSectionAttached(int number) {
+
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
@@ -510,6 +527,8 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
+
+
 
     /**
      * A placeholder fragment containing a simple view.
@@ -550,5 +569,6 @@ public class RoomerMainActivity extends Activity implements NavigationDrawerFrag
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
 
 }

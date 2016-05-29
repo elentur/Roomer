@@ -3,7 +3,9 @@ package com.projecttango.roomerapp;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Dialog;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -60,8 +62,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mUserLearnedDrawer;
 
 
-    public NavigationDrawerFragment() {
-    }
+    public NavigationDrawerFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,10 +94,13 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.drawer_main_layout, container, false);
+
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectItem(position);
+
+
             }
         });
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
@@ -116,6 +120,7 @@ public class NavigationDrawerFragment extends Fragment {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
+
     /**
      * Users of this fragment must call this method to set up the navigation drawer interactions.
      *
@@ -126,11 +131,10 @@ public class NavigationDrawerFragment extends Fragment {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
 
-        // set a custom shadow that overlays the main content when the drawer opens
-       // mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
         mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
@@ -191,7 +195,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    public void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
@@ -202,7 +206,17 @@ public class NavigationDrawerFragment extends Fragment {
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
         }
+
+
+        switch (position) {
+            case 1:
+
+                AlertListDialog alertListDialog = new AlertListDialog();
+
+                break;
+        }
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -282,4 +296,5 @@ public class NavigationDrawerFragment extends Fragment {
          */
         void onNavigationDrawerItemSelected(int position);
     }
+
 }

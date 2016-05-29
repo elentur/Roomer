@@ -47,13 +47,27 @@
                 android:textSize="50dp"
                 android:textIsSelectable="true"
                 android:layout_centerInParent="true" />
-        </RelativeLayout>
 
-        <com.google.atap.tango.ux.TangoUxLayout
-            android:id="@+id/layout_tango"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="left|top" />
+            <Button
+                android:id="@+id/openListFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/openListfragment"
+                android:clickable="false"
+                android:layout_marginTop="50dp"
+                android:layout_marginLeft="800dp"
+                android:background="#29ddce"
+                android:padding="20dp" />
+
+            <com.google.atap.tango.ux.TangoUxLayout
+                android:id="@+id/layout_tango"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="left|top"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:foregroundGravity="bottom" />
+        </RelativeLayout>
 
 
     </FrameLayout>
