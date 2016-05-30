@@ -337,7 +337,7 @@ public class RoomerMainActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                         if(mIsRelocalized)txtLocalized.setText( "Localized");
+                         if(mIsRelocalized)txtLocalized.setVisibility(View.INVISIBLE);
 
                     }
                 });

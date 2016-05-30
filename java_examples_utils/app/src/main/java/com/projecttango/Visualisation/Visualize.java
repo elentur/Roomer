@@ -1,6 +1,7 @@
 package com.projecttango.Visualisation;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
@@ -40,6 +41,7 @@ public class Visualize {
 
     public static void setPoints(ArrayList<Point> points) {
         Visualize.points = points;
+
 //TEST
         /*Vector3 v1 = new Vector3(0, -1, 0);
         Vector3 v2 = new Vector3(0, -1, -1);
@@ -74,9 +76,12 @@ public class Visualize {
             points.remove(1);
             points.add(0,p);
         }*/
+
+       // Log.d("DEBUGGER",points.toString());
         if (!points.isEmpty()) {
             CatmullRomCurve3D n = new CatmullRomCurve3D();
-            n.addPoint(points.get(0).getPosition());
+            n.addPoint(cp);
+            n.addPoint(cp);
             for (Point p : points) {
                 n.addPoint(p.getPosition());
             }
@@ -84,23 +89,14 @@ public class Visualize {
             n.reparametrizeForUniformDistribution(n.getNumPoints() * 4);
             ArrayList<Vector3> vP = new ArrayList<Vector3>();
             int count = ((int) n.getLength(10)) * 4;
-
-            Vector3 before = new Vector3();
-            n.calculatePoint(before, (start * 1.0) / (count * 1.0));
-            vP.add(before);
-            for (int i = start+1; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 Vector3 result = new Vector3();
                 double t = (i * 1.0) / (count * 1.0);
                 n.calculatePoint(result, t);
                 vP.add(result);
-                if(cp.distanceTo(result)< before.distanceTo(result)){
-                    vP.remove(before);
-                    start=i;
-                }
-                before = result;
-         }
+            }
 
-            for (int i = start; i < vP.size(); i++) {
+            for (int i = 0; i < vP.size(); i++) {
                 if(i == vP.size()-1){
                    // Sphere s = new Sphere(0.2f, 10, 10);
                     Cube s = new Cube(0.2f);

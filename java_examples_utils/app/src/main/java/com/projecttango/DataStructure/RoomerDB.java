@@ -225,8 +225,6 @@ public class RoomerDB extends SQLiteOpenHelper {
                     c.moveToNext();
                 }
             }
-            //db = getReadableDatabase();
-            //c = db.rawQuery("select * from Points", null);
             if (c.moveToFirst()) {
 
                 while (!c.isAfterLast()) {
@@ -236,7 +234,6 @@ public class RoomerDB extends SQLiteOpenHelper {
                     for(String s: ids){
                         int i = Integer.parseInt(s);
                         points.get(id-1).addNeighhbour(points.get(i-1));
-                        Log.d("DEBUGGER","Add Neighbour");
                     }
                     c.moveToNext();
                 }
@@ -244,7 +241,6 @@ public class RoomerDB extends SQLiteOpenHelper {
         }catch  (SQLiteException e){
                 Log.e("DEBUGGER", e.getMessage());
         }
-        Log.d("DEBUGGER",points.toString());
         return points;
     }
 }

@@ -124,7 +124,6 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentScene().addLight(light2);
 
 
-        Visualize.setPoints(new ArrayList<Point>());
 
 
 
