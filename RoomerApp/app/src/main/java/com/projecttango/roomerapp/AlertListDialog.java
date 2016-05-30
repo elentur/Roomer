@@ -10,11 +10,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.google.atap.tangoservice.Tango;
+
 /**
  * Created by Julian Dobrot on 29.05.2016.
  */
 public class AlertListDialog extends DialogFragment {
 
+
+
+
+    Tango mTango;
     Button dismiss;
     ListView listView;
     SearchView searchView;
