@@ -252,7 +252,7 @@ public class GetCoordinateActivity extends Activity {
                          if(mIsRelocalized)txtLocalized.setText( "Localized");
 
                         if(mRenderer.reloadList) {
-                            setUpSavePoinInterface();
+                            setUpSavePointInterface();
                         }
 
                     }
@@ -396,7 +396,7 @@ public class GetCoordinateActivity extends Activity {
             }
         });
     }
-    private void setUpSavePoinInterface() {
+    private void setUpSavePointInterface() {
 
         lltSavePoint.setVisibility(View.VISIBLE);
         btnDestPoint.setEnabled(false);
@@ -436,8 +436,9 @@ public class GetCoordinateActivity extends Activity {
             int key = checked.keyAt(i);
             if (checked.get(key)) {
                 lstPoints.setItemChecked(i,false);
-                point.addNeighhbour(points.get(i));
-                points.get(i).addNeighhbour(point);
+                point.addNeighhbour(points.get(key));
+                points.get(key).addNeighhbour(point);
+                Log.d("DEBUGGER",point.toString() +  "  " + points.get(key).toString());
             }
         }
         savePointList.add(point);
