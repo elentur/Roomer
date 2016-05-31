@@ -134,7 +134,6 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
-
         try{
             if(reDraw)Visualize.draw(getCurrentScene());
         }catch (Exception e){

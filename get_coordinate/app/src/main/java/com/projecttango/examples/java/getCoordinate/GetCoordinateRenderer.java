@@ -73,6 +73,8 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
     public ArrayList<Point> points = new ArrayList<Point>();
     public boolean reDraw = false;
 
+    public boolean isRelocated = false;
+
     public GetCoordinateRenderer(Context context) {
         super(context);
     }
@@ -176,11 +178,19 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
 
             TangoPoseData pose =null;
             try {
-                pose =
-                        TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
-                                TangoPoseData.COORDINATE_FRAME_DEVICE,
-                                TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
-                                mCurrentScreenRotation);
+               if(isRelocated){
+                   pose =
+                           TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
+                                   TangoPoseData.COORDINATE_FRAME_DEVICE,
+                                   TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
+                                   mCurrentScreenRotation);
+               }else{
+                   pose =
+                           TangoSupport.getPoseAtTime(0.0, TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
+                                   TangoPoseData.COORDINATE_FRAME_DEVICE,
+                                   TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
+                                   mCurrentScreenRotation);
+               }
             }catch (Exception e){
                 Log.e("Render_Pose_error", "Keine Pose Daten");
             }

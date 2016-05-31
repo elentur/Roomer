@@ -50,6 +50,7 @@ import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
+import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.rajawali.DeviceExtrinsics;
 
 import org.rajawali3d.scene.ASceneFrameCallback;
@@ -80,13 +81,15 @@ public class RoomerMainActivity extends Activity {
     private final Object mSharedLock = new Object();
     private boolean mIsRelocalized;
 
+    private boolean mIsPointsLoad;
+
     private AtomicBoolean mIsConnected = new AtomicBoolean(false);
 
     private TextView txtLocalized;
     private String uuid;
     private RoomerDB db;
 
-    private static final TangoCoordinateFramePair FRAME_PAIR = new TangoCoordinateFramePair(
+    private static  TangoCoordinateFramePair FRAME_PAIR = new TangoCoordinateFramePair(
             TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
             TangoPoseData.COORDINATE_FRAME_DEVICE);
 
@@ -97,6 +100,7 @@ public class RoomerMainActivity extends Activity {
     private TangoCameraIntrinsics mIntrinsics;
     private DeviceExtrinsics mExtrinsics;
     private double mCameraPoseTimestamp = 0;
+    private int countRelocationPoints = 0;
 
     private static final int INVALID_TEXTURE_ID = 0;
     private int mConnectedTextureIdGlThread = INVALID_TEXTURE_ID;
@@ -123,7 +127,7 @@ public class RoomerMainActivity extends Activity {
         try {
             db.importDB(getBaseContext());
 
-            mRenderer.setPoints(db.loadPoints());
+
         }catch (Exception e){
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
                     .show();
@@ -224,6 +228,7 @@ public class RoomerMainActivity extends Activity {
                     if (mIsConnected.get()==false) {
                         return;
                     }
+
 
                     // Set-up scene camera projection to match RGB camera intrinsics
                     if (!mRenderer.isSceneCameraConfigured()) {
@@ -337,7 +342,17 @@ public class RoomerMainActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                         if(mIsRelocalized)txtLocalized.setVisibility(View.INVISIBLE);
+                       // txtLocalized.setText(mRenderer.getCurrentCamera().getPosition() +"");
+                         if(mIsRelocalized){txtLocalized.setVisibility(View.INVISIBLE);
+                         }else{
+                             if (countRelocationPoints>4 ) countRelocationPoints=0;
+                             String s = ".";
+                             for(int i = 0; i <countRelocationPoints;i+=2){
+                                 s+=".";
+                             }
+                             countRelocationPoints++;
+                             txtLocalized.setText("Try to Locate" + s);
+                         }
 
                     }
                 });
@@ -356,6 +371,44 @@ public class RoomerMainActivity extends Activity {
             public void onPoseAvailable(TangoPoseData pose) {
                 if (mTangoUx != null) {
                     mTangoUx.updatePoseStatus(pose.statusCode);
+                }
+
+                // Make sure to have atomic access to Tango Data so that
+                // UI loop doesn't interfere while Pose call back is updating
+                // the data.
+                synchronized (mSharedLock) {
+                    // Check for Device wrt ADF pose, Device wrt Start of Service pose,
+                    // Start of Service wrt ADF pose (This pose determines if the device
+                    // is relocalized or not).
+                    if (pose.baseFrame == TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION
+                            && pose.targetFrame == TangoPoseData
+                            .COORDINATE_FRAME_START_OF_SERVICE) {
+                        mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
+
+                        if(mIsRelocalized && !mIsPointsLoad){
+                            mIsPointsLoad=true;
+                            FRAME_PAIR = new TangoCoordinateFramePair(
+                                    TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
+                                    TangoPoseData.COORDINATE_FRAME_DEVICE);
+                            ArrayList<Point> points = db.loadPoints();
+                            Point dest = null;
+                            for(Point p : points){
+                                if(p instanceof DestinationPoint){
+                                    dest = p;
+                                    break;
+                                }
+                            }
+                            mRenderer.setPoints(
+                                    VectorGraph.getPath(
+                                            mRenderer.getCurrentCamera().getPosition(),
+                                            dest,
+                                            points)
+                            );
+                        }
+
+                    }
+
+
                 }
             }
 

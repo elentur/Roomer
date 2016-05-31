@@ -67,17 +67,9 @@ public class Visualize {
                 scene.getCamera().getPosition().x,
                 scene.getCamera().getPosition().y-1,
                 scene.getCamera().getPosition().z);
-
-        /*if(points.size()>3 &&
-                cp.distanceTo(points.get(3).getPosition())
-                        < points.get(2).getPosition().distanceTo(points.get(3).getPosition())){
-            Point p = points.get(2);
-            points.remove(0);
-            points.remove(1);
-            points.add(0,p);
-        }*/
-
-       // Log.d("DEBUGGER",points.toString());
+if(cp.distanceTo(points.get(0).getPosition())<1){
+    points.remove(0);
+}
         if (!points.isEmpty()) {
             CatmullRomCurve3D n = new CatmullRomCurve3D();
             n.addPoint(cp);

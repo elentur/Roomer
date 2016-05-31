@@ -2,6 +2,8 @@ package com.projecttango.Dijkstra;
 import com.projecttango.DataStructure.Point;
 
 
+import org.rajawali3d.math.vector.Vector3;
+
 import java.util.*;
 
 /**
@@ -11,21 +13,34 @@ import java.util.*;
  */
 public class VectorGraph {
 
-    private final Map<Point, Vertex> graph; // mapping of vertex names to Vertex objects, built from a set of Edges
+    private  final Map<Point, Vertex> graph; // mapping of vertex names to Vertex objects, built from a set of Edges
 
     private final static ArrayList<Point> path = new ArrayList<Point>();
 
-    public static ArrayList<Point> getPath(Point start,Point end, ArrayList<Point> pointList) {
+    public static ArrayList<Point> getPath(Vector3 pos,Point end, ArrayList<Point> pointList) {
         VectorGraph g = new VectorGraph(pointList);
+        Point start = g.findNearestStartPoint(pos);
         g.dijkstra(start);
         g.printPath(end);
         return path;
     }
 
+    private  Point findNearestStartPoint(Vector3 pos){
+        Point point=null;
+        double dist = Double.MAX_VALUE;
+        for(Point p :graph.keySet()){
+            if(Vector3.distanceTo2(p.getPosition(),pos)<dist){
+                dist = Vector3.distanceTo2(p.getPosition(),pos);
+                point = p;
+            }
+        }
+        return point;
+    }
+
     /**
      * One vertex of the graph, complete with mappings to neighbouring vertices
      */
-    public class Vertex implements Comparable<Vertex> {
+    private class Vertex implements Comparable<Vertex> {
         public final Point p;
         public double dist = Double.MAX_VALUE; // MAX_VALUE assumed to be infinity
         public Vertex previous = null;
@@ -65,7 +80,7 @@ public class VectorGraph {
     /**
      * Builds a graph from a set of points
      */
-    public VectorGraph(ArrayList<Point> points) {
+    private VectorGraph(ArrayList<Point> points) {
         graph = new HashMap<Point, Vertex>(points.size());
 
         //one pass to find all vertices
@@ -83,7 +98,7 @@ public class VectorGraph {
     /**
      * Runs dijkstra using a specified source vertex
      */
-    public void dijkstra(Point startPoint) {
+    private void dijkstra(Point startPoint) {
         if (!graph.containsKey(startPoint)) {
             System.err.printf("Graph doesn't contain start vertex \"%s\"\n", startPoint);
             return;
@@ -128,7 +143,7 @@ public class VectorGraph {
     }
 
     /** Prints a path from the source to the specified vertex */
-    public void printPath(Point endPoint) {
+    private void printPath(Point endPoint) {
         if (!graph.containsKey(endPoint)) {
             System.err.printf("Graph doesn't contain end vertex \"%s\"\n", endPoint);
             return;
@@ -138,12 +153,13 @@ public class VectorGraph {
         System.out.println();
     }
     /** Prints the path from the source to every vertex (output order is not guaranteed) */
-    public void printAllPaths() {
+    private void printAllPaths() {
         for (Vertex v : graph.values()) {
             v.printPath();
             System.out.println();
         }
     }
+
 
 
 }

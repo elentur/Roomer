@@ -285,6 +285,7 @@ public class GetCoordinateActivity extends Activity {
                             && pose.targetFrame == TangoPoseData
                             .COORDINATE_FRAME_START_OF_SERVICE) {
                         mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
+                        mRenderer.isRelocated = mIsRelocalized;
 
                     }
 
