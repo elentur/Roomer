@@ -29,10 +29,15 @@ public class VectorGraph {
         Point point=null;
         double dist = Double.MAX_VALUE;
         for(Point p :graph.keySet()){
-            if(Vector3.distanceTo2(p.getPosition(),pos)<dist){
+
+            pos.subtract(p.getPosition());
+
+            /*if(Vector3.distanceTo2(p.getPosition(),pos)<dist){
                 dist = Vector3.distanceTo2(p.getPosition(),pos);
                 point = p;
-            }
+            }*/
+
+
         }
         return point;
     }

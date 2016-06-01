@@ -17,52 +17,31 @@
 package com.projecttango.roomerapp;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.atap.tango.ux.TangoUx;
 import com.google.atap.tango.ux.TangoUxLayout;
 import com.google.atap.tango.ux.UxExceptionEvent;
 import com.google.atap.tango.ux.UxExceptionEventListener;
-import com.google.atap.tangoservice.Tango;
+import com.google.atap.tangoservice.*;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
-import com.google.atap.tangoservice.TangoCameraIntrinsics;
-import com.google.atap.tangoservice.TangoConfig;
-import com.google.atap.tangoservice.TangoCoordinateFramePair;
-import com.google.atap.tangoservice.TangoErrorException;
-import com.google.atap.tangoservice.TangoEvent;
-import com.google.atap.tangoservice.TangoOutOfDateException;
-import com.google.atap.tangoservice.TangoPoseData;
-import com.google.atap.tangoservice.TangoXyzIjData;
 import com.projecttango.DataStructure.DestinationPoint;
-import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
-import com.projecttango.rajawali.renderables.primitives.Points;
 
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
