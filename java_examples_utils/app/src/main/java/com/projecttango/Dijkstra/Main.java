@@ -61,7 +61,8 @@ public class Main {
         pE.addNeighhbour(pF);
 
         // Neighbours F
-        pF.addNeighhbour(pD);
+        pF.addNeighhbour(pC);
+        pF.addNeighhbour(pE);
         pF.addNeighhbour(pZ);
 
         // Neighbours Z
@@ -76,7 +77,7 @@ public class Main {
         }*/
 
         System.out.println(
-                VectorGraph.getPath(new Vector3(80,-50,0),pZ,pointList)
+                VectorGraph.getPath(new Vector3(25,-50,0),pZ,pointList)
         );
     }
 }

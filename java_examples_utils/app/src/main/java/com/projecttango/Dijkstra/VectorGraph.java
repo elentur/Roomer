@@ -20,25 +20,67 @@ public class VectorGraph {
     public static ArrayList<Point> getPath(Vector3 pos,Point end, ArrayList<Point> pointList) {
         VectorGraph g = new VectorGraph(pointList);
         Point start = g.findNearestStartPoint(pos);
-        g.dijkstra(start);
+
+        /*g.dijkstra(start);
         g.printPath(end);
-        return path;
+        return path;*/
+
+        return null;
     }
 
     private  Point findNearestStartPoint(Vector3 pos){
+
         Point point=null;
+
         double dist = Double.MAX_VALUE;
+
+        /*Vector3 a = new Vector3(-2,1,7);
+        Vector3 b = new Vector3(2,2,4);
+        Vector3 u = b.subtract(a);
+        Vector3 p = new Vector3(10,5,7);
+
+        System.out.println("u: " + u);
+        System.out.println("(p-a): " + p.subtract(a));
+        System.out.println("(p⃗ −a⃗ )×u⃗: " + p.subtract(a).cross(u).absoluteValue());
+
+        System.out.println("S: " + p.subtract(a).cross(u).length() / u.length());*/
+
+
+
+        System.out.println(pos);
+        System.out.println("");
+
         for(Point p :graph.keySet()){
 
-            pos.subtract(p.getPosition());
+            Vector3 a = p.getPosition().clone();
 
-            /*if(Vector3.distanceTo2(p.getPosition(),pos)<dist){
-                dist = Vector3.distanceTo2(p.getPosition(),pos);
-                point = p;
-            }*/
+            for(Point n : p.getNeighbours().keySet()){
+                Vector3 b = n.getPosition().clone();
+                Vector3 u = b.subtract(a);
+                double d = pos.clone().subtract(a).cross(u).absoluteValue().length() / u.absoluteValue().length();
 
+                System.out.println(p);
+                System.out.println(n);
+                System.out.println("Distanz: " + d);
+
+                if(d<dist){
+                    dist = d;
+                    System.out.println("kleinste Distanz");
+                    System.out.print(p.getTag() + "----");
+                    System.out.println(n.getTag());
+                }
+            }
+            System.out.println("-----------------------------------");
 
         }
+
+
+      /*  if(Vector3.distanceTo2(p.getPosition(),pos)<dist){
+            dist = Vector3.distanceTo2(p.getPosition(),pos);
+            point = p;
+        }*/
+
+
         return point;
     }
 
