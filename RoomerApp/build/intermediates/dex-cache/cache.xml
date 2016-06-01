@@ -5,7 +5,7 @@
         jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         revision="21.1.2"
-        sha1="82b2010b49c2b59fff838af8af35f11571fe1bf3">
+        sha1="ceca610963e52fccbbe4c4178fd7223dc14be551">
         <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\instant-run_37552bde35c07f024562d7922c5da32ae0502114.jar" />
     </item>
     <item
@@ -19,7 +19,7 @@
         jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         revision="21.1.2"
-        sha1="3752a2eec50fbcfed614b693926f33cb5d29752c">
+        sha1="3588caed1f51933c2fc7bd14428b7f9ba6e61be7">
         <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\instant-run-bootstrap_ad6160cbd9e601f575da22ca1ab303560e021aff.jar" />
     </item>
     <item
@@ -47,7 +47,7 @@
         jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\RoomerApp\java_examples_utils\unspecified\jars\libs\tango_java_lib.jar"
         jumboMode="true"
         revision="21.1.2"
-        sha1="259876831cd859ccb7656a4e7032a18e1ccfdbdd">
+        sha1="d0790ea33835e112a4d69070761f59c7f126837f">
         <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\tango_java_lib_4388358499802ba37afbec58973a250bbf480161.jar" />
     </item>
     <item
