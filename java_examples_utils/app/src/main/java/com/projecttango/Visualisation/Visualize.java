@@ -18,13 +18,14 @@ import org.rajawali3d.scene.RajawaliScene;
 import java.util.ArrayList;
 
 /**
- * Created by marcu_000 on 26.05.2016.
+ * Created by Marcus Bätz on 26.05.2016.
+ * This Class Visualize the navigation path
  */
 public class Visualize {
 
-    private static ArrayList<Point> points;
-    private static Material material2 = new Material();
-    private static Material material1 = new Material();
+    private static ArrayList<Point> points = new ArrayList<Point>();
+    private final static Material material2 = new Material();
+    private final static Material material1 = new Material();
 
     static {
         material2.setDiffuseMethod(new DiffuseMethod.Lambert());
@@ -37,40 +38,47 @@ public class Visualize {
         material1.enableLighting(true);
     }
 
-    private static  int start=0;
-
+    /**
+     * Sets the Points of a calculated NavPath
+     * @param points An sorted ArrayList of Points that represents the NavPath. At 0 is start
+     *               at point.size()-1 ist destination
+     */
     public static void setPoints(ArrayList<Point> points) {
         Visualize.points = points;
 
-//TEST
-        /*Vector3 v1 = new Vector3(0, -1, 0);
-        Vector3 v2 = new Vector3(0, -1, -1);
-        Vector3 v3 = new Vector3(1, -1, -1);
-        Vector3 v4 = new Vector3(2, -1, -2);
-        Vector3 v5 = new Vector3(0, -1, -5);
-        Visualize.points.add(new NavigationPoint(v1, null, ""));
-        Visualize.points.add(new NavigationPoint(v2, null, ""));
-        Visualize.points.add(new NavigationPoint(v3, null, ""));
-        Visualize.points.add(new NavigationPoint(v4, null, ""));
-        Visualize.points.add(new NavigationPoint(v5, null, ""));*/
+    }
+
+    public static ArrayList<Point> getPoints() {
+        return points;
 
     }
 
-
+    /**
+     * This Methode actualize a given scene with a visualization of the Nav path from user
+     * position to destination if the NavPath is set
+     * @param scene The Rajawali scene where the visualization has to be added
+     */
     public static void draw(RajawaliScene scene) {
-
+        //Save the Backscreenquad
         ScreenQuad sq = (ScreenQuad) scene.getChildrenCopy().get(0);
+        //Clear all Elements from Scene
         scene.clearChildren();
-        scene.addChildAt(sq,0);
-
-        Vector3 cp= new Vector3(
+        //Add the Backscreenquad back again
+        scene.addChildAt(sq, 0);
+        //generate a new Point for the actual position of the user
+        Vector3 cp = new Vector3(
                 scene.getCamera().getPosition().x,
-                scene.getCamera().getPosition().y-1,
+                scene.getCamera().getPosition().y - 1,
                 scene.getCamera().getPosition().z);
-if(cp.distanceTo(points.get(0).getPosition())<1){
-    points.remove(0);
-}
+
+        //remove waypoints that the camera has crossed
+        if (cp.distanceTo(points.get(0).getPosition()) < 1) {
+            points.remove(0);
+        }
+
         if (!points.isEmpty()) {
+            //Generate an approximated curve over all points an the users position
+            //First an last have to be doubled
             CatmullRomCurve3D n = new CatmullRomCurve3D();
             n.addPoint(cp);
             n.addPoint(cp);
@@ -78,7 +86,10 @@ if(cp.distanceTo(points.get(0).getPosition())<1){
                 n.addPoint(p.getPosition());
             }
             n.addPoint(points.get(points.size() - 1).getPosition());
+
+            //equalize the elements for the same distance between each cube
             n.reparametrizeForUniformDistribution(n.getNumPoints() * 4);
+            //Generate list ov NavigationPoints
             ArrayList<Vector3> vP = new ArrayList<Vector3>();
             int count = ((int) n.getLength(10)) * 4;
             for (int i = 0; i < count; i++) {
@@ -87,21 +98,19 @@ if(cp.distanceTo(points.get(0).getPosition())<1){
                 n.calculatePoint(result, t);
                 vP.add(result);
             }
-
+            // generate for each navigation point a small square except the last,
+            // this one gets a big square
             for (int i = 0; i < vP.size(); i++) {
-                if(i == vP.size()-1){
-                   // Sphere s = new Sphere(0.2f, 10, 10);
-                    Cube s = new Cube(0.2f);
-                    s.setPosition(vP.get(i));
+                Cube s;
+                if (i == vP.size() - 1) {
+                    s = new Cube(0.2f);
                     s.setMaterial(material1);
-                    scene.addChild(s);
-                }else {
-                    //Sphere s = new Sphere(0.05f, 10, 10);
-                    Cube s = new Cube(0.05f);
-                    s.setPosition(vP.get(i));
+                } else {
+                    s = new Cube(0.05f);
                     s.setMaterial(material2);
-                    scene.addChild(s);
                 }
+                s.setPosition(vP.get(i));
+                scene.addChild(s);
             }
 
         }
@@ -110,6 +119,7 @@ if(cp.distanceTo(points.get(0).getPosition())<1){
 
 
     public static void main(String[] args) {
+        //Test Method
         setPoints(new ArrayList<Point>());
         draw(null);
     }

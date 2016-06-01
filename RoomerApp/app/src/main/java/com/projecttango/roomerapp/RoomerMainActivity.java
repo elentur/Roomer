@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -29,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,8 +53,11 @@ import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Dijkstra.VectorGraph;
+import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
+import com.projecttango.rajawali.renderables.primitives.Points;
 
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
@@ -118,11 +123,7 @@ public class RoomerMainActivity extends Activity {
 
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = setupTangoUxAndLayout();
-
-     //  startActivityForResult(
-      //          Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
-
         db = new RoomerDB(this,uuid);
         try {
             db.importDB(getBaseContext());
@@ -139,13 +140,9 @@ public class RoomerMainActivity extends Activity {
      * Sets Rajawalisurface view and its renderer. This is ideally called only once in onCreate.
      */
     private RoomerRenderer setupGLViewAndRenderer() {
-        // Configure OpenGL renderer
         RoomerRenderer renderer = new RoomerRenderer(this);
-        // OpenGL view where all of the graphics are drawn
         mSurfaceView  = (RajawaliSurfaceView) findViewById(R.id.gl_surface_view);
         mSurfaceView.setEGLContextClientVersion(2);
-       // glView.setZOrderOnTop(false);
-       // glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
         mSurfaceView.setSurfaceRenderer(renderer);
         return renderer;
 
@@ -191,7 +188,6 @@ public class RoomerMainActivity extends Activity {
                 public void run() {
                     try {
                         connectTango();
-                        //mRenderer.onResume();
                         setupRenderer();
                     } catch (TangoOutOfDateException outDateEx) {
                         if (mTangoUx != null) {
@@ -342,8 +338,36 @@ public class RoomerMainActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                       // txtLocalized.setText(mRenderer.getCurrentCamera().getPosition() +"");
-                         if(mIsRelocalized){txtLocalized.setVisibility(View.INVISIBLE);
+                         if(mIsRelocalized){
+                             txtLocalized.setVisibility(View.INVISIBLE);
+                             //Show Distance
+                             int distance = 0;
+                             ArrayList<Point> points = Visualize.getPoints();
+                             for(int i = 1; i< points.size(); i++){
+                                 distance+= Vector3.distanceTo2(
+                                         points.get(i-1).getPosition(),
+                                         points.get(i).getPosition());
+                             }
+                             Vector3 cp = new Vector3(
+                                     mRenderer.getCurrentCamera().getPosition().x,
+                                     mRenderer.getCurrentCamera().getPosition().y - 1,
+                                     mRenderer.getCurrentCamera().getPosition().z);
+                             if(!points.isEmpty())distance+= Vector3.distanceTo2(
+                                     Visualize.getPoints().get(0).getPosition(),
+                                     cp);
+
+                             TextView lblDistance = new TextView(getBaseContext());
+                             RelativeLayout relInfo = (RelativeLayout)findViewById(R.id.relInfo);
+                             relInfo.removeAllViews();
+                             relInfo.addView(lblDistance);
+                             RelativeLayout.LayoutParams layoutParams =
+                                     (RelativeLayout.LayoutParams)relInfo.getLayoutParams();
+                             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+                             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                             relInfo.setLayoutParams(layoutParams);
+                             String s = distance +"m";
+                             lblDistance.setText(s);
+
                          }else{
                              if (countRelocationPoints>4 ) countRelocationPoints=0;
                              String s = ".";
@@ -351,7 +375,8 @@ public class RoomerMainActivity extends Activity {
                                  s+=".";
                              }
                              countRelocationPoints++;
-                             txtLocalized.setText("Try to Locate" + s);
+                             final String showString = getString(R.string.tryToLocate) + s;
+                             txtLocalized.setText(showString);
                          }
 
                     }
@@ -359,7 +384,6 @@ public class RoomerMainActivity extends Activity {
                 }
             }
 
-            // Listen to Tango Events
             @Override
             public void onTangoEvent(final TangoEvent event) {
                 if (mTangoUx != null) {

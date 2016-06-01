@@ -20,7 +20,10 @@ import com.google.atap.tangoservice.TangoErrorException;
 import com.google.atap.tangoservice.TangoPoseData;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -29,11 +32,15 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
+import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Line3D;
+import org.rajawali3d.primitives.Plane;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.util.ObjectColorPicker;
 
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.NavigationPoint;
@@ -74,6 +81,8 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
     public boolean reDraw = false;
 
     public boolean isRelocated = false;
+    private Sphere sphere =new Sphere(0.5f,20,20);
+
 
     public GetCoordinateRenderer(Context context) {
         super(context);
@@ -100,6 +109,13 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
         light.setPower(0.8f);
         light.setPosition(3, 3, 3);
         getCurrentScene().addLight(light2);
+        Material mSphereMaterial = new Material();
+        mSphereMaterial.enableLighting(true);
+        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
+        sphere.setMaterial(mSphereMaterial);
+        getCurrentScene().addChild(sphere);
+
 
 
 
@@ -111,11 +127,29 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
         getCurrentCamera().setFarPlane(CAMERA_FAR);
     }
 
+    public Bitmap textAsBitmap(String text) {// For later usage
+        Paint paint = new Paint();
+        paint.setTextSize(16);
+        paint.setColor(0x666666);
+        paint.setUnderlineText(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        int width = (int) (paint.measureText(text) + 0.5f); // round
+        float baseline = 10;//(int) (paint.ascent() + 0.5f);
+        int height = (int) (baseline + paint.descent() + 0.5f);
+        Log.d("DEBUGGER", width +"  " + height + " " + baseline);
+        Bitmap image = Bitmap.createBitmap(width,height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(image);
+        canvas.drawText(text, 0, baseline, paint);
+        return image;
+    }
+
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
         // Update the scene objects with the latest device position and orientation information.
         // Synchronize to avoid concurrent access from the Tango callback thread below.
         try {
+            sphere.setPosition(new Vector3(0,0,0));
+            Log.d("DEBUGGER",getCurrentCamera().getProjectionMatrix().getTranslation(sphere.getPosition())+"");
             if(!addNavPoint){
                 addNavPoint = true;
 
@@ -133,6 +167,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
                 s.setPosition(p);
 
                 Point point = new NavigationPoint(p,null,"NavPoint" +countNavPoints);
+
                 countNavPoints++;
                 points.add(point);
                 reloadList=true;
