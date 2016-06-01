@@ -78,7 +78,7 @@ public class RoomerMainActivity extends Activity {
     private static final int SECS_TO_MILLISECS = 1000;
     private static final double UPDATE_INTERVAL_MS = 100.0;
 
-    private double mXyIjPreviousTimeStamp;;
+    private double mXyIjPreviousTimeStamp;
     private double mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
     private Tango mTango;
@@ -116,7 +116,7 @@ public class RoomerMainActivity extends Activity {
     //UI
     private DestinationDialog destinationDialog;
     private Button destinationButton;
-
+    private ArrayList<Point> points = new ArrayList<Point>();
 
 
     @Override
@@ -149,6 +149,11 @@ public class RoomerMainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 destinationDialog.show(fragmentManager,"Ziele");
+                if (points.size()>0){
+                    destinationDialog.connectAdapter(points);
+                }
+
+
             }
         });
 
@@ -433,14 +438,18 @@ public class RoomerMainActivity extends Activity {
                             FRAME_PAIR = new TangoCoordinateFramePair(
                                     TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                                     TangoPoseData.COORDINATE_FRAME_DEVICE);
-                            ArrayList<Point> points = db.loadPoints();
+                            points = db.loadPoints();
+
                             Point dest = null;
                             for(Point p : points){
                                 if(p instanceof DestinationPoint){
+
                                     dest = p;
+
                                     break;
                                 }
                             }
+
                             mRenderer.setPoints(
                                     VectorGraph.getPath(
                                             mRenderer.getCurrentCamera().getPosition(),

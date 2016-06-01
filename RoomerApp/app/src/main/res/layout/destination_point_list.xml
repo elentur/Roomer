@@ -15,7 +15,14 @@
         android:id="@+id/lv"
         android:layout_width="fill_parent"
         android:layout_height="485dp"
-        android:layout_weight="0.97" />
+        android:layout_weight="0.97"
+        android:choiceMode="singleChoice" />
+
+    <Button
+        android:id="@+id/accept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/accept" />
 
     <Button
         android:id="@+id/dismiss"

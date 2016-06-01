@@ -23,4 +23,5 @@
     <string name="tryToLocate">Try to Locate</string>
     <string name="zielbutton">Ziele</string>
     <string name="dismiss">Cancel</string>
+    <string name="accept">Starte Navigation</string>
 </resources>

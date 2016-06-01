@@ -1,6 +1,7 @@
 package com.projecttango.roomerapp.ui;
 
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
-
+import android.widget.Toast;
+import com.projecttango.DataStructure.DestinationPoint;
+import com.projecttango.DataStructure.Point;
 import com.projecttango.roomerapp.R;
+import java.util.ArrayList;
 
 /**
  * Created by Julian Dobrot on 01.06.2016.
@@ -20,14 +24,15 @@ import com.projecttango.roomerapp.R;
  * DestinationDialog.
  *
  */
-public class DestinationDialog extends DialogFragment {
+public class DestinationDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
 
     private static Button cancel;
+    private static Button accept;
     private static ListView destinationPoints;
     private static SearchView searchView;
-    private static ArrayAdapter<String> adapter;
-
+    private static ArrayAdapter<Point> adapter;
+    private ArrayList<Point> points = new ArrayList<Point>();
 
 
 
@@ -42,9 +47,9 @@ public class DestinationDialog extends DialogFragment {
         destinationPoints = (ListView) destinationDialogView.findViewById(R.id.lv);
         searchView = (SearchView) destinationDialogView.findViewById(R.id.searchView);
         cancel = (Button) destinationDialogView.findViewById(R.id.dismiss);
+        accept = (Button) destinationDialogView.findViewById(R.id.accept);
 
-
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+        adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,points);
         destinationPoints.setAdapter(adapter);
 
         searchView.setQueryHint("Search..");
@@ -65,6 +70,15 @@ public class DestinationDialog extends DialogFragment {
             }
         });
 
+        accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //TODO here the selected item have to be saved before closing the view.
+                dismiss();
+            }
+        });
+
 
         // listener for the cancel button
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -77,5 +91,26 @@ public class DestinationDialog extends DialogFragment {
         });
 
         return destinationDialogView;
+    }
+
+    public void connectAdapter(ArrayList<Point> list) {
+
+        points.clear();
+
+        for (Point p : list){
+            if (p instanceof DestinationPoint){
+                points.add(p);
+            }
+
+        }
+
+
+    }
+
+    @Override
+    public void onClick(DialogInterface dialogInterface, int i) {
+
+        this.dismiss();
+
     }
 }
