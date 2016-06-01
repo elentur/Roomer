@@ -17,6 +17,7 @@
 package com.projecttango.roomerapp;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.renderables.primitives.Points;
+import com.projecttango.roomerapp.ui.DestinationDialog;
 
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
@@ -110,7 +112,10 @@ public class RoomerMainActivity extends Activity {
     private static final int INVALID_TEXTURE_ID = 0;
     private int mConnectedTextureIdGlThread = INVALID_TEXTURE_ID;
 
-    // Handles the debug text UI update loop.
+
+    //UI
+    private DestinationDialog destinationDialog;
+    private Button destinationButton;
 
 
 
@@ -133,6 +138,20 @@ public class RoomerMainActivity extends Activity {
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
                     .show();
         }
+
+
+        //UI
+
+        destinationButton = (Button) findViewById(R.id.zielButton);
+        final FragmentManager fragmentManager  = getFragmentManager();
+        destinationDialog = new DestinationDialog();
+        destinationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                destinationDialog.show(fragmentManager,"Ziele");
+            }
+        });
+
 
     }
 
