@@ -41,6 +41,7 @@ import org.rajawali3d.primitives.Plane;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.util.ObjectColorPicker;
+import org.rajawali3d.util.OnObjectPickedListener;
 
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.NavigationPoint;
@@ -51,12 +52,13 @@ import com.projecttango.rajawali.renderables.Grid;
 import com.projecttango.tangosupport.TangoSupport;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 /**
  * This class implements the rendering logic for the Motion Tracking application using Rajawali.
  */
-public class GetCoordinateRenderer extends RajawaliRenderer {
+public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectPickedListener {
     private static final String TAG = GetCoordinateRenderer.class.getSimpleName();
 
     private static final float CAMERA_NEAR = 0.01f;
@@ -77,16 +79,20 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
 
     public boolean reloadList = false;
 
-    public ArrayList<Point> points = new ArrayList<Point>();
+    private HashMap<Object3D,Point> points = new HashMap<Object3D,Point>();
     public boolean reDraw = false;
 
     public boolean isRelocated = false;
     private Sphere sphere =new Sphere(0.5f,20,20);
+    private ObjectColorPicker mPicker;
 
 
     public GetCoordinateRenderer(Context context) {
         super(context);
     }
+
+
+
 
     public void setCurrentScreenRotation(int currentRotation) {
         mCurrentScreenRotation = currentRotation;
@@ -109,14 +115,9 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
         light.setPower(0.8f);
         light.setPosition(3, 3, 3);
         getCurrentScene().addLight(light2);
-        Material mSphereMaterial = new Material();
-        mSphereMaterial.enableLighting(true);
-        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
-        sphere.setMaterial(mSphereMaterial);
-        getCurrentScene().addChild(sphere);
 
-
+        mPicker = new ObjectColorPicker(this);
+        mPicker.setOnObjectPickedListener(this);
 
 
 
@@ -148,8 +149,6 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
         // Update the scene objects with the latest device position and orientation information.
         // Synchronize to avoid concurrent access from the Tango callback thread below.
         try {
-            sphere.setPosition(new Vector3(0,0,0));
-            Log.d("DEBUGGER",getCurrentCamera().getProjectionMatrix().getTranslation(sphere.getPosition())+"");
             if(!addNavPoint){
                 addNavPoint = true;
 
@@ -166,10 +165,11 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
                 getCurrentScene().addChild(s);
                 s.setPosition(p);
 
+                mPicker.registerObject(s);
                 Point point = new NavigationPoint(p,null,"NavPoint" +countNavPoints);
 
                 countNavPoints++;
-                points.add(point);
+                points.put(s,point);
                 reloadList=true;
             }
             if(!addDestPoint){
@@ -188,9 +188,11 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
 
                 getCurrentScene().addChild(s);
                 s.setPosition(p);
+
+                mPicker.registerObject(s);
                 Point point = new DestinationPoint(p,null,"DestPoint" +countDestPoints);
                 countDestPoints++;
-                points.add(point);
+                points.put(s,point);
                 reloadList=true;
             }
 
@@ -273,4 +275,20 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
 
     }
 
+    @Override
+    public void onObjectPicked(Object3D object) {
+            Log.d("DEBUGGER" , "Object selected: " + points.get(object).toString());
+    }
+
+    public void getObjectAt(float x, float y) {
+        mPicker.getObjectAt(x, y);
+    }
+
+    public ArrayList<Point> getPoints(){
+        ArrayList<Point> p = new ArrayList<Point>();
+        for(Object3D o : points.keySet()){
+            p.add(points.get(o));
+        }
+        return p;
+    }
 }

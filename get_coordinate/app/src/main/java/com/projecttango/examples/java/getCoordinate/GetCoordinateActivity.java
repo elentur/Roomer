@@ -40,6 +40,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -62,7 +63,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * service and propagation of Tango pose data to OpenGL and Layout views. OpenGL rendering logic is
  * delegated to the {@link GetCoordinateRenderer} class.
  */
-public class GetCoordinateActivity extends Activity {
+public class GetCoordinateActivity extends Activity implements View.OnTouchListener {
 
     private static final String TAG = GetCoordinateActivity.class.getSimpleName();
     private static final int SECS_TO_MILLISECS = 1000;
@@ -137,6 +138,7 @@ public class GetCoordinateActivity extends Activity {
        // glView.setZOrderOnTop(false);
        // glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
         glView.setSurfaceRenderer(renderer);
+        glView.setOnTouchListener(this);
         return renderer;
 
     }
@@ -403,7 +405,7 @@ public class GetCoordinateActivity extends Activity {
         btnNavPoint.setEnabled(false);
         mRenderer.reloadList=false;
         adapter.clear();
-        ArrayList<Point> points = ( ArrayList<Point>) mRenderer.points.clone();
+        ArrayList<Point> points = ( ArrayList<Point>) mRenderer.getPoints();
         Collections.reverse(points);
         Point point = points.remove(0);
         ((TextView)findViewById(R.id.txtPointCord)).setText(point.toString());
@@ -422,7 +424,7 @@ public class GetCoordinateActivity extends Activity {
         }
     }
     public void savePoint(View view){
-        ArrayList<Point> points =  ( ArrayList<Point>) mRenderer.points.clone();
+        ArrayList<Point> points =  ( ArrayList<Point>) mRenderer.getPoints();
         Collections.reverse(points);
         Point point = points.remove(0);
         if(point instanceof DestinationPoint){
@@ -443,12 +445,22 @@ public class GetCoordinateActivity extends Activity {
         }
         savePointList.add(point);
         db.insert(point);
-        db.update(mRenderer.points);
+        db.update(mRenderer.getPoints());
 
 
         btnDestPoint.setEnabled(true);
         btnNavPoint.setEnabled(true);
         lltSavePoint.setVisibility(View.INVISIBLE);
         mRenderer.reDraw = true;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN)
+        {
+            // this needs to be defined on the renderer:
+            mRenderer.getObjectAt(event.getX(), event.getY());
+        }
+        return super.onTouchEvent(event);
     }
 }
