@@ -1,3 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="82b2010b49c2b59fff838af8af35f11571fe1bf3">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\instant-run_37552bde35c07f024562d7922c5da32ae0502114.jar" />
+    </item>
+    <item
+        jar="C:\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.0\support-annotations-22.2.0.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.0_70ba567356d3f4e70248bb87208265e9c5e15549.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="3752a2eec50fbcfed614b693926f33cb5d29752c">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\instant-run-bootstrap_ad6160cbd9e601f575da22ca1ab303560e021aff.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\org.rajawali3d\rajawali\1.0.294-SNAPSHOT\jars\classes.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="d2d9278b181a6f41ac9fa2b4e18f873cd6a5b7d7">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\org.rajawali3d-rajawali-1.0.294-SNAPSHOT_2693d024b07a009a13cc6cc055ed9e6d57a76efb.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\libs\internal_impl-22.2.0.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.0_9b25f8353d4257bcfb72a58dff97d16e850866bc.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\classes.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\com.android.support-support-v4-22.2.0_667f784589b98bdcb16a3482f31d8af9622686df.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\RoomerApp\java_examples_utils\unspecified\jars\libs\tango_java_lib.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="259876831cd859ccb7656a4e7032a18e1ccfdbdd">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\tango_java_lib_4388358499802ba37afbec58973a250bbf480161.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\tango_support_java_lib\jars\classes.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="6bcb2de685d674b1b527dff1ca4aa123198b9565">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\intermediates-exploded-aar-tango_support_java_lib_79cfed2bb3a49ade55b780b4aa50cc352233820c.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\8.1.0\jars\classes.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="4477ea44f5ec5ad064022a22691732d7638ff197">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-appindexing-8.1.0_ca09706fb7077bd9fec8c850f766fe5f6b1ffd48.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.1.0\jars\classes.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="d0dda274b703dd9c5bb056867649d22b4171ae7d">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-basement-8.1.0_1a33df29c8329604e4cd9093d8d0f891624706fb.jar" />
+    </item>
+    <item
+        jar="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\exploded-aar\tango-ux-support-library\jars\classes.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="1130b8271921ef10d82dc12b02747e8aa060b028">
+        <dex dex="C:\Users\Julian Dobrot\Roomer\RoomerApp\app\build\intermediates\pre-dexed\debug\intermediates-exploded-aar-tango-ux-support-library_7600ff16014feb93b63d1dc30ace519c2a04caed.jar" />
+    </item>
+
+</items>

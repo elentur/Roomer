@@ -10,7 +10,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.projecttango.tangoutils.R;
+
 
 import org.rajawali3d.math.vector.Vector3;
 
