@@ -34,10 +34,6 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
     private static ArrayAdapter<Point> adapter;
     private ArrayList<Point> points = new ArrayList<Point>();
 
-
-
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -94,10 +90,15 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
         return destinationDialogView;
     }
 
+    /**
+     * This method is used to get the current selected destination point.
+     * @return the selected point.
+     */
     public Point getDestinationPoint() {
 
         Point selectedPoint = (Point) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
         Toast.makeText(getActivity(), "selected"+ selectedPoint, Toast.LENGTH_SHORT).show();
+
         return selectedPoint;
     }
 
@@ -113,12 +114,9 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
             if (p instanceof DestinationPoint){
                 points.add(p);
             }
-
         }
-
-
     }
-
+    //can i delete this?
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
 
