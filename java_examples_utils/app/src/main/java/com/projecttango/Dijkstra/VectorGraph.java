@@ -1,4 +1,5 @@
 package com.projecttango.Dijkstra;
+import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
 
 
@@ -20,66 +21,76 @@ public class VectorGraph {
     public static ArrayList<Point> getPath(Vector3 pos,Point end, ArrayList<Point> pointList) {
         VectorGraph g = new VectorGraph(pointList);
         Point start = g.findNearestStartPoint(pos);
-
-        /*g.dijkstra(start);
+        g.dijkstra(start);
         g.printPath(end);
-        return path;*/
-
-        return null;
+        return path;
     }
 
-    private  Point findNearestStartPoint(Vector3 pos){
+    private Point findNearestStartPoint(Vector3 pos){
 
-        Point point=null;
+        double min_dist = Double.MAX_VALUE;
 
-        double dist = Double.MAX_VALUE;
+        Vector3 p = pos.clone();
 
-        /*Vector3 a = new Vector3(-2,1,7);
-        Vector3 b = new Vector3(2,2,4);
-        Vector3 u = b.subtract(a);
-        Vector3 p = new Vector3(10,5,7);
+        ArrayList<Point> pointList = new ArrayList<Point>();
 
-        System.out.println("u: " + u);
-        System.out.println("(p-a): " + p.subtract(a));
-        System.out.println("(p⃗ −a⃗ )×u⃗: " + p.subtract(a).cross(u).absoluteValue());
+        for(Point k :graph.keySet()){
 
-        System.out.println("S: " + p.subtract(a).cross(u).length() / u.length());*/
+            Vector3 a = k.getPosition().clone();
 
+            for(Point n : k.getNeighbours().keySet()){
 
-
-        System.out.println(pos);
-        System.out.println("");
-
-        for(Point p :graph.keySet()){
-
-            Vector3 a = p.getPosition().clone();
-
-            for(Point n : p.getNeighbours().keySet()){
                 Vector3 b = n.getPosition().clone();
-                Vector3 u = b.subtract(a);
-                double d = pos.clone().subtract(a).cross(u).absoluteValue().length() / u.absoluteValue().length();
 
-                System.out.println(p);
-                System.out.println(n);
-                System.out.println("Distanz: " + d);
+                Vector3 q = Vector3.subtractAndCreate(b,a);
 
-                if(d<dist){
-                    dist = d;
-                    System.out.println("kleinste Distanz");
-                    System.out.print(p.getTag() + "----");
-                    System.out.println(n.getTag());
+                double r = (q.x*(p.x-a.x) + q.y*(p.y-a.y) + q.z*(p.z-a.z)) / (q.x*q.x + q.y*q.y +q.z*q.z );
+
+                double distance;
+
+                HashMap<Point,Double> neighbours;
+
+                if(r < 0 ){
+                    distance = Vector3.distanceTo(a,p);
+                    if(distance<min_dist) {
+                        min_dist = distance;
+                        pointList = new ArrayList<Point>();
+                        pointList.add(k);
+                    }
+
+                }else if(r > 1){
+                    distance = Vector3.distanceTo(b,p);
+                    if(distance<min_dist) {
+                        min_dist = distance;
+                        pointList = new ArrayList<Point>();
+                        pointList.add(n);
+                    }
+                }else{
+                    Vector3 lotpunkt = Vector3.multiplyAndCreate(q,r).add(a);
+                    distance = Vector3.distanceTo(lotpunkt,p);
+
+                    if(distance<min_dist) {
+                        min_dist = distance;
+                        pointList = new ArrayList<Point>();
+                        pointList.add(k);
+                        pointList.add(n);
+                    }
+
                 }
             }
-            System.out.println("-----------------------------------");
-
         }
 
+        Point point = new NavigationPoint(new Vector3(pos),new HashMap<Point, Double>(),"Start");
 
-      /*  if(Vector3.distanceTo2(p.getPosition(),pos)<dist){
-            dist = Vector3.distanceTo2(p.getPosition(),pos);
-            point = p;
-        }*/
+        for(Point candidate : pointList){
+            point.addNeighhbour(candidate);
+        }
 
+        if (!graph.containsKey(point)) graph.put(point, new Vertex(point));
+
+        for(Point neighbour : point.getNeighbours().keySet()){
+            graph.get(point).neighbours.put(graph.get(neighbour), point.getNeighbours().get(neighbour));
+        }
 
         return point;
     }

@@ -36,7 +36,7 @@ public class Main {
         Point pF = new NavigationPoint(new Vector3(50,20,0),new HashMap<Point, Double>(),"F");
 
         // Point Z
-        Point pZ = new NavigationPoint(new Vector3(25,30,0),new HashMap<Point, Double>(),"Z");
+        Point pZ = new NavigationPoint(new Vector3(0,30,0),new HashMap<Point, Double>(),"Z");
 
         // Neighbours A
         pA.addNeighhbour(pB);
@@ -77,7 +77,7 @@ public class Main {
         }*/
 
         System.out.println(
-                VectorGraph.getPath(new Vector3(25,-50,0),pZ,pointList)
+                VectorGraph.getPath(new Vector3(80,5,0),pZ,pointList)
         );
     }
 }
