@@ -1,5 +1,6 @@
 package com.projecttango.roomerapp.ui;
 
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -40,7 +41,7 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-        View destinationDialogView = inflater.inflate(R.layout.destination_point_list, null);
+        final View destinationDialogView = inflater.inflate(R.layout.destination_point_list, null);
 
         getDialog().setTitle("Ziele in ihrer Umgebung");
 
@@ -74,8 +75,14 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
             @Override
             public void onClick(View view) {
 
+
+                Point checkedItem = (Point) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
+
+
+
                 //TODO here the selected item have to be saved before closing the view.
                 dismiss();
+                Toast.makeText(getActivity(), "selected"+ checkedItem, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -93,6 +100,10 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
         return destinationDialogView;
     }
 
+    /**
+     * This method fills the point list with direction points.
+     * @param list
+     */
     public void connectAdapter(ArrayList<Point> list) {
 
         points.clear();
