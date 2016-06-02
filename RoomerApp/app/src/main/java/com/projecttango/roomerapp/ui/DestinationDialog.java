@@ -1,6 +1,5 @@
 package com.projecttango.roomerapp.ui;
 
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -34,6 +33,8 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
     private static SearchView searchView;
     private static ArrayAdapter<Point> adapter;
     private ArrayList<Point> points = new ArrayList<Point>();
+
+
 
 
 
@@ -75,17 +76,11 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
             @Override
             public void onClick(View view) {
 
-
-                Point checkedItem = (Point) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
-
-
-
-                //TODO here the selected item have to be saved before closing the view.
+                getDestinationPoint();
                 dismiss();
-                Toast.makeText(getActivity(), "selected"+ checkedItem, Toast.LENGTH_SHORT).show();
+
             }
         });
-
 
         // listener for the cancel button
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -94,10 +89,16 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
                 dismiss();
             }
 
-
         });
 
         return destinationDialogView;
+    }
+
+    public Point getDestinationPoint() {
+
+        Point selectedPoint = (Point) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
+        Toast.makeText(getActivity(), "selected"+ selectedPoint, Toast.LENGTH_SHORT).show();
+        return selectedPoint;
     }
 
     /**
