@@ -40,9 +40,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -119,11 +121,31 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = setupTangoUxAndLayout();
 
-     //  startActivityForResult(
-      //          Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
 
         db = new RoomerDB(this,uuid);
+
+        lstPoints.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Point p =(Point) lstPoints.getItemAtPosition(position);
+                if(mRenderer.getSelectetPoint()!=null) {
+                    if (mRenderer.getSelectetPoint().getNeighbours().keySet().contains(p)){
+                        mRenderer.getSelectetPoint().getNeighbours().remove(p);
+                        p.getNeighbours().remove(mRenderer.getSelectetPoint());
+                        lstPoints.setItemChecked(position,false);
+                        Log.d("DEBUGGER", "Nachbar entfernt");
+                    }else{
+                        mRenderer.getSelectetPoint().addNeighhbour(p);
+                        p.addNeighhbour(mRenderer.getSelectetPoint());
+                        lstPoints.setItemChecked(position,true);
+                        Log.d("DEBUGGER", "Nachbar hinzugefügt");
+                    }
+                    mRenderer.reDraw = true;
+                }
+            }
+        });
+
     }
 
     /**
@@ -148,7 +170,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     @Override
     protected void onPause() {
         super.onPause();
-        db.exportDB(getBaseContext());
+        savePoints();
         if (mIsConnected.compareAndSet(true, false)) {
             mTangoUx.stop();
             mIsRelocalized = false;
@@ -160,6 +182,26 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
                 Toast.makeText(getApplicationContext(),
                         R.string.exception_tango_error, Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void savePoints() {
+        ArrayList<Point> points = mRenderer.getPoints();
+        Collections.reverse(points);
+        db.clearDB();
+        for(Point point: points) {
+            db.insert(point);
+        }
+        db.update(mRenderer.getPoints());
+        db.exportDB(getBaseContext());
+    }
+
+    private void loadPoints(){
+        try {
+            ArrayList<Point> points = db.loadPoints();
+            mRenderer.setPoints(points);
+        }catch (Exception e){
+
         }
     }
 
@@ -182,6 +224,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
                         connectTango();
                         mRenderer.onResume();
                         connectRenderer();
+                        loadPoints();
                     } catch (TangoOutOfDateException outDateEx) {
                         if (mTangoUx != null) {
                             mTangoUx.showTangoOutOfDate();
@@ -308,11 +351,11 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
 
     public synchronized void addNavPoint(View view) {
 
-        mRenderer.addNavPoint();
+        mRenderer.addNavPoint =false;
     }
 
     public synchronized void addDestPoint(View view) {
-        mRenderer.addDestPoint();
+        mRenderer.addDestPoint=false;
     }
 
     @Override
@@ -400,58 +443,51 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     }
     private void setUpSavePointInterface() {
 
-        lltSavePoint.setVisibility(View.VISIBLE);
-        btnDestPoint.setEnabled(false);
-        btnNavPoint.setEnabled(false);
+
+
         mRenderer.reloadList=false;
         adapter.clear();
-        ArrayList<Point> points = ( ArrayList<Point>) mRenderer.getPoints();
-        Collections.reverse(points);
-        Point point = points.remove(0);
-        ((TextView)findViewById(R.id.txtPointCord)).setText(point.toString());
-        adapter.addAll(points);
-        if(!points.isEmpty())lstPoints.setItemChecked(0,true);
-        if(point instanceof NavigationPoint){
-            txtName.setText(point.getTag());
-            txtName.setEnabled(false);
-        }else{
-            txtName.setText("");
-            txtName.setEnabled(true);
-            txtName.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(txtName, InputMethodManager.SHOW_IMPLICIT);
 
-        }
-    }
-    public void savePoint(View view){
-        ArrayList<Point> points =  ( ArrayList<Point>) mRenderer.getPoints();
-        Collections.reverse(points);
-        Point point = points.remove(0);
-        if(point instanceof DestinationPoint){
-            if(txtName.getText().equals(""))return;
-            point.setTag(txtName.getText().toString());
-        }
-        SparseBooleanArray checked = lstPoints.getCheckedItemPositions();
-
-        final int checkedItemCount = checked.size();
-        for (int i = 0; i < checkedItemCount; i++) {
-            int key = checked.keyAt(i);
-            if (checked.get(key)) {
-                lstPoints.setItemChecked(i,false);
-                point.addNeighhbour(points.get(key));
-                points.get(key).addNeighhbour(point);
-                Log.d("DEBUGGER",point.toString() +  "  " + points.get(key).toString());
+        final Point point = mRenderer.getSelectetPoint();
+        if(point==null){
+            lltSavePoint.setVisibility(View.INVISIBLE);
+            ((TextView) findViewById(R.id.txtPointCord)).setText("");
+        }else {
+            lltSavePoint.setVisibility(View.VISIBLE);
+            ArrayList<Point> points = mRenderer.getPoints();
+            Collections.reverse(points);
+            points.remove(point);
+            ((TextView) findViewById(R.id.txtPointCord)).setText(point.toString());
+            adapter.addAll(points);
+            lstPoints.clearChoices();
+            for (int i = 0; i < lstPoints.getCount(); i++) {
+                for (Point n : point.getNeighbours().keySet()) {
+                    if (lstPoints.getItemAtPosition(i).equals(n)) {
+                        lstPoints.setItemChecked(i, true);
+                    }
+                }
             }
+
+
+            txtName.setText(point.getTag());
+            txtName.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    Log.d("DEBUGGER", point + "  geht");
+                    point.setTag( txtName.getText().toString());
+                    return false;
+                }
+            });
+            txtName.setEnabled(point instanceof DestinationPoint);
         }
-        savePointList.add(point);
-        db.insert(point);
-        db.update(mRenderer.getPoints());
+
+    }
 
 
-        btnDestPoint.setEnabled(true);
-        btnNavPoint.setEnabled(true);
-        lltSavePoint.setVisibility(View.INVISIBLE);
-        mRenderer.reDraw = true;
+    public void deletePoint(View view){
+        mRenderer.removePoint();
+        setUpSavePointInterface();
+
     }
 
     @Override
@@ -460,7 +496,10 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         {
             // this needs to be defined on the renderer:
             mRenderer.getObjectAt(event.getX(), event.getY());
+            setUpSavePointInterface();
         }
         return super.onTouchEvent(event);
     }
+
+
 }

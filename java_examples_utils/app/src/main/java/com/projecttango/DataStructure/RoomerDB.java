@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -147,7 +148,15 @@ public class RoomerDB extends SQLiteOpenHelper {
 
         }
     }
+public void clearDB(){
+    try{
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DROP TABLE Points");
+    }catch (SQLiteException e){
+        Log.e(TAG,e.getMessage());
+    }
 
+}
     /**
      * Imports the Database for given ADF from shared space
      * @param context
@@ -191,7 +200,7 @@ public class RoomerDB extends SQLiteOpenHelper {
      * Returns an ArrayList with all points
      * @return ArrayList of Points
      */
-    public ArrayList<Point> loadPoints(){
+    public ArrayList<Point> loadPoints() throws Exception{
         ArrayList<Point> points = new ArrayList<Point>();
         try {
             SQLiteDatabase db = getReadableDatabase();
@@ -220,8 +229,12 @@ public class RoomerDB extends SQLiteOpenHelper {
                     String n = c.getString(c.getColumnIndex("NEIGHBOURS"));
                     String[] ids = n.split(";");
                     for(String s: ids){
-                        int i = Integer.parseInt(s);
-                        points.get(id-1).addNeighhbour(points.get(i-1));
+                        try {
+                            int i = Integer.parseInt(s);
+                            points.get(id - 1).addNeighhbour(points.get(i - 1));
+                        }catch (Exception e){
+                            Log.e(TAG,e.getMessage());
+                        }
                     }
                     c.moveToNext();
                 }
