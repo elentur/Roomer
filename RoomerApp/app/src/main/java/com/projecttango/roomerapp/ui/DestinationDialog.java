@@ -1,7 +1,6 @@
 package com.projecttango.roomerapp.ui;
 
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,21 +9,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.roomerapp.R;
+
+
 import java.util.ArrayList;
 
 /**
  * Created by Julian Dobrot on 01.06.2016.
  * This class represents a list view dialog of all destinations of the loaded adf file.
  * Is is possible to filter them with search strings.
- * With the selected point the navigation will be calculated. So the value have to be passed by the
- * DestinationDialog.
+ * With the selected point the navigation will be calculated.
  *
  */
-public class DestinationDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class DestinationDialog extends DialogFragment  {
 
 
     private static Button cancel;
@@ -32,7 +31,10 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
     private static ListView destinationPoints;
     private static SearchView searchView;
     private static ArrayAdapter<Point> adapter;
-    private ArrayList<Point> points = new ArrayList<Point>();
+    private ArrayList<Point> pointsDialog = new ArrayList<Point>();
+    private DestinationPoint selectedPoint = null;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
         cancel = (Button) destinationDialogView.findViewById(R.id.dismiss);
         accept = (Button) destinationDialogView.findViewById(R.id.accept);
 
-        adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,points);
+        adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialog);
         destinationPoints.setAdapter(adapter);
 
         searchView.setQueryHint("Search..");
@@ -68,12 +70,17 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
             }
         });
 
+
+        //listener for the accept button
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                getDestinationPoint();
+
+                selectedPoint = (DestinationPoint) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
+                setSelectedPoint(selectedPoint);
                 dismiss();
+
 
             }
         });
@@ -90,16 +97,12 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
         return destinationDialogView;
     }
 
-    /**
-     * This method is used to get the current selected destination point.
-     * @return the selected point.
-     */
-    public Point getDestinationPoint() {
-
-        Point selectedPoint = (Point) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
-        Toast.makeText(getActivity(), "selected"+ selectedPoint, Toast.LENGTH_SHORT).show();
-
+    public DestinationPoint getSelectedPoint() {
         return selectedPoint;
+    }
+
+    public void setSelectedPoint(DestinationPoint selectedPoint) {
+        this.selectedPoint = selectedPoint;
     }
 
     /**
@@ -108,19 +111,21 @@ public class DestinationDialog extends DialogFragment implements DialogInterface
      */
     public void connectAdapter(ArrayList<Point> list) {
 
-        points.clear();
+        pointsDialog.clear();
 
         for (Point p : list){
             if (p instanceof DestinationPoint){
-                points.add(p);
+                pointsDialog.add(p);
             }
         }
     }
-    //can i delete this?
+
     @Override
-    public void onClick(DialogInterface dialogInterface, int i) {
-
-        this.dismiss();
-
+    public String toString() {
+        return "DestinationDialog{" +
+                "pointsDialog=" + pointsDialog +
+                ", selectedPoint=" + selectedPoint +
+                '}';
     }
+
 }

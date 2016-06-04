@@ -19,6 +19,7 @@ package com.projecttango.roomerapp;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -88,7 +89,6 @@ public class RoomerMainActivity extends Activity {
     private final Object mSharedLock = new Object();
     private boolean mIsRelocalized;
 
-    private boolean mIsPointsLoad;
 
     private AtomicBoolean mIsConnected = new AtomicBoolean(false);
 
@@ -113,10 +113,23 @@ public class RoomerMainActivity extends Activity {
     private int mConnectedTextureIdGlThread = INVALID_TEXTURE_ID;
 
 
-    //UI
+    /**
+     * The DestinationDialog component of the View. The Dialog provides the selection
+     * of destinations.
+     */
     private DestinationDialog destinationDialog;
     private Button destinationButton;
+
+    /**
+     * Holds all points loaded from the database.
+     */
     private ArrayList<Point> points = new ArrayList<Point>();
+
+
+    /**
+     * Checks if the
+     */
+    private boolean firstTimeloaded = true;
 
 
     @Override
@@ -142,6 +155,8 @@ public class RoomerMainActivity extends Activity {
 
         //UI
 
+        // Destination Dialog
+
         destinationButton = (Button) findViewById(R.id.zielButton);
         final FragmentManager fragmentManager  = getFragmentManager();
         destinationDialog = new DestinationDialog();
@@ -152,7 +167,6 @@ public class RoomerMainActivity extends Activity {
                 if (points.size()>0){
                     destinationDialog.connectAdapter(points);
                 }
-
 
             }
         });
@@ -321,14 +335,13 @@ public class RoomerMainActivity extends Activity {
         config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
 
         config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
-           config.putBoolean(
-                  TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
+        config.putBoolean(
+                TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
 
 
-
-   //Set adf file
-            config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
-                    uuid);
+        //Set adf file
+        config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
+                uuid);
 
         mTango.connect(config);
 
@@ -359,52 +372,52 @@ public class RoomerMainActivity extends Activity {
                 if (mTimeToNextUpdate < 0.0) {
                     mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                         if(mIsRelocalized){
-                             txtLocalized.setVisibility(View.INVISIBLE);
-                             //Show Distance
-                             int distance = 0;
-                             ArrayList<Point> points = Visualize.getPoints();
-                             for(int i = 1; i< points.size(); i++){
-                                 distance+= Vector3.distanceTo2(
-                                         points.get(i-1).getPosition(),
-                                         points.get(i).getPosition());
-                             }
-                             Vector3 cp = new Vector3(
-                                     mRenderer.getCurrentCamera().getPosition().x,
-                                     mRenderer.getCurrentCamera().getPosition().y - 1,
-                                     mRenderer.getCurrentCamera().getPosition().z);
-                             if(!points.isEmpty())distance+= Vector3.distanceTo2(
-                                     Visualize.getPoints().get(0).getPosition(),
-                                     cp);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mIsRelocalized) {
+                                txtLocalized.setVisibility(View.INVISIBLE);
+                                //Show Distance
+                                int distance = 0;
+                                ArrayList<Point> points = Visualize.getPoints();
+                                for (int i = 1; i < points.size(); i++) {
+                                    distance += Vector3.distanceTo2(
+                                            points.get(i - 1).getPosition(),
+                                            points.get(i).getPosition());
+                                }
+                                Vector3 cp = new Vector3(
+                                        mRenderer.getCurrentCamera().getPosition().x,
+                                        mRenderer.getCurrentCamera().getPosition().y - 1,
+                                        mRenderer.getCurrentCamera().getPosition().z);
+                                if (!points.isEmpty()) distance += Vector3.distanceTo2(
+                                        Visualize.getPoints().get(0).getPosition(),
+                                        cp);
 
-                             TextView lblDistance = new TextView(getBaseContext());
-                             RelativeLayout relInfo = (RelativeLayout)findViewById(R.id.relInfo);
-                             relInfo.removeAllViews();
-                             relInfo.addView(lblDistance);
-                             RelativeLayout.LayoutParams layoutParams =
-                                     (RelativeLayout.LayoutParams)relInfo.getLayoutParams();
-                             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
-                             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-                             relInfo.setLayoutParams(layoutParams);
-                             String s = distance +"m";
-                             lblDistance.setText(s);
+                                TextView lblDistance = new TextView(getBaseContext());
+                                RelativeLayout relInfo = (RelativeLayout) findViewById(R.id.relInfo);
+                                relInfo.removeAllViews();
+                                relInfo.addView(lblDistance);
+                                RelativeLayout.LayoutParams layoutParams =
+                                        (RelativeLayout.LayoutParams) relInfo.getLayoutParams();
+                                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+                                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                                relInfo.setLayoutParams(layoutParams);
+                                String s = distance + "m";
+                                lblDistance.setText(s);
 
-                         }else{
-                             if (countRelocationPoints>4 ) countRelocationPoints=0;
-                             String s = ".";
-                             for(int i = 0; i <countRelocationPoints;i+=2){
-                                 s+=".";
-                             }
-                             countRelocationPoints++;
-                             final String showString = getString(R.string.tryToLocate) + s;
-                             txtLocalized.setText(showString);
-                         }
+                            } else {
+                                if (countRelocationPoints > 4) countRelocationPoints = 0;
+                                String s = ".";
+                                for (int i = 0; i < countRelocationPoints; i += 2) {
+                                    s += ".";
+                                }
+                                countRelocationPoints++;
+                                final String showString = getString(R.string.tryToLocate) + s;
+                                txtLocalized.setText(showString);
+                            }
 
-                    }
-                });
+                        }
+                    });
                 }
             }
 
@@ -433,33 +446,18 @@ public class RoomerMainActivity extends Activity {
                             .COORDINATE_FRAME_START_OF_SERVICE) {
                         mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
 
-                        if(mIsRelocalized && !mIsPointsLoad){
-                            mIsPointsLoad=true;
+                        if (mIsRelocalized) {
+
                             FRAME_PAIR = new TangoCoordinateFramePair(
                                     TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                                     TangoPoseData.COORDINATE_FRAME_DEVICE);
                             points = db.loadPoints();
+                            renderPath();
 
-                            Point dest = null;
-                            for(Point p : points){
-                                if(p instanceof DestinationPoint){
 
-                                    dest = p;
-
-                                    break;
-                                }
-                            }
-
-                            mRenderer.setPoints(
-                                    VectorGraph.getPath(
-                                            mRenderer.getCurrentCamera().getPosition(),
-                                            dest,
-                                            points)
-                            );
                         }
 
                     }
-
 
                 }
             }
@@ -479,6 +477,34 @@ public class RoomerMainActivity extends Activity {
         });
         mExtrinsics = setupExtrinsics(mTango);
         mIntrinsics = mTango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
+    }
+
+
+    /**
+     * This method reders the Path to the selected point.
+     */
+    private void renderPath(){
+        Point dest=null;
+        if(dest == null)dest= destinationDialog.getSelectedPoint();
+
+        if (dest != null&&firstTimeloaded) {
+            firstTimeloaded=false;
+
+
+        Vector3 pos = new Vector3( mRenderer.getCurrentCamera().getPosition().x,
+                mRenderer.getCurrentCamera().getPosition().y-1,
+                mRenderer.getCurrentCamera().getPosition().z);
+
+        //entire list will be rendered for testing, because of issues with the path calculation
+
+          //  mRenderer.setPoints(
+          //          VectorGraph.getPath(pos,
+          //                  dest,
+          //                  points)
+          //  );
+            mRenderer.setPoints(points);
+
+        }
     }
 
 

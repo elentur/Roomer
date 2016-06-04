@@ -198,6 +198,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
 
     public void setPoints(ArrayList<Point> points) {
+
         this.points = points;
         Visualize.setPoints(points);
         reDraw =true;
