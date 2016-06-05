@@ -19,11 +19,8 @@ public class VectorGraph {
     public static ArrayList<Point> getPath(Vector3 pos,Point end, ArrayList<Point> pointList) {
         VectorGraph g = new VectorGraph(pointList);
         Point start = g.findNearestStartPoint(pos);
-        System.out.println("start: " + start.getNeighbours());
         g.dijkstra(start);
-        System.out.println("************ all path **************");
-        g.printAllPaths();
-        System.out.println("************ final path **************");
+        //g.printAllPaths();
         g.printPath(end);
         return path;
     }
@@ -91,7 +88,9 @@ public class VectorGraph {
         if (!graph.containsKey(point)) graph.put(point, new Vertex(point));
 
         for(Point neighbour : point.getNeighbours().keySet()){
+
             graph.get(point).neighbours.put(graph.get(neighbour), point.getNeighbours().get(neighbour));
+            graph.get(neighbour).neighbours.put(graph.get(point), Vector3.distanceTo(graph.get(neighbour).p.getPosition(),graph.get(point).p.getPosition()));
         }
 
         return point;
@@ -132,7 +131,8 @@ public class VectorGraph {
             return "Vertex{" +
                     "p=" + p +
                     ", dist=" + dist +
-                    ", previous=" + previous +
+                    /* ", previous=" + previous +*/
+                    /*", neighbours=" + neighbours +*/
                     '}';
         }
     }
@@ -166,17 +166,13 @@ public class VectorGraph {
         final Vertex source = graph.get(startPoint);
         NavigableSet<Vertex> q = new TreeSet<Vertex>();
 
-
         // set-up vertices
         for (Vertex v : graph.values()) {
-            //System.out.println("v: " + v);
             v.previous = v == source ? source : null;
             v.dist = v == source ? 0 : Double.MAX_VALUE;
             q.add(v);
         }
-
         dijkstra(q);
-
     }
 
     /**
