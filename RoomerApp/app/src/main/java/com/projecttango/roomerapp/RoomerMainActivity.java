@@ -18,6 +18,7 @@ package com.projecttango.roomerapp;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,11 +26,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -59,12 +62,15 @@ import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.renderables.primitives.Points;
 import com.projecttango.roomerapp.ui.DestinationDialog;
+import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -119,6 +125,11 @@ public class RoomerMainActivity extends Activity {
      */
     private DestinationDialog destinationDialog;
     private Button destinationButton;
+    private ImageButton thumbButton;
+
+    final FragmentManager fragmentManager  = getFragmentManager();
+
+
 
     /**
      * Holds all points loaded from the database.
@@ -156,9 +167,42 @@ public class RoomerMainActivity extends Activity {
         //UI
 
         // Destination Dialog
-
+        thumbButton = (ImageButton) findViewById(R.id.thumb_button);
         destinationButton = (Button) findViewById(R.id.zielButton);
-        final FragmentManager fragmentManager  = getFragmentManager();
+
+        thumbButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                Icon_Segment_Fragment icon_segment_fragment = new Icon_Segment_Fragment();
+
+
+
+                if (motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
+
+                    transaction.add(R.id.fragment_holder, icon_segment_fragment);
+                    transaction.commit();
+
+                    int x = (int)motionEvent.getX();
+                    int y = (int)motionEvent.getY();
+
+
+
+
+
+                    int[] arr=icon_segment_fragment.segDesMeasures(icon_segment_fragment.getSegDestinations());
+                    Log.d("DEBUGGER", "the measures" + Arrays.toString(arr));
+
+
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+
+                    fragmentManager.beginTransaction().remove(getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
+                }
+                return false;
+            }
+        });
+
+
         destinationDialog = new DestinationDialog();
         destinationButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -42,14 +42,32 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:text="@string/zielbutton"
-            android:layout_marginTop="310dp"
-            android:layout_marginLeft="800dp"
+            android:layout_marginTop="350dp"
+            android:layout_marginLeft="30dp"
             android:padding="20dp"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/relInfo"></RelativeLayout>
+            android:id="@+id/relInfo">
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/fragment_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        </FrameLayout>
+
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="295dp"
+            android:layout_marginLeft="794dp"
+            android:id="@+id/thumb_button"
+            android:background="@null"
+            android:src="@drawable/thumb_button_main" />
 
 
     </RelativeLayout>
