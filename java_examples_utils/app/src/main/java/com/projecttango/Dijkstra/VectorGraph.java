@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Created by roberto on 05.06.16.
  */
-class VectorGraph {
+public class VectorGraph {
 
     private final Map<Point, Vertex> graph; // mapping of vertex names to Vertex objects, built from a set of Edges
     private final static ArrayList<Point> path = new ArrayList<Point>(); // final way with the shortest distance
