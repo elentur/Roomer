@@ -123,10 +123,6 @@ public class RoomerRenderer extends RajawaliRenderer {
         light.setPosition(3, 3, 3);
         getCurrentScene().addLight(light2);
 
-
-
-
-
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
         getCurrentCamera().setFarPlane(CAMERA_FAR);
     }

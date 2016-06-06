@@ -46,7 +46,7 @@ public abstract class Point implements Serializable{
     }
 
     public String toString(){
-        return tag + "\n" + String.format("x: %.2f y: %.2f z: %.2f",position.x,position.y,position.z);
+        return tag + ": " + String.format("x: %.2f y: %.2f z: %.2f",position.x,position.y,position.z);
     }
 
 }
