@@ -49,4 +49,9 @@ public abstract class Point implements Serializable{
         return tag + "\n" + String.format("x: %.2f y: %.2f z: %.2f",position.x,position.y,position.z);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Point))return false;
+        return ((Point)o).getTag().equals(this.getTag());
+    }
 }

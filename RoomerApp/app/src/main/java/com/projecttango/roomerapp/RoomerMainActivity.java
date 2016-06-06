@@ -504,7 +504,11 @@ public class RoomerMainActivity extends Activity {
                             FRAME_PAIR = new TangoCoordinateFramePair(
                                     TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                                     TangoPoseData.COORDINATE_FRAME_DEVICE);
-                            points = db.loadPoints();
+                            try {
+                                points = db.loadPoints();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             renderPath();
 
 
@@ -537,11 +541,25 @@ public class RoomerMainActivity extends Activity {
      * This method reders the Path to the selected point.
      */
     private void renderPath(){
-        Point dest=null;
-        if(dest == null)dest= destinationDialog.getSelectedPoint();
+        Point dest=destinationDialog.getSelectedPoint();
 
+
+
+
+            for (Point p : points){
+                if (p.equals(dest)){
+                    dest = p;
+                    break;
+                }
+            }
+
+
+        Point savedDest  = dest;
         if (dest != null&&firstTimeloaded) {
-            firstTimeloaded=false;
+            if (savedDest.equals(dest)){
+                firstTimeloaded=false;
+            }else firstTimeloaded = true;
+
 
 
         Vector3 pos = new Vector3( mRenderer.getCurrentCamera().getPosition().x,
@@ -550,12 +568,12 @@ public class RoomerMainActivity extends Activity {
 
         //entire list will be rendered for testing, because of issues with the path calculation
 
-          //  mRenderer.setPoints(
-          //          VectorGraph.getPath(pos,
-          //                  dest,
-          //                  points)
-          //  );
-            mRenderer.setPoints(points);
+            mRenderer.setPoints(
+                    VectorGraph.getPath(pos,
+                            dest,
+                            points)
+            );
+           // mRenderer.setPoints(points);
 
         }
     }
