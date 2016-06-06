@@ -52,8 +52,13 @@ import com.projecttango.rajawali.renderables.Grid;
 import com.projecttango.tangosupport.TangoSupport;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.Stack;
+import java.util.TreeMap;
 
 /**
  * This class implements the rendering logic for the Motion Tracking application using Rajawali.
@@ -79,7 +84,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
 
     public boolean reloadList = false;
 
-    private HashMap<Object3D,Point> points = new HashMap<Object3D,Point>();
+    private LinkedHashMap<Object3D,Point> points = new LinkedHashMap<Object3D, Point>();
     public boolean reDraw = false;
 
     public boolean isRelocated = false;
@@ -89,6 +94,8 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
 
 
     private Material mSphereMaterial = new Material();
+    private boolean pointsClear =  false;
+
     { mSphereMaterial.enableLighting(true);
         mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
         mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());}
@@ -118,6 +125,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
         Grid grid = new Grid(100, 1, 1, 0xFFCCCCCC);
         grid.setPosition(0, -1.3f, 0);
         getCurrentScene().addChild(grid);
+
         DirectionalLight light = new DirectionalLight(1, 0.2, -1);
         light.setColor(1, 1, 1);
         light.setPower(0.8f);
@@ -142,22 +150,6 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
         getCurrentCamera().setFarPlane(CAMERA_FAR);
     }
 
-    public Bitmap textAsBitmap(String text) {// For later usage
-        Paint paint = new Paint();
-        paint.setTextSize(16);
-        paint.setColor(0x666666);
-        paint.setUnderlineText(true);
-        paint.setTextAlign(Paint.Align.CENTER);
-        int width = (int) (paint.measureText(text) + 0.5f); // round
-        float baseline = 10;//(int) (paint.ascent() + 0.5f);
-        int height = (int) (baseline + paint.descent() + 0.5f);
-        Log.d("DEBUGGER", width +"  " + height + " " + baseline);
-        Bitmap image = Bitmap.createBitmap(width,height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(image);
-        canvas.drawText(text, 0, baseline, paint);
-        return image;
-    }
-
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
         // Update the scene objects with the latest device position and orientation information.
@@ -169,6 +161,16 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
             }
             if(!addDestPoint){
                 addDestPoint();
+            }
+
+            if (pointsClear){
+                pointsClear=false;
+
+                getCurrentScene().clearChildren();
+                Grid grid = new Grid(100, 1, 1, 0xFFCCCCCC);
+                grid.setPosition(0, -1.3f, 0);
+                getCurrentScene().addChild(grid);
+
             }
 
             if(reDraw){
@@ -290,13 +292,22 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
     }
 
     public ArrayList<Point> getPoints(){
-        ArrayList<Point> p = new ArrayList<Point>();
-        for(Object3D o : points.keySet()){
-            p.add(points.get(o));
-        }
+        ArrayList<Point> p = new ArrayList<Point>( points.values());
+
+
         return p;
     }
 
+    public void clearPoints(){
+        pointsClear = true;
+        points.clear();
+        reDraw =true;
+        countDestPoints=0;
+        countNavPoints=0;
+        selectetPoint=null;
+        reloadList=true;
+
+    }
     public Point getSelectetPoint() {
         return selectetPoint;
     }
@@ -334,11 +345,5 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
         }
         reDraw=true;
 
-Vector3 pos = new Vector3();
-        Vector3 a = new Vector3();
-        Vector3 u = new Vector3();
-        double d = Vector3.crossAndCreate(
-                Vector3.subtractAndCreate(
-                        pos,a),u).absoluteValue().length()/ u.absoluteValue().length();
     }
 }
