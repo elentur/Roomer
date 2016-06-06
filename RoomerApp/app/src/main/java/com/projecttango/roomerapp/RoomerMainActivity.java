@@ -147,7 +147,7 @@ public class RoomerMainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_roomer);
-        Intent i = getIntent();
+        final Intent i = getIntent();
         uuid = i.getStringExtra("uuid");
 
         mRenderer = setupGLViewAndRenderer();
@@ -183,22 +183,31 @@ public class RoomerMainActivity extends Activity {
                     transaction.add(R.id.fragment_holder, icon_segment_fragment);
                     transaction.commit();
 
-                    int x = (int)motionEvent.getX();
-                    int y = (int)motionEvent.getY();
+                    Log.e("DEBUGGER","Down");
+                    return true;
+                }
+
+                if (motionEvent.getAction()==MotionEvent.ACTION_MOVE){
+
+                    int x = (int) motionEvent.getX();
+                    int y = (int) motionEvent.getY();
 
 
 
 
+                    Log.e("DEBUGGER","Move");
+                    return true;
 
-                    int[] arr=icon_segment_fragment.segDesMeasures(icon_segment_fragment.getSegDestinations());
-                    Log.d("DEBUGGER", "the measures" + Arrays.toString(arr));
-
-
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                }
+                if (motionEvent.getAction()==MotionEvent.ACTION_UP) {
 
                     fragmentManager.beginTransaction().remove(getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
+
+                    Log.e("DEBUGGER", "Up");
+                    return true;
                 }
                 return false;
+
             }
         });
 

@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 
 import com.projecttango.roomerapp.R;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -29,55 +30,44 @@ public class Icon_Segment_Fragment extends Fragment {
 
 
 
-    private ImageButton segDestinations;
+    public ImageButton segDestinations;
     private ImageButton segChangeBuilding;
     private ImageButton segFavorites;
     private ImageButton segRestroom;
     private ImageButton segEmergencyExit;
 
 
-
-
+    public Icon_Segment_Fragment(){}
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View icon_segment_fragment = inflater.inflate(R.layout.icon_segment_fragment,null);
 
         segDestinations = (ImageButton) icon_segment_fragment.findViewById(R.id.all_destinations);
-        segChangeBuilding = (ImageButton) icon_segment_fragment.findViewById(R.id.change_building);
-        segFavorites = (ImageButton) icon_segment_fragment.findViewById(R.id.show_favorites);
-        segRestroom = (ImageButton) icon_segment_fragment.findViewById(R.id.restrooms);
-        segEmergencyExit = (ImageButton) getActivity().findViewById(R.id.emergencyExit);
+
+
+        segDestinations.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+
+
+                return false;
+            }
+        });
+
+
+
 
         return icon_segment_fragment;
     }
 
-    public int[] segDesMeasures(ImageButton imagebutton) {
-        int[] measures = new int[6];
-        if (imagebutton!=null){
-
-
-            measures[0] = imagebutton.getTop();
-            measures[1] = imagebutton.getRight();
-            measures[2] = imagebutton.getLeft();
-            measures[3] = imagebutton.getBottom();
-            measures[4] = (int)imagebutton.getX();
-            measures[5] = (int)imagebutton.getY();
-
-            Log.d("DEBUGGER", Arrays.toString(measures));
-
-        }
 
 
 
-        return measures;
-    }
-
-    public ImageButton getSegDestinations() {
-        return segDestinations;
-    }
-
-    public void setSegDestinations(ImageButton segDestinations) {
-        this.segDestinations = segDestinations;
-    }
 }
+
+
+
+
+
