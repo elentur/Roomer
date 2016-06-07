@@ -75,7 +75,7 @@ public class Visualize {
                 scene.getCamera().getPosition().z);
 
         //remove waypoints that the camera has crossed
-        if (cp.distanceTo(points.get(0).getPosition()) < 1) {
+        if (cp.distanceTo(points.get(0).getPosition()) < 0.5) {
             points.remove(0);
         }
 
@@ -137,4 +137,7 @@ public class Visualize {
     }
 
 
+    public static void debugDraw(RajawaliScene currentScene, ArrayList<Point> allPoints) {
+
+    }
 }

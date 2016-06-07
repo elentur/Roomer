@@ -81,6 +81,8 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     public ArrayList<Point> points = new ArrayList<Point>();
     private boolean reDraw = false;
+    public boolean isDebug =false;
+    private ArrayList<Point> allPoints = new ArrayList<Point>();
 
     public RoomerRenderer(Context context) {
         super(context);
@@ -130,7 +132,12 @@ public class RoomerRenderer extends RajawaliRenderer {
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
         try{
-            if(reDraw)Visualize.draw(getCurrentScene());
+            if(reDraw){
+                Visualize.draw(getCurrentScene());
+                if(isDebug){
+                    Visualize.debugDraw(getCurrentScene(), allPoints );
+                }
+            }
         }catch (Exception e){
 
         }
@@ -198,5 +205,9 @@ public class RoomerRenderer extends RajawaliRenderer {
         this.points = points;
         Visualize.setPoints(points);
         reDraw =true;
+    }
+
+    public void setAllPoints(ArrayList<Point> points) {
+        allPoints = points;
     }
 }

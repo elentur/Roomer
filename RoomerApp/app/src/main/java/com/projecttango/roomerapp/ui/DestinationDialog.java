@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -35,6 +36,12 @@ public class DestinationDialog extends DialogFragment  {
     private DestinationPoint selectedPoint = null;
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        accept.setEnabled(false);
+        destinationPoints.clearChoices();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,7 +84,7 @@ public class DestinationDialog extends DialogFragment  {
             public void onClick(View view) {
 
 
-                selectedPoint = (DestinationPoint) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
+               if(destinationPoints.getCheckedItemPosition()>-1) selectedPoint = (DestinationPoint) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
                 //setSelectedPoint(selectedPoint);
                 dismiss();
 
@@ -85,6 +92,13 @@ public class DestinationDialog extends DialogFragment  {
             }
         });
 
+        destinationPoints.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                accept.setEnabled(destinationPoints.getCheckedItemPosition()>-1);
+            }
+        });
         // listener for the cancel button
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +107,7 @@ public class DestinationDialog extends DialogFragment  {
             }
 
         });
+
 
         return destinationDialogView;
     }

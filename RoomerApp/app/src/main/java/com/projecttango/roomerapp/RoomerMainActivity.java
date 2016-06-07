@@ -140,6 +140,7 @@ public class RoomerMainActivity extends Activity {
      * Checks if the
      */
     private boolean firstTimeloaded = false;
+    private boolean isDebug = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,7 +214,6 @@ public class RoomerMainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 destinationDialog.show(fragmentManager,"Ziele");
-                firstTimeloaded = true;
                 if (points.size()>0){
                     destinationDialog.connectAdapter(points);
                 }
@@ -560,6 +560,7 @@ public class RoomerMainActivity extends Activity {
                         mRenderer.getCurrentCamera().getPosition().y - 1,
                         mRenderer.getCurrentCamera().getPosition().z);
 
+                mRenderer.setAllPoints(points);
                 mRenderer.setPoints(
                         VectorGraph.getPath(pos,
                                 dest,
@@ -645,5 +646,8 @@ public class RoomerMainActivity extends Activity {
         }
     };
 
-
+    public void setDebug(View view){
+        isDebug = !isDebug;
+        mRenderer.isDebug = isDebug;
+    }
 }
