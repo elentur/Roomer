@@ -167,7 +167,6 @@ public class RoomerMainActivity extends Activity {
 
         // Destination Dialog
         thumbButton = (ImageButton) findViewById(R.id.thumb_button);
-        destinationButton = (Button) findViewById(R.id.zielButton);
 
         thumbButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
