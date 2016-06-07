@@ -407,10 +407,13 @@ public class RoomerMainActivity extends Activity {
                                     break;
                                 }
                             }
-
+Vector3 pos = new Vector3(
+        mRenderer.getCurrentCamera().getPosition().x,
+        mRenderer.getCurrentCamera().getPosition().y-1,
+        mRenderer.getCurrentCamera().getPosition().z);
                             mRenderer.setPoints(
                                     VectorGraph.getPath(
-                                            mRenderer.getCurrentCamera().getPosition(),
+                                            pos,
                                             dest,
                                             points)
                             );
