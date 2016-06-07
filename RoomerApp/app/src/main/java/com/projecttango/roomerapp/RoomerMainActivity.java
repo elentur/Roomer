@@ -127,7 +127,7 @@ public class RoomerMainActivity extends Activity {
     private ImageButton thumbButton;
 
     final FragmentManager fragmentManager  = getFragmentManager();
-
+    private boolean countClicks = false;
 
 
     /**
@@ -139,7 +139,7 @@ public class RoomerMainActivity extends Activity {
     /**
      * Checks if the
      */
-    private boolean firstTimeloaded = true;
+    private boolean firstTimeloaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,38 +171,36 @@ public class RoomerMainActivity extends Activity {
         thumbButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                Log.e("DEBUGGER","methodcall");
+
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 Icon_Segment_Fragment icon_segment_fragment = new Icon_Segment_Fragment();
 
 
-
                 if (motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
+                    Log.e("DEBUGGER","down");
 
-                    transaction.add(R.id.fragment_holder, icon_segment_fragment);
-                    transaction.commit();
+                    if (countClicks==false){
 
-                    Log.e("DEBUGGER","Down");
-                    return true;
-                }
+                        transaction.add(R.id.fragment_holder, icon_segment_fragment);
+                        transaction.commit();
+                        thumbButton.isActivated();
+                        thumbButton.setImageResource(R.drawable.thumb_button_segment4_main);
+                        countClicks = true;
+                        Log.e("DEBUGGER","on");
+                        return true;
+                    }
 
-                if (motionEvent.getAction()==MotionEvent.ACTION_MOVE){
-
-                    int x = (int) motionEvent.getX();
-                    int y = (int) motionEvent.getY();
+                    if (countClicks = true) {
 
 
+                        fragmentManager.beginTransaction().remove(getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
+                        thumbButton.setImageResource(R.drawable.thumb_button_segment3_main);
+                        countClicks = false;
+                        Log.e("DEBUGGER","off");
+                        return true;
+                    }
 
-
-                    Log.e("DEBUGGER","Move");
-                    return true;
-
-                }
-                if (motionEvent.getAction()==MotionEvent.ACTION_UP) {
-
-                    fragmentManager.beginTransaction().remove(getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
-
-                    Log.e("DEBUGGER", "Up");
-                    return true;
                 }
                 return false;
 
@@ -215,6 +213,7 @@ public class RoomerMainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 destinationDialog.show(fragmentManager,"Ziele");
+                firstTimeloaded = true;
                 if (points.size()>0){
                     destinationDialog.connectAdapter(points);
                 }
@@ -540,40 +539,34 @@ public class RoomerMainActivity extends Activity {
      * This method reders the Path to the selected point.
      */
     private void renderPath(){
-        Point dest=destinationDialog.getSelectedPoint();
 
 
+        Point dest = null;
 
+        if (dest == null )dest = destinationDialog.getSelectedPoint();
+        {
 
-            for (Point p : points){
-                if (p.equals(dest)){
-                    dest = p;
-                    break;
+            if (dest != null && firstTimeloaded) {
+                firstTimeloaded = false;
+
+                for (Point p : points) {
+                    if (p.equals(dest)) {
+                        dest = p;
+                        break;
+                    }
                 }
+
+                Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
+                        mRenderer.getCurrentCamera().getPosition().y - 1,
+                        mRenderer.getCurrentCamera().getPosition().z);
+
+                mRenderer.setPoints(
+                        VectorGraph.getPath(pos,
+                                dest,
+                                points)
+                );
+
             }
-
-
-        Point savedDest  = dest;
-        if (dest != null&&firstTimeloaded) {
-            if (savedDest.equals(dest)){
-                firstTimeloaded=false;
-            }else firstTimeloaded = true;
-
-
-
-        Vector3 pos = new Vector3( mRenderer.getCurrentCamera().getPosition().x,
-                mRenderer.getCurrentCamera().getPosition().y-1,
-                mRenderer.getCurrentCamera().getPosition().z);
-
-        //entire list will be rendered for testing, because of issues with the path calculation
-
-            mRenderer.setPoints(
-                    VectorGraph.getPath(pos,
-                            dest,
-                            points)
-            );
-           // mRenderer.setPoints(points);
-
         }
     }
 
