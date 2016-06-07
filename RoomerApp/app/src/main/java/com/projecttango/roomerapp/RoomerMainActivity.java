@@ -122,7 +122,7 @@ public class RoomerMainActivity extends Activity {
      * The DestinationDialog component of the View. The Dialog provides the selection
      * of destinations.
      */
-    private DestinationDialog destinationDialog;
+    private DestinationDialog destinationDialog = new DestinationDialog();
     private Button destinationButton;
     private ImageButton thumbButton;
 
@@ -183,7 +183,7 @@ public class RoomerMainActivity extends Activity {
 
                         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 
-                            destinationDialog = new DestinationDialog();
+
 
                             destinationDialog.show(fragmentManager, "Ziele");
                             firstTimeloaded = true;
@@ -543,12 +543,15 @@ public class RoomerMainActivity extends Activity {
     private void renderPath(){
 
 
+
+
         Point dest = null;
 
         if (dest == null )dest = destinationDialog.getSelectedPoint();
         {
 
             if (dest != null && firstTimeloaded) {
+                Visualize.clear(mRenderer.getCurrentScene());
                 firstTimeloaded = false;
 
                 for (Point p : points) {

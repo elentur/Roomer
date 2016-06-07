@@ -36,7 +36,7 @@ public class Icon_Segment_Fragment extends Fragment {
     private ImageButton segFavorites;
     private ImageButton segRestroom;
     private ImageButton segEmergencyExit;
-    public boolean isCreated =false;
+
     private View.OnTouchListener listener = null;
 
 

@@ -84,7 +84,7 @@ public class DestinationDialog extends DialogFragment  {
             public void onClick(View view) {
 
 
-               if(destinationPoints.getCheckedItemPosition()>-1) selectedPoint = (DestinationPoint) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
+                selectedPoint = (DestinationPoint) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
                 //setSelectedPoint(selectedPoint);
                 dismiss();
 
