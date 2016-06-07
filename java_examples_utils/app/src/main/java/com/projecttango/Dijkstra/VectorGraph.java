@@ -7,7 +7,8 @@ import org.rajawali3d.math.vector.Vector3;
 import java.util.*;
 
 /**
- * Created by roberto on 05.06.16.
+ * Created by
+ * Robert Dziuba on 05.06.16.
  */
 public class VectorGraph {
 
