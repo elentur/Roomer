@@ -37,16 +37,6 @@
             android:textSize="50dp"
             android:textIsSelectable="true"
             android:layout_centerInParent="true" />
-
-        <Button
-            android:id="@+id/zielButton"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:text="@string/zielbutton"
-            android:layout_marginTop="350dp"
-            android:layout_marginLeft="30dp"
-            android:padding="20dp"/>
-
         <Button
             android:id="@+id/btnDebug"
             android:layout_width="wrap_content"
