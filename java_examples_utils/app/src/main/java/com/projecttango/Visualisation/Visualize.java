@@ -41,6 +41,7 @@ public class Visualize {
 
     /**
      * Sets the Points of a calculated NavPath
+     *
      * @param points An sorted ArrayList of Points that represents the NavPath. At 0 is start
      *               at point.size()-1 ist destination
      */
@@ -57,6 +58,7 @@ public class Visualize {
     /**
      * This Methode actualize a given scene with a visualization of the Nav path from user
      * position to destination if the NavPath is set
+     *
      * @param scene The Rajawali scene where the visualization has to be added
      */
     public static void draw(RajawaliScene scene) {
@@ -118,6 +120,15 @@ public class Visualize {
 
     }
 
+    public static void clear(RajawaliScene scene) {
+        points.clear();
+        //Save the Backscreenquad
+        ScreenQuad sq = (ScreenQuad) scene.getChildrenCopy().get(0);
+        //Clear all Elements from Scene
+        scene.clearChildren();
+        //Add the Backscreenquad back again
+        scene.addChildAt(sq, 0);
+    }
 
     public static void main(String[] args) {
         //Test Method

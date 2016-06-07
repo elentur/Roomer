@@ -19,6 +19,7 @@ public class StartActivity extends Activity {
     private Tango mTango;
     private ListView lstView;
     private ArrayAdapter<String> adapter;
+
     ArrayList<String> fullUuidList;
 
     @Override

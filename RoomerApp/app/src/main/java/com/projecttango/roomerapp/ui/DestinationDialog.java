@@ -51,7 +51,7 @@ public class DestinationDialog extends DialogFragment  {
 
         adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialog);
         destinationPoints.setAdapter(adapter);
-
+        selectedPoint = null;
         searchView.setQueryHint("Search..");
 
 
@@ -78,7 +78,7 @@ public class DestinationDialog extends DialogFragment  {
 
 
                 selectedPoint = (DestinationPoint) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
-                setSelectedPoint(selectedPoint);
+                //setSelectedPoint(selectedPoint);
                 dismiss();
 
 

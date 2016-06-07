@@ -218,6 +218,9 @@ public class RoomerMainActivity extends Activity {
                 if (points.size()>0){
                     destinationDialog.connectAdapter(points);
                 }
+                Visualize.clear(mRenderer.getCurrentScene());
+                firstTimeloaded = true;
+
 
             }
         });
