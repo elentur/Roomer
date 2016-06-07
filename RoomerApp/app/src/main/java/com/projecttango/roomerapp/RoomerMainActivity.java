@@ -184,7 +184,7 @@ public class RoomerMainActivity extends Activity {
                         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 
 
-
+                           mRenderer.clear=true;
                             destinationDialog.show(fragmentManager, "Ziele");
                             firstTimeloaded = true;
                             if (points.size() > 0) {
@@ -506,6 +506,7 @@ public class RoomerMainActivity extends Activity {
                                     TangoPoseData.COORDINATE_FRAME_DEVICE);
                             try {
                                 points = db.loadPoints();
+                                mRenderer.setAllPoints(points);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -551,7 +552,7 @@ public class RoomerMainActivity extends Activity {
         {
 
             if (dest != null && firstTimeloaded) {
-                Visualize.clear(mRenderer.getCurrentScene());
+
                 firstTimeloaded = false;
 
                 for (Point p : points) {
@@ -565,7 +566,7 @@ public class RoomerMainActivity extends Activity {
                         mRenderer.getCurrentCamera().getPosition().y - 1,
                         mRenderer.getCurrentCamera().getPosition().z);
 
-                mRenderer.setAllPoints(points);
+
                 mRenderer.setPoints(
                         VectorGraph.getPath(pos,
                                 dest,
@@ -654,5 +655,8 @@ public class RoomerMainActivity extends Activity {
     public void setDebug(View view){
         isDebug = !isDebug;
         mRenderer.isDebug = isDebug;
+        mRenderer.debugRerender = true;
+        Log.d("DEBUGGER","Debugging:" +isDebug);
+
     }
 }

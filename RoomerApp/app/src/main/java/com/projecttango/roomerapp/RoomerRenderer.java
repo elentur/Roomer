@@ -83,6 +83,8 @@ public class RoomerRenderer extends RajawaliRenderer {
     private boolean reDraw = false;
     public boolean isDebug =false;
     private ArrayList<Point> allPoints = new ArrayList<Point>();
+    public boolean debugRerender = false;
+    public boolean clear = false;
 
     public RoomerRenderer(Context context) {
         super(context);
@@ -127,19 +129,35 @@ public class RoomerRenderer extends RajawaliRenderer {
 
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
         getCurrentCamera().setFarPlane(CAMERA_FAR);
+        Visualize.init(getCurrentScene());
     }
 
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
         try{
+            if(clear){
+                clear = false;
+                reDraw=false;
+                Log.d("DEBUGGER","Clear Scene");
+                Visualize.clear(getCurrentScene());
+
+            }
             if(reDraw){
+                //Log.d("DEBUGGER","redraw");
                 Visualize.draw(getCurrentScene());
-                if(isDebug){
-                    Visualize.debugDraw(getCurrentScene(), allPoints );
-                }
+            }
+
+            if(isDebug && debugRerender){
+
+                Log.d("DEBUGGER","Try to DebugRender");
+                debugRerender=false;
+                Visualize.debugDraw( allPoints );
+            }else if(!isDebug && debugRerender){
+                debugRerender=false;
+                Visualize.debugClear();
             }
         }catch (Exception e){
-
+            Log.e("DEBUGGER",e.getMessage());
         }
 
         // Perform the actual OpenGL rendering of the updated objects
