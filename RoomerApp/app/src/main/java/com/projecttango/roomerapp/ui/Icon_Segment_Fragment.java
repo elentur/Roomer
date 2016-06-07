@@ -1,6 +1,7 @@
 package com.projecttango.roomerapp.ui;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -35,9 +36,12 @@ public class Icon_Segment_Fragment extends Fragment {
     private ImageButton segFavorites;
     private ImageButton segRestroom;
     private ImageButton segEmergencyExit;
+    public boolean isCreated =false;
+    private View.OnTouchListener listener = null;
 
 
-    public Icon_Segment_Fragment(){}
+    public Icon_Segment_Fragment(){
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -45,24 +49,16 @@ public class Icon_Segment_Fragment extends Fragment {
 
         segDestinations = (ImageButton) icon_segment_fragment.findViewById(R.id.all_destinations);
 
-
-        segDestinations.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-
-
-                return false;
-            }
-        });
-
-
-
+       if(listener != null) segDestinations.setOnTouchListener(listener);
 
         return icon_segment_fragment;
     }
 
 
+    public void setDestinationDialogListener(View.OnTouchListener listener){
+        this.listener =listener;
+        if(segDestinations != null) segDestinations.setOnTouchListener(listener);
+    }
 
 
 }

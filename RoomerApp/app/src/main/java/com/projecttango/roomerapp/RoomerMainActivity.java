@@ -179,6 +179,24 @@ public class RoomerMainActivity extends Activity {
                 Icon_Segment_Fragment icon_segment_fragment = new Icon_Segment_Fragment();
 
 
+                icon_segment_fragment.setDestinationDialogListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                        if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+
+                            destinationDialog = new DestinationDialog();
+
+                            destinationDialog.show(fragmentManager, "Ziele");
+                            firstTimeloaded = true;
+                            if (points.size() > 0) {
+                                destinationDialog.connectAdapter(points);
+                            }
+                        }
+                        return false;
+                    }
+                });
+
                 if (motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
                     Log.e("DEBUGGER","down");
 
@@ -190,6 +208,8 @@ public class RoomerMainActivity extends Activity {
                         thumbButton.setImageResource(R.drawable.thumb_button_segment4_main);
                         countClicks = true;
                         Log.e("DEBUGGER","on");
+
+
                         return true;
                     }
 
@@ -208,21 +228,6 @@ public class RoomerMainActivity extends Activity {
 
             }
         });
-
-
-        destinationDialog = new DestinationDialog();
-        destinationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                destinationDialog.show(fragmentManager,"Ziele");
-                firstTimeloaded = true;
-                if (points.size()>0){
-                    destinationDialog.connectAdapter(points);
-                }
-
-            }
-        });
-
 
     }
 
@@ -467,6 +472,11 @@ public class RoomerMainActivity extends Activity {
                                 final String showString = getString(R.string.tryToLocate) + s;
                                 txtLocalized.setText(showString);
                             }
+
+
+
+                            //////////
+
 
                         }
                     });
