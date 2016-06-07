@@ -17,10 +17,24 @@
 package com.projecttango.roomerapp;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,18 +44,33 @@ import com.google.atap.tango.ux.UxExceptionEvent;
 import com.google.atap.tango.ux.UxExceptionEventListener;
 import com.google.atap.tangoservice.*;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
+import com.google.atap.tangoservice.TangoCameraIntrinsics;
+import com.google.atap.tangoservice.TangoConfig;
+import com.google.atap.tangoservice.TangoCoordinateFramePair;
+import com.google.atap.tangoservice.TangoErrorException;
+import com.google.atap.tangoservice.TangoEvent;
+import com.google.atap.tangoservice.TangoOutOfDateException;
+import com.google.atap.tangoservice.TangoPoseData;
+import com.google.atap.tangoservice.TangoXyzIjData;
 import com.projecttango.DataStructure.DestinationPoint;
+import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
+import com.projecttango.rajawali.renderables.primitives.Points;
+import com.projecttango.roomerapp.ui.DestinationDialog;
+import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -56,7 +85,6 @@ public class RoomerMainActivity extends Activity {
     private static final double UPDATE_INTERVAL_MS = 100.0;
 
     private double mXyIjPreviousTimeStamp;
-    ;
     private double mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
     private Tango mTango;
@@ -66,7 +94,6 @@ public class RoomerMainActivity extends Activity {
     private final Object mSharedLock = new Object();
     private boolean mIsRelocalized;
 
-    private boolean mIsPointsLoad;
 
     private AtomicBoolean mIsConnected = new AtomicBoolean(false);
 
@@ -90,14 +117,35 @@ public class RoomerMainActivity extends Activity {
     private static final int INVALID_TEXTURE_ID = 0;
     private int mConnectedTextureIdGlThread = INVALID_TEXTURE_ID;
 
-    // Handles the debug text UI update loop.
 
+    /**
+     * The DestinationDialog component of the View. The Dialog provides the selection
+     * of destinations.
+     */
+    private DestinationDialog destinationDialog;
+    private Button destinationButton;
+    private ImageButton thumbButton;
+
+    final FragmentManager fragmentManager  = getFragmentManager();
+
+
+
+    /**
+     * Holds all points loaded from the database.
+     */
+    private ArrayList<Point> points = new ArrayList<Point>();
+
+
+    /**
+     * Checks if the
+     */
+    private boolean firstTimeloaded = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_roomer);
-        Intent i = getIntent();
+        final Intent i = getIntent();
         uuid = i.getStringExtra("uuid");
 
         mRenderer = setupGLViewAndRenderer();
@@ -112,6 +160,68 @@ public class RoomerMainActivity extends Activity {
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
                     .show();
         }
+
+
+        //UI
+
+        // Destination Dialog
+        thumbButton = (ImageButton) findViewById(R.id.thumb_button);
+        destinationButton = (Button) findViewById(R.id.zielButton);
+
+        thumbButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                Icon_Segment_Fragment icon_segment_fragment = new Icon_Segment_Fragment();
+
+
+
+                if (motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
+
+                    transaction.add(R.id.fragment_holder, icon_segment_fragment);
+                    transaction.commit();
+
+                    Log.e("DEBUGGER","Down");
+                    return true;
+                }
+
+                if (motionEvent.getAction()==MotionEvent.ACTION_MOVE){
+
+                    int x = (int) motionEvent.getX();
+                    int y = (int) motionEvent.getY();
+
+
+
+
+                    Log.e("DEBUGGER","Move");
+                    return true;
+
+                }
+                if (motionEvent.getAction()==MotionEvent.ACTION_UP) {
+
+                    fragmentManager.beginTransaction().remove(getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
+
+                    Log.e("DEBUGGER", "Up");
+                    return true;
+                }
+                return false;
+
+            }
+        });
+
+
+        destinationDialog = new DestinationDialog();
+        destinationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                destinationDialog.show(fragmentManager,"Ziele");
+                if (points.size()>0){
+                    destinationDialog.connectAdapter(points);
+                }
+
+            }
+        });
+
 
     }
 
@@ -385,42 +495,22 @@ public class RoomerMainActivity extends Activity {
                             .COORDINATE_FRAME_START_OF_SERVICE) {
                         mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
 
-                        if (mIsRelocalized && !mIsPointsLoad) {
-                            mIsPointsLoad = true;
+                        if (mIsRelocalized) {
 
                             FRAME_PAIR = new TangoCoordinateFramePair(
                                     TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                                     TangoPoseData.COORDINATE_FRAME_DEVICE);
-
-                            ArrayList<Point> points = null;
-
                             try {
                                 points = db.loadPoints();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            Point dest = null;
+                            renderPath();
 
-                            for (Point p : points) {
-                                if (p instanceof DestinationPoint) {
-                                    dest = p;
-                                    break;
-                                }
-                            }
-Vector3 pos = new Vector3(
-        mRenderer.getCurrentCamera().getPosition().x,
-        mRenderer.getCurrentCamera().getPosition().y-1,
-        mRenderer.getCurrentCamera().getPosition().z);
-                            mRenderer.setPoints(
-                                    VectorGraph.getPath(
-                                            pos,
-                                            dest,
-                                            points)
-                            );
+
                         }
 
                     }
-
 
                 }
             }
@@ -440,6 +530,48 @@ Vector3 pos = new Vector3(
         });
         mExtrinsics = setupExtrinsics(mTango);
         mIntrinsics = mTango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
+    }
+
+
+    /**
+     * This method reders the Path to the selected point.
+     */
+    private void renderPath(){
+        Point dest=destinationDialog.getSelectedPoint();
+
+
+
+
+            for (Point p : points){
+                if (p.equals(dest)){
+                    dest = p;
+                    break;
+                }
+            }
+
+
+        Point savedDest  = dest;
+        if (dest != null&&firstTimeloaded) {
+            if (savedDest.equals(dest)){
+                firstTimeloaded=false;
+            }else firstTimeloaded = true;
+
+
+
+        Vector3 pos = new Vector3( mRenderer.getCurrentCamera().getPosition().x,
+                mRenderer.getCurrentCamera().getPosition().y-1,
+                mRenderer.getCurrentCamera().getPosition().z);
+
+        //entire list will be rendered for testing, because of issues with the path calculation
+
+            mRenderer.setPoints(
+                    VectorGraph.getPath(pos,
+                            dest,
+                            points)
+            );
+           // mRenderer.setPoints(points);
+
+        }
     }
 
 
