@@ -1,4 +1,6 @@
 package com.projecttango.Dijkstra;
+import android.util.Log;
+
 import com.projecttango.DataStructure.Point;
 
 
@@ -18,10 +20,17 @@ public class VectorGraph {
     private final static ArrayList<Point> path = new ArrayList<Point>();
 
     public static ArrayList<Point> getPath(Vector3 pos,Point end, ArrayList<Point> pointList) {
+
         VectorGraph g = new VectorGraph(pointList);
         Point start = g.findNearestStartPoint(pos);
+
         g.dijkstra(start);
         g.printPath(end);
+
+        Log.d("DEBUGGER","start:" + start);
+        Log.d("DEBUGGER","params:" + "POS:" + pos +"END:" + end + "pointlist" + pointList);
+        Log.d("DEBUGGER","path:" + path );
+
         return path;
     }
 

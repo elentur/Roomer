@@ -37,6 +37,15 @@
             android:textIsSelectable="true"
             android:layout_centerInParent="true" />
 
+        <Button
+            android:id="@+id/zielButton"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:text="@string/zielbutton"
+            android:layout_marginTop="310dp"
+            android:layout_marginLeft="800dp"
+            android:padding="20dp"/>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

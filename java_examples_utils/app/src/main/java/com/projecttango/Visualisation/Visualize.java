@@ -32,6 +32,7 @@ public class Visualize {
         material2.setColor(Color.GREEN);
         material2.enableLighting(true);
 
+
         material1.setDiffuseMethod(new DiffuseMethod.Lambert());
         material1.setSpecularMethod(new SpecularMethod.Phong());
         material1.setColor(Color.YELLOW);
