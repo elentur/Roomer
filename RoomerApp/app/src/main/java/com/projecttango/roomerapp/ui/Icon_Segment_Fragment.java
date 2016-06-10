@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -17,16 +18,12 @@ import com.projecttango.roomerapp.R;
  */
 public class Icon_Segment_Fragment extends Fragment {
 
-    private Handler handler;
 
-
-
-    public ImageButton segDestinations;
-    private ImageButton segChangeBuilding;
+    public static ImageButton segDestinations;
+    public static ImageButton segChangeBuilding;
     private ImageButton segFavorites;
     private ImageButton segRestroom;
     private ImageButton segEmergencyExit;
-
     private View.OnTouchListener listener = null;
 
 
@@ -43,17 +40,44 @@ public class Icon_Segment_Fragment extends Fragment {
         segRestroom = (ImageButton) icon_segment_fragment.findViewById(R.id.restrooms);
         segEmergencyExit = (ImageButton) icon_segment_fragment.findViewById(R.id.emergencyExit);
 
-       if(listener != null) segDestinations.setOnTouchListener(listener);
-
+        if(listener != null) segDestinations.setOnTouchListener(listener);
 
         return icon_segment_fragment;
     }
 
-
     public void setDestinationDialogListener(View.OnTouchListener listener){
         this.listener =listener;
+
         if(segDestinations != null) segDestinations.setOnTouchListener(listener);
+
     }
+
+    public void setChangeBuildingListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segChangeBuilding !=null) segChangeBuilding.setOnTouchListener(listener);
+    }
+
+    public void setFavoritesListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segFavorites !=null) segFavorites.setOnTouchListener(listener);
+
+    }
+
+    public void setRestroomListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segRestroom !=null) segRestroom.setOnTouchListener(listener);
+
+    }
+    public void setEmergenyExitListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segEmergencyExit !=null) segEmergencyExit.setOnTouchListener(listener);
+
+    }
+
 
 
 }

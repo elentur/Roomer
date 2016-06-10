@@ -1,25 +1,15 @@
 package com.projecttango.roomerapp.ui;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.atap.tango.ux.TangoUx;
 import com.google.atap.tango.ux.TangoUxLayout;
-import com.projecttango.DataStructure.Point;
-import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.Exceptions.RoomerUxExceptionEventListener;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
 import com.projecttango.roomerapp.RoomerRenderer;
-
-import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import com.projecttango.roomerapp.ui.listener.ThumbOnTouchListener;
 
 /**
  * Created by Marcus Bätz on 09.06.2016.
