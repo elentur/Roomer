@@ -1,26 +1,14 @@
 package com.projecttango.roomerapp.ui;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
+import android.os.Handler;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-
 import com.projecttango.roomerapp.R;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * This Fragment holds the logic for the icon segments which are active when the thumb button
@@ -28,6 +16,8 @@ import java.util.Arrays;
  * Created by Julian Dobrot on 05.06.2016.
  */
 public class Icon_Segment_Fragment extends Fragment {
+
+    private Handler handler;
 
 
 
@@ -48,8 +38,13 @@ public class Icon_Segment_Fragment extends Fragment {
         final View icon_segment_fragment = inflater.inflate(R.layout.icon_segment_fragment,null);
 
         segDestinations = (ImageButton) icon_segment_fragment.findViewById(R.id.all_destinations);
+        segChangeBuilding = (ImageButton) icon_segment_fragment.findViewById(R.id.change_building);
+        segFavorites = (ImageButton) icon_segment_fragment.findViewById(R.id.show_favorites);
+        segRestroom = (ImageButton) icon_segment_fragment.findViewById(R.id.restrooms);
+        segEmergencyExit = (ImageButton) icon_segment_fragment.findViewById(R.id.emergencyExit);
 
        if(listener != null) segDestinations.setOnTouchListener(listener);
+
 
         return icon_segment_fragment;
     }
