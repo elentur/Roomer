@@ -152,7 +152,7 @@ public class DestinationDialog extends DialogFragment  {
     }
 
     /**
-     * This method reders the Path to the selected point.
+     * This method renders the Path to the selected point.
      */
 
     public void renderPath(){
