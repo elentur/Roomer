@@ -64,27 +64,20 @@ public class RoomerRenderer extends RajawaliRenderer {
     private static final float CAMERA_NEAR = 0.01f;
     private static final float CAMERA_FAR = 200f;
 
-    // Latest available device pose;
-    private Pose mDevicePose = new Pose(Vector3.ZERO, Quaternion.getIdentity());
-    private boolean mPoseUpdated = false;
-  
     // The current screen rotation index. The index value follow the Android surface rotation enum:
     // http://developer.android.com/reference/android/view/Surface.html#ROTATION_0
-    private int mCurrentScreenRotation = 0;
 
-    private boolean addNavPoint =true;
-    private boolean addDestPoint =true;
-    private int countDestPoints = 0;
-    private int countNavPoints =0;
-
-    public boolean reloadList = false;
 
     public ArrayList<Point> points = new ArrayList<Point>();
     private boolean reDraw = false;
-    public boolean isDebug =false;
+    public boolean isDebug = false;
     private ArrayList<Point> allPoints = new ArrayList<Point>();
     public boolean debugRerender = false;
     public boolean clear = false;
+
+    private long timeStamp = 0;
+    private long fps = 0;
+    public int globalFPS = 0;
 
     public RoomerRenderer(Context context) {
         super(context);
@@ -95,7 +88,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     // Keeps track of whether the scene camera has been configured
     private boolean mSceneCameraConfigured;
-  
+
     @Override
     protected void initScene() {
 
@@ -129,35 +122,49 @@ public class RoomerRenderer extends RajawaliRenderer {
 
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
         getCurrentCamera().setFarPlane(CAMERA_FAR);
+
+
         Visualize.init(getCurrentScene());
+
+        timeStamp = System.currentTimeMillis();
     }
 
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
-        try{
-            if(clear){
+
+        //For debug representation of framerate
+            fps++;
+            globalFPS = (int) (fps / ((System.currentTimeMillis() - timeStamp) / 1000.0));
+            if (fps > 1000) {
+                fps = 0;
+                timeStamp = System.currentTimeMillis();
+            }
+
+        try {
+            //Clear Scene
+            if (clear) {
                 clear = false;
-                reDraw=false;
-                Log.d("DEBUGGER","Clear Scene");
+                reDraw = false;
                 Visualize.clear(getCurrentScene());
 
             }
-            if(reDraw){
+            //Redraw Scene
+            if (reDraw) {
                 //Log.d("DEBUGGER","redraw");
                 Visualize.draw(getCurrentScene());
             }
 
-            if(isDebug && debugRerender){
+            if (isDebug && debugRerender) {
 
-                Log.d("DEBUGGER","Try to DebugRender");
-                debugRerender=false;
-                Visualize.debugDraw( allPoints );
-            }else if(!isDebug && debugRerender){
-                debugRerender=false;
+                debugRerender = false;
+                Visualize.debugDraw(allPoints);
+            } else if (!isDebug && debugRerender) {
+                debugRerender = false;
                 Visualize.debugClear();
             }
-        }catch (Exception e){
-            Log.e("DEBUGGER",e.getMessage());
+
+        } catch (Exception e) {
+            Log.e("DEBUGGER", e.getMessage());
         }
 
         // Perform the actual OpenGL rendering of the updated objects
@@ -166,7 +173,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     @Override
     public void onOffsetsChanged(float v, float v1, float v2, float v3, int i, int i1) {
-      // Unused, but needs to be declared to adhere to the IRajawaliSurfaceRenderer interface.
+        // Unused, but needs to be declared to adhere to the IRajawaliSurfaceRenderer interface.
     }
 
     /**
@@ -193,10 +200,12 @@ public class RoomerRenderer extends RajawaliRenderer {
                 intrinsics.fx, intrinsics.fy, intrinsics.cx, intrinsics.cy);
         getCurrentCamera().setProjectionMatrix(projectionMatrix);
     }
+
     @Override
     public void onTouchEvent(MotionEvent motionEvent) {
-      // Unused, but needs to be declared to adhere to the IRajawaliSurfaceRenderer interface.
+        // Unused, but needs to be declared to adhere to the IRajawaliSurfaceRenderer interface.
     }
+
     /**
      * Update the scene camera based on the provided pose in Tango start of service frame.
      * The device pose should match the pose of the device at the time the last rendered RGB
@@ -208,6 +217,7 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentCamera().setRotation(cameraPose.getOrientation());
         getCurrentCamera().setPosition(cameraPose.getPosition());
     }
+
     /**
      * It returns the ID currently assigned to the texture where the Tango color camera contents
      * should be rendered.
@@ -222,7 +232,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
         this.points = points;
         Visualize.setPoints(points);
-        reDraw =true;
+        reDraw = true;
     }
 
     public void setAllPoints(ArrayList<Point> points) {
