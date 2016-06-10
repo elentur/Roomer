@@ -12,8 +12,13 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.R;
+import com.projecttango.roomerapp.RoomerRenderer;
 
+
+import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.renderer.RajawaliRenderer;
 
 import java.util.ArrayList;
 
@@ -34,6 +39,8 @@ public class DestinationDialog extends DialogFragment  {
     private static ArrayAdapter<Point> adapter;
     private ArrayList<Point> pointsDialog = new ArrayList<Point>();
     private DestinationPoint selectedPoint = null;
+    private ArrayList<Point> allPoints;
+
 
 
     @Override
@@ -86,6 +93,7 @@ public class DestinationDialog extends DialogFragment  {
 
                 selectedPoint = (DestinationPoint) destinationPoints.getAdapter().getItem(destinationPoints.getCheckedItemPosition());
                 //setSelectedPoint(selectedPoint);
+                renderPath();
                 dismiss();
 
 
@@ -125,7 +133,7 @@ public class DestinationDialog extends DialogFragment  {
      * @param list
      */
     public void connectAdapter(ArrayList<Point> list) {
-
+        allPoints = list;
         pointsDialog.clear();
 
         for (Point p : list){
@@ -143,4 +151,29 @@ public class DestinationDialog extends DialogFragment  {
                 '}';
     }
 
+    /**
+     * This method reders the Path to the selected point.
+     */
+
+    public void renderPath(){
+
+        {
+            Point destpoint =selectedPoint;
+                for (Point p : allPoints) {
+                    if (p.equals(selectedPoint)) {
+                        destpoint = p;
+                        break;
+                    }
+                }
+            RoomerRenderer mRenderer = SetUpUI.getInstance(null).getRenderer();
+                Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
+                        mRenderer.getCurrentCamera().getPosition().y - 1,
+                        mRenderer.getCurrentCamera().getPosition().z);
+                mRenderer.setPoints(
+                        VectorGraph.getPath(pos,
+                                destpoint,
+                                allPoints)
+                );
+            }
+        }
 }

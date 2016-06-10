@@ -3,19 +3,24 @@ package com.projecttango.Visualisation;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
 
+import org.rajawali3d.Object3D;
 import org.rajawali3d.curves.CatmullRomCurve3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
+import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.primitives.ScreenQuad;
+import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.scene.RajawaliScene;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * Created by Marcus Bätz on 26.05.2016.
@@ -26,6 +31,7 @@ public class Visualize {
     private static ArrayList<Point> points = new ArrayList<Point>();
     private final static Material material2 = new Material();
     private final static Material material1 = new Material();
+    private final static Object3D debugObjects = new Object3D();
 
     static {
         material2.setDiffuseMethod(new DiffuseMethod.Lambert());
@@ -38,6 +44,16 @@ public class Visualize {
         material1.setColor(Color.YELLOW);
         material1.enableLighting(true);
     }
+
+    private static Material mSphereMaterial = new Material();
+    static{ mSphereMaterial.enableLighting(true);
+        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());}
+    private static Material mSphereMaterialGreen = new Material();
+    static{ mSphereMaterial.enableLighting(true);
+        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
+        mSphereMaterialGreen.setColor(Color.GREEN);}
 
     /**
      * Sets the Points of a calculated NavPath
@@ -68,6 +84,7 @@ public class Visualize {
         scene.clearChildren();
         //Add the Backscreenquad back again
         scene.addChildAt(sq, 0);
+        scene.addChild(debugObjects);
         //generate a new Point for the actual position of the user
         Vector3 cp = new Vector3(
                 scene.getCamera().getPosition().x,
@@ -128,6 +145,7 @@ public class Visualize {
         scene.clearChildren();
         //Add the Backscreenquad back again
         scene.addChildAt(sq, 0);
+        scene.addChild(debugObjects);
     }
 
     public static void main(String[] args) {
@@ -137,7 +155,43 @@ public class Visualize {
     }
 
 
-    public static void debugDraw(RajawaliScene currentScene, ArrayList<Point> allPoints) {
+    public static void debugDraw(ArrayList<Point> allPoints) {
 
+        Log.d("DEBUGGER","Debug Draw");
+        for(Point p : allPoints){
+            Sphere s = new Sphere(0.1f, 20, 20);
+            s.setPosition(p.getPosition());
+            if(p instanceof DestinationPoint){
+                s.setMaterial(mSphereMaterialGreen);
+            }else{
+                s.setMaterial(mSphereMaterial);
+            }
+            debugObjects.addChild(s);
+            for(Point n : p.getNeighbours().keySet()){
+                Stack<Vector3> stack = new Stack<Vector3>();
+                stack.add(p.getPosition());
+                stack.add(n.getPosition());
+                Line3D line = new Line3D(stack, 50, Color.RED);
+                Material m = new Material();
+                m.setColor(Color.RED);
+                line.setMaterial(m);
+                debugObjects.addChild(line);
+            }
+        }
+
+    }
+    public static void debugClear() {
+
+        Log.d("DEBUGGER","Debug clear");
+        int x = debugObjects.getNumChildren();
+        for(int i = 0; i <x ; i++){
+            debugObjects.removeChild(debugObjects.getChildAt(0));
+        }
+
+    }
+
+    public static void init(RajawaliScene currentScene) {
+        currentScene.addChild(debugObjects);
+        Log.d("DEBUGGER","Visualize initialisiert");
     }
 }
