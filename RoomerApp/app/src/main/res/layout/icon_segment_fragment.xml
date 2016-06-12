@@ -24,15 +24,7 @@
         android:layout_marginLeft="707dp"
         android:src="@drawable/thumb_button_segment2_blu" />
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/show_favorites"
-        android:background="@null"
-        android:layout_marginTop="248dp"
-        android:layout_marginLeft="743dp"
-        android:src="@drawable/thumb_button_segment3_blu"
-        />
+
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -42,6 +34,16 @@
         android:layout_marginLeft="798dp"
         android:src="@drawable/thumb_button_segment4_blu"
         android:id="@+id/change_building" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/show_favorites"
+        android:background="@null"
+        android:layout_marginTop="248dp"
+        android:layout_marginLeft="743dp"
+        android:src="@drawable/thumb_button_segment3_blu"
+        />
 
     <ImageButton
         android:layout_width="wrap_content"

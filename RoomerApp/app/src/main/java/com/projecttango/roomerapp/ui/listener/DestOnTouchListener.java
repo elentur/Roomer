@@ -19,20 +19,24 @@ import org.rajawali3d.math.vector.Vector3;
 public class DestOnTouchListener implements View.OnTouchListener {
 
 
+
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
-    public DestOnTouchListener(ImageButton imageButton,RoomerMainActivity main) {
+    public DestOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, RoomerMainActivity main) {
 
-        this.imageButton = imageButton;
+        this.imageButton = icon_segment_fragment.segDestinations;
         this.main=main;
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
 
+
+
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment5_red);
+
 
         }
 
@@ -40,6 +44,8 @@ public class DestOnTouchListener implements View.OnTouchListener {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment5_blu);
 
+            //Disable button to secure that the DestinationDialog not will be opened again before closing it.
+            imageButton.setEnabled(false);
 
             main.mRenderer.clear=true;
             SetUpUI.getInstance(main).getDestinationDialog().show(main.getFragmentManager(), "Ziele");

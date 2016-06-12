@@ -21,11 +21,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class BuildingOnTouchListener implements View.OnTouchListener {
 
+
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
-    public BuildingOnTouchListener(ImageButton imageButton,RoomerMainActivity main) {
 
-        this.imageButton = imageButton;
+    public BuildingOnTouchListener(Icon_Segment_Fragment icon_segment_fragment,RoomerMainActivity main) {
+
+        this.imageButton = icon_segment_fragment.segChangeBuilding;
         this.main=main;
     }
 

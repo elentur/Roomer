@@ -1,6 +1,7 @@
 package com.projecttango.roomerapp.ui;
 
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,9 +47,12 @@ public class DestinationDialog extends DialogFragment  {
     @Override
     public void onResume() {
         super.onResume();
+
         accept.setEnabled(false);
         destinationPoints.clearChoices();
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,6 +87,10 @@ public class DestinationDialog extends DialogFragment  {
                 return false;
             }
         });
+
+
+
+
 
 
         //listener for the accept button
@@ -120,6 +128,16 @@ public class DestinationDialog extends DialogFragment  {
         return destinationDialogView;
     }
 
+
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+
+        //Enable the the destination button to secure that the user can reopen the DestinationDialog
+        Icon_Segment_Fragment.segDestinations.setEnabled(true);
+        super.onDismiss(dialog);
+    }
+
     public DestinationPoint getSelectedPoint() {
         return selectedPoint;
     }
@@ -142,6 +160,7 @@ public class DestinationDialog extends DialogFragment  {
             }
         }
     }
+
 
     @Override
     public String toString() {

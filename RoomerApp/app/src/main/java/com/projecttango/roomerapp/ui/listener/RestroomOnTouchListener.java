@@ -6,6 +6,7 @@ import android.widget.ImageButton;
 
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
+import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 import com.projecttango.roomerapp.ui.SetUpUI;
 
 /**
@@ -15,8 +16,8 @@ public class RestroomOnTouchListener implements View.OnTouchListener {
     private ImageButton imageButton;
     private RoomerMainActivity main;
 
-    public RestroomOnTouchListener(ImageButton imageButton, RoomerMainActivity main) {
-        this.imageButton = imageButton;
+    public RestroomOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, RoomerMainActivity main) {
+        this.imageButton = icon_segment_fragment.segRestroom ;
         this.main = main;
     }
     @Override

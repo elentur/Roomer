@@ -24,8 +24,8 @@ public class Icon_Segment_Fragment extends Fragment {
     public static ImageButton segFavorites;
     public static ImageButton segRestroom;
     public static ImageButton segEmergencyExit;
-    private View.OnTouchListener listener = null;
 
+    private View.OnTouchListener listener = null;
 
     public Icon_Segment_Fragment(){
     }
@@ -41,10 +41,6 @@ public class Icon_Segment_Fragment extends Fragment {
         segEmergencyExit = (ImageButton) icon_segment_fragment.findViewById(R.id.emergencyExit);
 
         if(listener != null) segDestinations.setOnTouchListener(listener);
-        if(listener != null) segChangeBuilding.setOnTouchListener(listener);
-        if(listener != null) segFavorites.setOnTouchListener(listener);
-        if(listener != null) segEmergencyExit.setOnTouchListener(listener);
-        if(listener != null) segRestroom.setOnTouchListener(listener);
 
         return icon_segment_fragment;
     }
@@ -81,7 +77,6 @@ public class Icon_Segment_Fragment extends Fragment {
         if (segEmergencyExit !=null) segEmergencyExit.setOnTouchListener(listener);
 
     }
-
 
 
 }

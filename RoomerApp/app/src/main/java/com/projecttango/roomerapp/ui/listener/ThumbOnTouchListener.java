@@ -30,12 +30,15 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
+
             Icon_Segment_Fragment icon_segment_fragment = new Icon_Segment_Fragment();
-            icon_segment_fragment.setDestinationDialogListener(new DestOnTouchListener(icon_segment_fragment.segDestinations,main));
-            icon_segment_fragment.setChangeBuildingListener(new BuildingOnTouchListener(icon_segment_fragment.segChangeBuilding,main));
-            icon_segment_fragment.setFavoritesListener(new FavoritesOnTouchListener(icon_segment_fragment.segFavorites,main ));
-            icon_segment_fragment.setEmergenyExitListener(new EmergecyOnTouchListerner(icon_segment_fragment.segEmergencyExit,main));
-            icon_segment_fragment.setRestroomListener(new RestroomOnTouchListener(icon_segment_fragment.segRestroom,main));
+
+            icon_segment_fragment.setDestinationDialogListener(new DestOnTouchListener(icon_segment_fragment,main));
+            icon_segment_fragment.setChangeBuildingListener(new BuildingOnTouchListener(icon_segment_fragment,main));
+            icon_segment_fragment.setFavoritesListener(new FavoritesOnTouchListener(icon_segment_fragment,main ));
+            icon_segment_fragment.setEmergenyExitListener(new EmergecyOnTouchListerner(icon_segment_fragment,main));
+            icon_segment_fragment.setRestroomListener(new RestroomOnTouchListener(icon_segment_fragment,main));
+
             if (motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
                 if (countClicks==false){
                     transaction.add(R.id.fragment_holder, icon_segment_fragment);
