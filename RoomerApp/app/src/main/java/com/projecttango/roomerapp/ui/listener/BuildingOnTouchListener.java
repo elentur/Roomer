@@ -1,19 +1,13 @@
 package com.projecttango.roomerapp.ui.listener;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.google.atap.tangoservice.TangoErrorException;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
-import com.projecttango.roomerapp.StartActivity;
 import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -46,8 +40,11 @@ public class BuildingOnTouchListener implements View.OnTouchListener {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment4_blu);
 
-            Intent intent = new Intent(view.getContext(), StartActivity.class);
-            main.startActivity(intent);
+
+            // here jump back to startActivity where u can choose another ADF, workes but tango service crashes.
+            // Think the tanco service has to disconnect properly when aborting mainscreen :)
+            // Intent intent = new Intent(view.getContext(), StartActivity.class);
+            // main.startActivity(intent);
 
         }
 
