@@ -104,7 +104,6 @@ public class RoomerMainActivity extends Activity {
         ui = SetUpUI.getInstance(this);
         final Intent i = getIntent();
         uuid = i.getStringExtra("uuid");
-
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = ui.setupTangoUxAndLayout();
 
@@ -116,6 +115,7 @@ public class RoomerMainActivity extends Activity {
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
                     .show();
         }
+
     }
 
     /**
@@ -163,7 +163,6 @@ public class RoomerMainActivity extends Activity {
             mTango = new Tango(RoomerMainActivity.this, new ConnectRunnable(this,uuid));
         }
     }
-
 
     public void loadAreaDescription(String uuid){
         if(uuid == null)  mTango.experimentalLoadAreaDescription(this.uuid);

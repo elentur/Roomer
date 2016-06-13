@@ -9,8 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.atap.tangoservice.Tango;
+import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 import com.google.atap.tangoservice.TangoConfig;
 import com.google.atap.tangoservice.TangoErrorException;
+import com.projecttango.roomerapp.ui.DestinationDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,8 +73,6 @@ public class StartActivity extends Activity {
                 Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
 
 
-
-
     }
 
     @Override
@@ -83,10 +83,26 @@ public class StartActivity extends Activity {
 
     public void start(View view){
         mTango.disconnect();
+
         Intent i = new Intent(this, RoomerMainActivity.class);
         i.putExtra("uuid",fullUuidList.get(lstView.getCheckedItemPosition()));
         startActivity(i);
 
 
     }
+    public String getName(String uuid) {
+
+        TangoAreaDescriptionMetaData metadata = new TangoAreaDescriptionMetaData();
+        metadata = mTango.loadAreaDescriptionMetaData(uuid);
+        byte[] nameBytes = metadata.get(TangoAreaDescriptionMetaData.KEY_NAME);
+        if (nameBytes != null) {
+            String name = new String(nameBytes);
+            Log.d("DEBUGGER",name);
+            return name;
+        } // Do something if null
+        return "byteArrempty";
+    }
+
+
+
 }

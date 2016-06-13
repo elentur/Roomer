@@ -15,6 +15,7 @@ import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.R;
+import com.projecttango.roomerapp.RoomerMainActivity;
 import com.projecttango.roomerapp.RoomerRenderer;
 
 
@@ -22,6 +23,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Julian Dobrot on 01.06.2016.
@@ -42,7 +44,7 @@ public class DestinationDialog extends DialogFragment  {
     private DestinationPoint selectedPoint = null;
     private ArrayList<Point> allPoints;
 
-
+    String adf;
 
     @Override
     public void onResume() {
@@ -60,7 +62,8 @@ public class DestinationDialog extends DialogFragment  {
 
         final View destinationDialogView = inflater.inflate(R.layout.destination_point_list, null);
 
-        getDialog().setTitle("Ziele in ihrer Umgebung");
+
+        getDialog().setTitle("Ziele im ihrer Umgebung");
 
         destinationPoints = (ListView) destinationDialogView.findViewById(R.id.lv);
         searchView = (SearchView) destinationDialogView.findViewById(R.id.searchView);
@@ -87,11 +90,6 @@ public class DestinationDialog extends DialogFragment  {
                 return false;
             }
         });
-
-
-
-
-
 
         //listener for the accept button
         accept.setOnClickListener(new View.OnClickListener() {
@@ -161,15 +159,6 @@ public class DestinationDialog extends DialogFragment  {
         }
     }
 
-
-    @Override
-    public String toString() {
-        return "DestinationDialog{" +
-                "pointsDialog=" + pointsDialog +
-                ", selectedPoint=" + selectedPoint +
-                '}';
-    }
-
     /**
      * This method renders the Path to the selected point.
      */
@@ -195,4 +184,13 @@ public class DestinationDialog extends DialogFragment  {
                 );
             }
         }
+
+    @Override
+    public String toString() {
+        return "DestinationDialog{" +
+                "pointsDialog=" + pointsDialog +
+                ", selectedPoint=" + selectedPoint +
+                '}';
+    }
+
 }
