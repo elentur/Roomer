@@ -36,7 +36,7 @@ public class RoomerDB extends SQLiteOpenHelper {
     public RoomerDB(Context context, String  adf) {
         super(context, "roomer_"+ adf +".db", null, 1);
         this.adf = adf;
-        CREATE_TABLE = "CREATE TABLE Points (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        CREATE_TABLE = "CREATE TABLE Points (ID INTEGER PRIMARY KEY, " +
                 "ISNAV STRING, TAG TEXT, POSX REAL, POSY REAL, POSZ REAL, NEIGHBOURS TEXT);";
         isCreating=true;
     }
@@ -69,6 +69,7 @@ public class RoomerDB extends SQLiteOpenHelper {
                 isCreating=false;
             }
             ContentValues ct = new ContentValues();
+            ct.put("ID",p.hashCode());
             ct.put("ISNAV",(p instanceof NavigationPoint)+"");
             ct.put("TAG",p.getTag());
             ct.put("POSX",p.getPosition().x);
@@ -89,10 +90,10 @@ public class RoomerDB extends SQLiteOpenHelper {
         try{
             SQLiteDatabase db = getWritableDatabase();
             for(Point p: list){
-                int id = list.indexOf(p)+1;
+                int id = p.hashCode();
                 String idN ="";
                 for (Point n : p.getNeighbours().keySet()){
-                    idN = idN + (list.indexOf(n)+1)+";";
+                    idN = idN + n.hashCode()+ ";";
                 }
                 ContentValues ct = new ContentValues();
                 ct.put("NEIGHBOURS", idN);
@@ -231,7 +232,9 @@ public void clearDB(){
                     for(String s: ids){
                         try {
                             int i = Integer.parseInt(s);
-                            points.get(id - 1).addNeighhbour(points.get(i - 1));
+                            for(Point point : points ) {
+                             if(point.hashCode()==id )point.addNeighhbour(points.get(i));
+                            }
                         }catch (Exception e){
                             Log.e(TAG,e.getMessage());
                         }

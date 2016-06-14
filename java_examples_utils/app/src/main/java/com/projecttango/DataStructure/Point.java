@@ -33,6 +33,13 @@ public abstract class Point implements Serializable{
         neighbours.put(p,x);
     }
 
+    @Override
+    public int hashCode() {
+        int result = position != null ? position.hashCode() : 0;
+        result = 31 * result + (tag != null ? tag.hashCode() : 0);
+        return result;
+    }
+
     public double distance(Point p1, Point p2){
 
        return Vector3.distanceTo(p1.getPosition(),p2.getPosition());
