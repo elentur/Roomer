@@ -2,6 +2,7 @@ package com.projecttango.roomerapp.ui;
 
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,8 +44,7 @@ public class DestinationDialog extends DialogFragment  {
     private ArrayList<Point> pointsDialog = new ArrayList<Point>();
     private DestinationPoint selectedPoint = null;
     private ArrayList<Point> allPoints;
-
-    String adf;
+    private String adfName;
 
     @Override
     public void onResume() {
@@ -63,7 +63,12 @@ public class DestinationDialog extends DialogFragment  {
         final View destinationDialogView = inflater.inflate(R.layout.destination_point_list, null);
 
 
-        getDialog().setTitle("Ziele im ihrer Umgebung");
+        if (RoomerMainActivity.adf!=null) {
+            getDialog().setTitle("Ziele in "+RoomerMainActivity.adf);
+        } else {
+            getDialog().setTitle("Ziele in ihrer Umgebung ");
+        }
+
 
         destinationPoints = (ListView) destinationDialogView.findViewById(R.id.lv);
         searchView = (SearchView) destinationDialogView.findViewById(R.id.searchView);
