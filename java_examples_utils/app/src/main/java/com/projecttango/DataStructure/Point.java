@@ -13,11 +13,23 @@ public abstract class Point implements Serializable{
     private final Vector3 position;
     private final HashMap<Point,Double> neighbours;
     private String tag;
+    private int ID = 0;
 
     public Point(Vector3 position, HashMap<Point, Double> neighbours,  String tag) {
         this.position = position;
         this.neighbours = neighbours!= null? neighbours: new  HashMap<Point,Double>();
         this.tag = tag;
+
+        if(ID == 0){
+            this.ID = this.hashCode();
+        }
+    }
+
+    public Point(int id, Vector3 position, HashMap<Point, Double> neighbours,  String tag) {
+        this.position = position;
+        this.neighbours = neighbours != null ? neighbours : new HashMap<Point, Double>();
+        this.tag = tag;
+        this.ID = id;
     }
 
     public Vector3 getPosition() {
@@ -33,9 +45,20 @@ public abstract class Point implements Serializable{
         neighbours.put(p,x);
     }
 
+    @Override
+    public int hashCode() {
+        int result = position != null ? position.hashCode() : 0;
+        result = 31 * result + (tag != null ? tag.hashCode() : 0);
+        return result;
+    }
+
     public double distance(Point p1, Point p2){
 
        return Vector3.distanceTo(p1.getPosition(),p2.getPosition());
+    }
+
+    public int getID() {
+        return ID;
     }
 
     public String getTag() {
