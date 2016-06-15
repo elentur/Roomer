@@ -27,16 +27,12 @@ public class FavoritesOnTouchListener implements View.OnTouchListener {
     public boolean onTouch(View view, MotionEvent motionEvent) {
 
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            Log.d("DEBUGGER","fav_down");
-
 
             imageButton.setImageResource(R.drawable.thumb_button_segment3_red);
-
 
         }
 
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            Log.d("DEBUGGER","fav_up");
 
             imageButton.setImageResource(R.drawable.thumb_button_segment3_blu);
 

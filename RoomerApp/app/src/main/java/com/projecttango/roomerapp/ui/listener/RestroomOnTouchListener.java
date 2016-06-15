@@ -13,10 +13,11 @@ import com.projecttango.roomerapp.ui.SetUpUI;
  * Created by Julian Dobrot on 10.06.2016.
  */
 public class RestroomOnTouchListener implements View.OnTouchListener {
-    private ImageButton imageButton;
-    private RoomerMainActivity main;
+    private final ImageButton imageButton;
+    private final RoomerMainActivity main;
 
     public RestroomOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, RoomerMainActivity main) {
+
         this.imageButton = icon_segment_fragment.segRestroom ;
         this.main = main;
     }

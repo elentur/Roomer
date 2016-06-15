@@ -44,7 +44,7 @@ public class DestinationDialog extends DialogFragment  {
     private ArrayList<Point> pointsDialog = new ArrayList<Point>();
     private DestinationPoint selectedPoint = null;
     private ArrayList<Point> allPoints;
-    private String adfName;
+
 
     @Override
     public void onResume() {

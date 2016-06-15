@@ -38,6 +38,9 @@ public class SetUpUI {
         if(instance==null) instance = new SetUpUI(main);
         return instance;
     }
+    public void diconnectUI(){
+
+    }
 
     /**
      * Sets up TangoUX layout and sets its listener.
