@@ -26,8 +26,9 @@ public class RestroomOnTouchListener implements View.OnTouchListener {
 
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
-            imageButton.setImageResource(R.drawable.thumb_button_segment1_red);
 
+
+           imageButton.setImageResource(R.drawable.thumb_button_segment1_red);
         }
 
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {

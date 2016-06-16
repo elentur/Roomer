@@ -3,13 +3,16 @@ package com.projecttango.roomerapp.ui;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import com.projecttango.DataStructure.DestinationPoint;
@@ -34,6 +37,7 @@ import java.util.Arrays;
  *
  */
 public class DestinationDialog extends DialogFragment  {
+
 
 
     private static Button cancel;
@@ -72,8 +76,13 @@ public class DestinationDialog extends DialogFragment  {
 
         destinationPoints = (ListView) destinationDialogView.findViewById(R.id.lv);
         searchView = (SearchView) destinationDialogView.findViewById(R.id.searchView);
-        cancel = (Button) destinationDialogView.findViewById(R.id.dismiss);
+        cancel = (Button) destinationDialogView.findViewById(R.id.cancel);
         accept = (Button) destinationDialogView.findViewById(R.id.accept);
+        Typeface robotoMedium = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Medium.ttf");
+
+        cancel.setTypeface(robotoMedium);
+        accept.setTypeface(robotoMedium);
+
 
         adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialog);
         destinationPoints.setAdapter(adapter);

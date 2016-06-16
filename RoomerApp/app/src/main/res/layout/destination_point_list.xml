@@ -26,37 +26,39 @@
         android:minHeight="75dp" />
 
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_vertical_margin">
-
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_gravity="right"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
 
         <Button
-            android:id="@+id/dismiss"
-            android:layout_width="250dp"
+            android:id="@+id/cancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dismiss"
-            android:minHeight="75dp"
-            android:background="@color/main_red_roomer"
-            android:layout_gravity="left|center_vertical"
-            android:textSize="@dimen/standart_button_text_size" />
+            android:minWidth="88dp"
+            android:height="36dp"
+            android:text="CANCEL"
+            android:textSize="14pt"
+            />
 
         <Button
             android:id="@+id/accept"
-            android:layout_width="250dp"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/accept"
-            android:minHeight="75dp"
-            android:background="@color/main_blue_roomer"
-            android:layout_gravity="right|center_vertical"
-            android:textSize="@dimen/standart_button_text_size" />
-
-
-    </FrameLayout>
-
-
-
+            android:minWidth="88dp"
+            android:height="36dp"
+            android:typeface="monospace"
+            android:text="ACCEPT"
+            android:textSize="14pt"
+            android:paddingLeft="8dp"
+            android:layout_marginLeft="8dp"
+            />
+    </LinearLayout>
 
 
 </LinearLayout>

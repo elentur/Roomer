@@ -19,7 +19,7 @@ public class SetUpUI {
     private TextView txtLocalized;
     private TextView txtFPS;
     private final RoomerMainActivity main;
-    private  static SetUpUI instance;
+    private static SetUpUI instance;
     private ImageButton thumbButton;
     private final DestinationDialog destinationDialog;
 

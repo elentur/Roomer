@@ -27,6 +27,8 @@ public class EmergecyOnTouchListerner implements View.OnTouchListener {
 
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
+            main.setDebug(view);
+
             imageButton.setImageResource(R.drawable.thumb_button_segment2_red);
 
         }
