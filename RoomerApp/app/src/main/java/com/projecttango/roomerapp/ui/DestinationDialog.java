@@ -1,19 +1,25 @@
 package com.projecttango.roomerapp.ui;
 
 import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.R;
+import com.projecttango.roomerapp.RoomerMainActivity;
 import com.projecttango.roomerapp.RoomerRenderer;
 
 
@@ -21,6 +27,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Julian Dobrot on 01.06.2016.
@@ -30,6 +37,7 @@ import java.util.ArrayList;
  *
  */
 public class DestinationDialog extends DialogFragment  {
+
 
 
     private static Button cancel;
@@ -42,13 +50,15 @@ public class DestinationDialog extends DialogFragment  {
     private ArrayList<Point> allPoints;
 
 
-
     @Override
     public void onResume() {
         super.onResume();
+
         accept.setEnabled(false);
         destinationPoints.clearChoices();
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,12 +66,23 @@ public class DestinationDialog extends DialogFragment  {
 
         final View destinationDialogView = inflater.inflate(R.layout.destination_point_list, null);
 
-        getDialog().setTitle("Ziele in ihrer Umgebung");
+
+        if (RoomerMainActivity.adf!=null) {
+            getDialog().setTitle("Ziele in "+RoomerMainActivity.adf);
+        } else {
+            getDialog().setTitle("Ziele in ihrer Umgebung ");
+        }
+
 
         destinationPoints = (ListView) destinationDialogView.findViewById(R.id.lv);
         searchView = (SearchView) destinationDialogView.findViewById(R.id.searchView);
-        cancel = (Button) destinationDialogView.findViewById(R.id.dismiss);
+        cancel = (Button) destinationDialogView.findViewById(R.id.cancel);
         accept = (Button) destinationDialogView.findViewById(R.id.accept);
+        Typeface robotoMedium = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Medium.ttf");
+
+        cancel.setTypeface(robotoMedium);
+        accept.setTypeface(robotoMedium);
+
 
         adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialog);
         destinationPoints.setAdapter(adapter);
@@ -83,7 +104,6 @@ public class DestinationDialog extends DialogFragment  {
                 return false;
             }
         });
-
 
         //listener for the accept button
         accept.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +140,16 @@ public class DestinationDialog extends DialogFragment  {
         return destinationDialogView;
     }
 
+
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+
+        //Enable the the destination button to secure that the user can reopen the DestinationDialog
+        Icon_Segment_Fragment.segDestinations.setEnabled(true);
+        super.onDismiss(dialog);
+    }
+
     public DestinationPoint getSelectedPoint() {
         return selectedPoint;
     }
@@ -143,16 +173,8 @@ public class DestinationDialog extends DialogFragment  {
         }
     }
 
-    @Override
-    public String toString() {
-        return "DestinationDialog{" +
-                "pointsDialog=" + pointsDialog +
-                ", selectedPoint=" + selectedPoint +
-                '}';
-    }
-
     /**
-     * This method reders the Path to the selected point.
+     * This method renders the Path to the selected point.
      */
 
     public void renderPath(){
@@ -176,4 +198,13 @@ public class DestinationDialog extends DialogFragment  {
                 );
             }
         }
+
+    @Override
+    public String toString() {
+        return "DestinationDialog{" +
+                "pointsDialog=" + pointsDialog +
+                ", selectedPoint=" + selectedPoint +
+                '}';
+    }
+
 }

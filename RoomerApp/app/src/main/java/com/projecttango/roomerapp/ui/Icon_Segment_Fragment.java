@@ -1,26 +1,15 @@
 package com.projecttango.roomerapp.ui;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-
 import com.projecttango.roomerapp.R;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * This Fragment holds the logic for the icon segments which are active when the thumb button
@@ -30,15 +19,13 @@ import java.util.Arrays;
 public class Icon_Segment_Fragment extends Fragment {
 
 
-
-    public ImageButton segDestinations;
-    private ImageButton segChangeBuilding;
-    private ImageButton segFavorites;
-    private ImageButton segRestroom;
-    private ImageButton segEmergencyExit;
+    public static ImageButton segDestinations;
+    public static ImageButton segChangeBuilding;
+    public static ImageButton segFavorites;
+    public static ImageButton segRestroom;
+    public static ImageButton segEmergencyExit;
 
     private View.OnTouchListener listener = null;
-
 
     public Icon_Segment_Fragment(){
     }
@@ -48,16 +35,47 @@ public class Icon_Segment_Fragment extends Fragment {
         final View icon_segment_fragment = inflater.inflate(R.layout.icon_segment_fragment,null);
 
         segDestinations = (ImageButton) icon_segment_fragment.findViewById(R.id.all_destinations);
+        segChangeBuilding = (ImageButton) icon_segment_fragment.findViewById(R.id.change_building);
+        segFavorites = (ImageButton) icon_segment_fragment.findViewById(R.id.show_favorites);
+        segRestroom = (ImageButton) icon_segment_fragment.findViewById(R.id.restrooms);
+        segEmergencyExit = (ImageButton) icon_segment_fragment.findViewById(R.id.emergencyExit);
 
-       if(listener != null) segDestinations.setOnTouchListener(listener);
+        if(listener != null) segDestinations.setOnTouchListener(listener);
 
         return icon_segment_fragment;
     }
 
-
     public void setDestinationDialogListener(View.OnTouchListener listener){
         this.listener =listener;
+
         if(segDestinations != null) segDestinations.setOnTouchListener(listener);
+
+    }
+
+    public void setChangeBuildingListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segChangeBuilding !=null) segChangeBuilding.setOnTouchListener(listener);
+    }
+
+    public void setFavoritesListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segFavorites !=null) segFavorites.setOnTouchListener(listener);
+
+    }
+
+    public void setRestroomListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segRestroom !=null) segRestroom.setOnTouchListener(listener);
+
+    }
+    public void setEmergenyExitListener(View.OnTouchListener listener) {
+        this.listener = listener;
+
+        if (segEmergencyExit !=null) segEmergencyExit.setOnTouchListener(listener);
+
     }
 
 

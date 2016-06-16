@@ -18,6 +18,7 @@ package com.projecttango.roomerapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,10 +34,12 @@ import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.roomerapp.tango.ConnectRunnable;
 import com.projecttango.roomerapp.ui.SetUpUI;
+import com.projecttango.utils.Constants;
 
 import org.rajawali3d.surface.RajawaliSurfaceView;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * Main Activity class for the Motion Tracking API Sample. Handles the connection to the Tango
@@ -89,22 +92,22 @@ public class RoomerMainActivity extends Activity {
 
     public boolean firstTimeloaded = false;
 
-
-    /**
-     * Checks if the
-     */
     private boolean isDebug = false;
+
+
+    public static String adf;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        loadPreferences();
         setContentView(R.layout.activity_main_roomer);
         ui = SetUpUI.getInstance(this);
         final Intent i = getIntent();
         uuid = i.getStringExtra("uuid");
-
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = ui.setupTangoUxAndLayout();
 
@@ -115,6 +118,24 @@ public class RoomerMainActivity extends Activity {
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
                     .show();
+        }
+
+
+
+    }
+
+    /**
+     * This method loads the Preferences passed by the StartActivity
+     */
+    private void loadPreferences() {
+
+        SharedPreferences prefs = getSharedPreferences(Constants.ROOMER_PREFS, MODE_PRIVATE);
+        String adfName = prefs.getString("text", "null");
+        if (adfName != null) {
+             adf = prefs.getString("name", "No name defined");
+        } else {
+            Toast.makeText(this,"Could not load preferences",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -135,6 +156,7 @@ public class RoomerMainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         if (mIsConnected.compareAndSet(true, false)) {
+
             mTangoUx.stop();
             mIsRelocalized = false;
             mRenderer.onPause();
@@ -163,7 +185,6 @@ public class RoomerMainActivity extends Activity {
             mTango = new Tango(RoomerMainActivity.this, new ConnectRunnable(this,uuid));
         }
     }
-
 
     public void loadAreaDescription(String uuid){
         if(uuid == null)  mTango.experimentalLoadAreaDescription(this.uuid);
