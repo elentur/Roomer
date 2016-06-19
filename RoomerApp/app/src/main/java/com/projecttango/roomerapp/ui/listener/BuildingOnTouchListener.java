@@ -19,10 +19,12 @@ public class BuildingOnTouchListener implements View.OnTouchListener {
 
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
+    private final ThumbOnTouchListener thumbOnTouchListener;
 
-    public BuildingOnTouchListener(Icon_Segment_Fragment icon_segment_fragment,RoomerMainActivity main) {
+    public BuildingOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.imageButton = icon_segment_fragment.segChangeBuilding;
+        this.thumbOnTouchListener = thumbOnTouchListener;
         this.main=main;
     }
 
@@ -36,6 +38,8 @@ public class BuildingOnTouchListener implements View.OnTouchListener {
             imageButton.setImageResource(R.drawable.thumb_button_segment4_red);
             imageButton.setX(1595);
             imageButton.setY(418);
+
+            thumbOnTouchListener.upaDateUI();
 
         }
 

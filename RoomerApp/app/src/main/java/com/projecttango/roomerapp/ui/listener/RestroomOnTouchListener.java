@@ -15,10 +15,12 @@ import com.projecttango.roomerapp.ui.SetUpUI;
 public class RestroomOnTouchListener implements View.OnTouchListener {
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
+    private final ThumbOnTouchListener thumbOnTouchListener;
 
-    public RestroomOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, RoomerMainActivity main) {
+    public RestroomOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.imageButton = icon_segment_fragment.segRestroom ;
+        this.thumbOnTouchListener = thumbOnTouchListener;
         this.main = main;
     }
     @Override
@@ -26,9 +28,8 @@ public class RestroomOnTouchListener implements View.OnTouchListener {
 
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
-
-
-           imageButton.setImageResource(R.drawable.thumb_button_segment1_red);
+            imageButton.setImageResource(R.drawable.thumb_button_segment1_red);
+            thumbOnTouchListener.upaDateUI();
         }
 
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {

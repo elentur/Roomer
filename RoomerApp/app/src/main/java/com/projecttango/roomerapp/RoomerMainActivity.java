@@ -120,8 +120,6 @@ public class RoomerMainActivity extends Activity {
                     .show();
         }
 
-
-
     }
 
     /**
@@ -195,9 +193,6 @@ public class RoomerMainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
     }
-
-
-
 
 
     public void setDebug(View view){

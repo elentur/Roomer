@@ -16,9 +16,12 @@ public class FavoritesOnTouchListener implements View.OnTouchListener {
 
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
+    private final ThumbOnTouchListener thumbOnTouchListener;
 
-    public FavoritesOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, RoomerMainActivity main) {
+    public FavoritesOnTouchListener(Icon_Segment_Fragment icon_segment_fragment,ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
+
         this.imageButton = icon_segment_fragment.segFavorites;
+        this.thumbOnTouchListener = thumbOnTouchListener;
         this.main = main;
     }
 
@@ -29,6 +32,7 @@ public class FavoritesOnTouchListener implements View.OnTouchListener {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment3_red);
+            thumbOnTouchListener.upaDateUI();
 
         }
 

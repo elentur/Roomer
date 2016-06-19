@@ -17,9 +17,12 @@ public class EmergecyOnTouchListerner implements View.OnTouchListener {
 
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
+    private final ThumbOnTouchListener thumbOnTouchListener;
 
-    public EmergecyOnTouchListerner(Icon_Segment_Fragment icon_segment_fragment, RoomerMainActivity main) {
+    public EmergecyOnTouchListerner(Icon_Segment_Fragment icon_segment_fragment,ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
+
         this.imageButton = icon_segment_fragment.segEmergencyExit;
+        this.thumbOnTouchListener = thumbOnTouchListener;
         this.main = main;
     }
     @Override
@@ -30,6 +33,7 @@ public class EmergecyOnTouchListerner implements View.OnTouchListener {
             main.setDebug(view);
 
             imageButton.setImageResource(R.drawable.thumb_button_segment2_red);
+            thumbOnTouchListener.upaDateUI();
 
         }
 
