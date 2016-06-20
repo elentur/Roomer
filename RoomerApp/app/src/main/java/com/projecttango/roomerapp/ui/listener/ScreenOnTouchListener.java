@@ -16,7 +16,7 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
 
     private ImageButton thumbButton;
     private ThumbOnTouchListener thumbOnTouchListener;
-    public static boolean onOff = true;
+    public static boolean onOff = false;
 
     public ScreenOnTouchListener(ImageButton thumbButton, ThumbOnTouchListener thumbOnTouchListener) {
 

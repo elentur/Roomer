@@ -127,7 +127,7 @@ public class RoomerMainActivity extends Activity {
      */
     private void loadPreferences() {
 
-        SharedPreferences prefs = getSharedPreferences(Constants.ROOMER_FREFS, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(Constants.ROOMER_PREFS, MODE_PRIVATE);
         String adfName = prefs.getString("text", "null");
         if (adfName != null) {
              adf = prefs.getString("name", "No name defined");
