@@ -29,7 +29,8 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
 
     private final FragmentManager fragmentManager;
     private final RoomerMainActivity main;
-    private boolean countClicks = false;
+
+    public static boolean countClicks = false;
     private final ImageButton thumbButton;
     private Handler handler = new Handler();
     public static boolean thumbButtonIsDisplayed=true;
@@ -58,7 +59,7 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
 
                 upaDateUI();
 
-                if (countClicks==false){
+                if (!countClicks){
                     transaction.add(R.id.fragment_holder, icon_segment_fragment);
                     transaction.commit();
                     thumbButton.isActivated();
@@ -66,7 +67,9 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
                     countClicks = true;
                     return true;
                 }
-                if (countClicks = true) {
+                if (countClicks) {
+
+                    clearFragment();
                     fragmentManager.beginTransaction().remove(
                             main.getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
                     thumbButton.setImageResource(R.drawable.thumb_button_segment3_main);
@@ -76,6 +79,13 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
             }
             return false;
         }
+
+    public void clearFragment() {
+        fragmentManager.beginTransaction().remove(
+                main.getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
+        thumbButton.setImageResource(R.drawable.thumb_button_segment3_main);
+        countClicks = false;
+    }
 
 
     /**
@@ -137,8 +147,10 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
                 Icon_Segment_Fragment.segRestroom.setVisibility(View.INVISIBLE);
 
                 thumbButton.animate().scaleX(2/3).scaleY(2/3).setDuration(150).setInterpolator(new AccelerateInterpolator());
-                thumbButtonIsDisplayed = false;
+                ScreenOnTouchListener.onOff=true;
+                thumbButtonIsDisplayed=false;
                 countClicks=false;
+
 
             }
 

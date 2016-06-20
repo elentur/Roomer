@@ -103,7 +103,7 @@ public class StartActivity extends Activity {
      * adf is saved in the prefs.
      */
     private void passData() {
-        SharedPreferences.Editor editor = getSharedPreferences(Constants.ROOMER_PREFS, MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(Constants.ROOMER_FREFS, MODE_PRIVATE).edit();
 
         String name = getName(fullUuidList.get(lstView.getCheckedItemPosition()));
         editor.putString( "name",name);

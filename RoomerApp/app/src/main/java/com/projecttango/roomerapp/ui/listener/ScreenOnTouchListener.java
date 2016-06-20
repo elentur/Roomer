@@ -16,7 +16,7 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
 
     private ImageButton thumbButton;
     private ThumbOnTouchListener thumbOnTouchListener;
-
+    public static boolean onOff = true;
 
     public ScreenOnTouchListener(ImageButton thumbButton, ThumbOnTouchListener thumbOnTouchListener) {
 
@@ -26,6 +26,21 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
     }
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+
+        if (onOff) {
+            thumbButton.setVisibility(View.VISIBLE);
+            thumbButton.setEnabled(true);
+            onOff=false;
+        } else if (!onOff) {
+            if (thumbOnTouchListener.countClicks){
+                thumbOnTouchListener.clearFragment();
+
+
+            }
+            thumbButton.setVisibility(View.INVISIBLE);
+            thumbButton.setEnabled(false);
+            onOff=true;
+        }
 
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
@@ -43,5 +58,13 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
 
 
         return false;
+    }
+
+    public boolean isOnOff() {
+        return onOff;
+    }
+
+    public void setOnOff(boolean onOff) {
+        this.onOff = onOff;
     }
 }
