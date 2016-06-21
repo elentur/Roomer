@@ -22,9 +22,11 @@ public class DestOnTouchListener implements View.OnTouchListener {
 
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
-    public DestOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, RoomerMainActivity main) {
+    private final ThumbOnTouchListener thumbOnTouchListener;
+    public DestOnTouchListener(Icon_Segment_Fragment icon_segment_fragment,ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.imageButton = icon_segment_fragment.segDestinations;
+        this.thumbOnTouchListener = thumbOnTouchListener;
         this.main=main;
     }
 
@@ -33,9 +35,12 @@ public class DestOnTouchListener implements View.OnTouchListener {
 
 
 
+
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment5_red);
+
+            thumbOnTouchListener.upaDateUI();
 
 
         }

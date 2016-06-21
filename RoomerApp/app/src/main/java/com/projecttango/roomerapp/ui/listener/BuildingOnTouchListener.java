@@ -3,6 +3,7 @@ package com.projecttango.roomerapp.ui.listener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
@@ -18,10 +19,12 @@ public class BuildingOnTouchListener implements View.OnTouchListener {
 
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
+    private final ThumbOnTouchListener thumbOnTouchListener;
 
-    public BuildingOnTouchListener(Icon_Segment_Fragment icon_segment_fragment,RoomerMainActivity main) {
+    public BuildingOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.imageButton = icon_segment_fragment.segChangeBuilding;
+        this.thumbOnTouchListener = thumbOnTouchListener;
         this.main=main;
     }
 
@@ -33,12 +36,18 @@ public class BuildingOnTouchListener implements View.OnTouchListener {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment4_red);
+            imageButton.setX(1595);
+            imageButton.setY(418);
+
+            thumbOnTouchListener.upaDateUI();
 
         }
 
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 
-            imageButton.setImageResource(R.drawable.thumb_button_segment4_blu);
+            imageButton.setImageResource(R.drawable.thumb_button_segment44_blu);
+            imageButton.setX(1645);
+            imageButton.setY(462);
 
 
             // here jump back to startActivity where u can choose another ADF, workes but tango service crashes.

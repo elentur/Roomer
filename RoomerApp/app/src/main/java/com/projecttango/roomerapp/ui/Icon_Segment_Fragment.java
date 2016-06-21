@@ -78,7 +78,12 @@ public class Icon_Segment_Fragment extends Fragment {
 
     }
 
-
+    @Override
+    public String toString() {
+        return "Icon_Segment_Fragment{" +
+                "listener=" + listener +
+                '}';
+    }
 }
 
 

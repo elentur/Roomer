@@ -35,7 +35,7 @@ import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.roomerapp.tango.ConnectRunnable;
 import com.projecttango.roomerapp.ui.SetUpUI;
 import com.projecttango.utils.Constants;
-
+import com.projecttango.utils.Constants;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -120,8 +120,6 @@ public class RoomerMainActivity extends Activity {
                     .show();
         }
 
-
-
     }
 
     /**
@@ -195,9 +193,6 @@ public class RoomerMainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
     }
-
-
-
 
 
     public void setDebug(View view){
