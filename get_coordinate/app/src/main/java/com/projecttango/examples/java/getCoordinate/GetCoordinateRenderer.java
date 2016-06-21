@@ -41,6 +41,7 @@ import org.rajawali3d.primitives.Plane;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.util.ObjectColorPicker;
+import org.rajawali3d.util.OnObjectPickedListener;
 
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.NavigationPoint;
@@ -51,12 +52,18 @@ import com.projecttango.rajawali.renderables.Grid;
 import com.projecttango.tangosupport.TangoSupport;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.Stack;
+import java.util.TreeMap;
 
 /**
  * This class implements the rendering logic for the Motion Tracking application using Rajawali.
  */
-public class GetCoordinateRenderer extends RajawaliRenderer {
+public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectPickedListener {
     private static final String TAG = GetCoordinateRenderer.class.getSimpleName();
 
     private static final float CAMERA_NEAR = 0.01f;
@@ -70,23 +77,43 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
     // http://developer.android.com/reference/android/view/Surface.html#ROTATION_0
     private int mCurrentScreenRotation = 0;
 
-    private boolean addNavPoint =true;
-    private boolean addDestPoint =true;
+    public boolean addNavPoint =true;
+    public boolean addDestPoint =true;
     private int countDestPoints = 0;
     private int countNavPoints =0;
 
     public boolean reloadList = false;
 
-    public ArrayList<Point> points = new ArrayList<Point>();
+    private LinkedHashMap<Object3D,Point> points = new LinkedHashMap<Object3D, Point>();
     public boolean reDraw = false;
 
     public boolean isRelocated = false;
     private Sphere sphere =new Sphere(0.5f,20,20);
+    private ObjectColorPicker mPicker;
+    private Point selectetPoint;
+
+
+    private Material mSphereMaterial = new Material();
+    private boolean pointsClear =  false;
+
+    { mSphereMaterial.enableLighting(true);
+        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());}
+    private Material mSphereMaterialGreen = new Material();
+    { mSphereMaterial.enableLighting(true);
+        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
+    mSphereMaterialGreen.setColor(Color.GREEN);}
+
+    private ArrayList<Line3D> lines = new ArrayList<Line3D>();
 
 
     public GetCoordinateRenderer(Context context) {
         super(context);
     }
+
+
+
 
     public void setCurrentScreenRotation(int currentRotation) {
         mCurrentScreenRotation = currentRotation;
@@ -98,6 +125,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
         Grid grid = new Grid(100, 1, 1, 0xFFCCCCCC);
         grid.setPosition(0, -1.3f, 0);
         getCurrentScene().addChild(grid);
+
         DirectionalLight light = new DirectionalLight(1, 0.2, -1);
         light.setColor(1, 1, 1);
         light.setPower(0.8f);
@@ -109,14 +137,9 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
         light.setPower(0.8f);
         light.setPosition(3, 3, 3);
         getCurrentScene().addLight(light2);
-        Material mSphereMaterial = new Material();
-        mSphereMaterial.enableLighting(true);
-        mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-        mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
-        sphere.setMaterial(mSphereMaterial);
-        getCurrentScene().addChild(sphere);
 
-
+        mPicker = new ObjectColorPicker(this);
+        mPicker.setOnObjectPickedListener(this);
 
 
 
@@ -127,87 +150,49 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
         getCurrentCamera().setFarPlane(CAMERA_FAR);
     }
 
-    public Bitmap textAsBitmap(String text) {// For later usage
-        Paint paint = new Paint();
-        paint.setTextSize(16);
-        paint.setColor(0x666666);
-        paint.setUnderlineText(true);
-        paint.setTextAlign(Paint.Align.CENTER);
-        int width = (int) (paint.measureText(text) + 0.5f); // round
-        float baseline = 10;//(int) (paint.ascent() + 0.5f);
-        int height = (int) (baseline + paint.descent() + 0.5f);
-        Log.d("DEBUGGER", width +"  " + height + " " + baseline);
-        Bitmap image = Bitmap.createBitmap(width,height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(image);
-        canvas.drawText(text, 0, baseline, paint);
-        return image;
-    }
-
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
         // Update the scene objects with the latest device position and orientation information.
         // Synchronize to avoid concurrent access from the Tango callback thread below.
         try {
-            sphere.setPosition(new Vector3(0,0,0));
-            Log.d("DEBUGGER",getCurrentCamera().getProjectionMatrix().getTranslation(sphere.getPosition())+"");
             if(!addNavPoint){
-                addNavPoint = true;
+                addNavPoint();
 
-
-                Vector3 p = new Vector3(getCurrentCamera().getPosition().x,getCurrentCamera().getPosition().y-1,getCurrentCamera().getPosition().z);
-
-                Sphere s = new Sphere(0.1f, 20, 20);
-                Material mSphereMaterial = new Material();
-                mSphereMaterial.enableLighting(true);
-                mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-                mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
-                s.setMaterial(mSphereMaterial);
-
-                getCurrentScene().addChild(s);
-                s.setPosition(p);
-
-                Point point = new NavigationPoint(p,null,"NavPoint" +countNavPoints);
-
-                countNavPoints++;
-                points.add(point);
-                reloadList=true;
             }
             if(!addDestPoint){
-                addDestPoint = true;
+                addDestPoint();
+            }
 
+            if (pointsClear){
+                pointsClear=false;
 
-                Vector3 p = new Vector3(getCurrentCamera().getPosition().x,getCurrentCamera().getPosition().y-1,getCurrentCamera().getPosition().z);
+                getCurrentScene().clearChildren();
+                Grid grid = new Grid(100, 1, 1, 0xFFCCCCCC);
+                grid.setPosition(0, -1.3f, 0);
+                getCurrentScene().addChild(grid);
 
-                Sphere s = new Sphere(0.1f, 20, 20);
-                Material mSphereMaterial = new Material();
-                mSphereMaterial.enableLighting(true);
-                mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-                mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
-                mSphereMaterial.setColor(Color.GREEN);
-                s.setMaterial(mSphereMaterial);
-
-                getCurrentScene().addChild(s);
-                s.setPosition(p);
-                Point point = new DestinationPoint(p,null,"DestPoint" +countDestPoints);
-                countDestPoints++;
-                points.add(point);
-                reloadList=true;
             }
 
             if(reDraw){
                 reDraw=false;
-                Point p = points.get(points.size()-1);
-
-                for(Point n : p.getNeighbours().keySet()){
-                    Stack<Vector3> stack = new Stack<Vector3>();
-                    stack.add(p.getPosition());
-                    stack.add(n.getPosition());
-                    Object3D line = new Line3D(stack,50,Color.RED);
-                    Material m = new Material();
-                    m.setColor(Color.RED);
-                    line.setMaterial(m);
-                    getCurrentScene().addChild(line);
+                for(Line3D line : lines){
+                    getCurrentScene().removeChild(line);
                 }
+
+               for(Object3D key: points.keySet()) {
+                    Point p = points.get(key);
+                   for (Point n : p.getNeighbours().keySet()) {
+                       Stack<Vector3> stack = new Stack<Vector3>();
+                       stack.add(p.getPosition());
+                       stack.add(n.getPosition());
+                       Line3D line = new Line3D(stack, 50, Color.RED);
+                       Material m = new Material();
+                       m.setColor(Color.RED);
+                       line.setMaterial(m);
+                       lines.add(line);
+                       getCurrentScene().addChild(line);
+                   }
+               }
             }
 
 
@@ -265,12 +250,100 @@ public class GetCoordinateRenderer extends RajawaliRenderer {
     }
 
     public  void addNavPoint() {
-        addNavPoint =false;
+        addNavPoint = true;
+        Vector3 p = new Vector3(getCurrentCamera().getPosition().x,getCurrentCamera().getPosition().y-1,getCurrentCamera().getPosition().z);
+        Sphere s = new Sphere(0.1f, 20, 20);
+        s.setMaterial(mSphereMaterial);
+        getCurrentScene().addChild(s);
+        s.setPosition(p);
 
+        mPicker.registerObject(s);
+        Point point = new NavigationPoint(p,null,"NavPoint" +countNavPoints);
+
+        countNavPoints++;
+        points.put(s,point);
+        selectetPoint = point;
+        reloadList=true;
     }
     public  void addDestPoint() {
-        addDestPoint =false;
+        addDestPoint = true;
+        Vector3 p = new Vector3(getCurrentCamera().getPosition().x,getCurrentCamera().getPosition().y-1,getCurrentCamera().getPosition().z);
+        Sphere s = new Sphere(0.1f, 20, 20);
+        s.setMaterial(mSphereMaterialGreen);
+        getCurrentScene().addChild(s);
+        s.setPosition(p);
 
+        mPicker.registerObject(s);
+        Point point = new DestinationPoint(p,null,"DestPoint" +countDestPoints);
+        countDestPoints++;
+        points.put(s,point);
+        selectetPoint = point;
+        reloadList=true;
     }
 
+    @Override
+    public void onObjectPicked(Object3D object) {
+        selectetPoint = points.get(object);
+        reloadList=true;
+    }
+
+    public void getObjectAt(float x, float y) {
+        mPicker.getObjectAt(x, y);
+    }
+
+    public ArrayList<Point> getPoints(){
+        ArrayList<Point> p = new ArrayList<Point>( points.values());
+
+
+        return p;
+    }
+
+    public void clearPoints(){
+        pointsClear = true;
+        points.clear();
+        reDraw =true;
+        countDestPoints=0;
+        countNavPoints=0;
+        selectetPoint=null;
+        reloadList=true;
+
+    }
+    public Point getSelectetPoint() {
+        return selectetPoint;
+    }
+
+    public void removePoint() {
+        for(Object3D key : points.keySet()){
+            if(points.get(key).equals(selectetPoint)){
+
+                getCurrentScene().removeChild(key);
+                Point p = points.remove(key);
+                for(Object3D key2 : points.keySet()){
+                    points.get(key2).getNeighbours().remove(p);
+                }
+                selectetPoint =null;
+                reDraw =true;
+                return;
+            }
+        }
+    }
+
+    public void setPoints(ArrayList<Point> points) {
+        for (Point p : points) {
+            Sphere s = new Sphere(0.1f, 20, 20);
+            getCurrentScene().addChild(s);
+            s.setPosition(p.getPosition());
+            mPicker.registerObject(s);
+            this.points.put(s, p);
+            if (p instanceof DestinationPoint) {
+                s.setMaterial(mSphereMaterialGreen);
+                countDestPoints++;
+            } else {
+                s.setMaterial(mSphereMaterial);
+                countNavPoints++;
+            }
+        }
+        reDraw=true;
+
+    }
 }

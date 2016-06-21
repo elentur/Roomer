@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    //roomer colors
+    <color name="main_blue_roomer">#2C3E50</color>
+    <color name="main_red_roomer">#E74C3C</color>
+    <color name="white_roomer">#ECF0F1</color>
+    <color name="light_blue_roomer">#3498DB</color>
+    <color name="light_blue_roomer2">#2980B9</color>
+
+</resources>

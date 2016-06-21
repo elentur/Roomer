@@ -11,4 +11,8 @@ public class NavigationPoint extends Point {
     public NavigationPoint(Vector3 position, HashMap<Point, Double> neighbours, String tag) {
         super(position, neighbours, tag);
     }
+
+    public NavigationPoint(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag) {
+        super(id,position, neighbours, tag);
+    }
 }

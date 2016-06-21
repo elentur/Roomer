@@ -14,13 +14,16 @@
    limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
 
     <RelativeLayout
+
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true">
 
         <org.rajawali3d.surface.RajawaliSurfaceView
             android:id="@+id/gl_surface_view"
@@ -40,7 +43,35 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/relInfo"></RelativeLayout>
+            android:id="@+id/relInfo">
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/fragment_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="295dp"
+                android:layout_marginLeft="794dp"
+                android:id="@+id/thumb_button"
+                android:background="@null"
+                android:src="@drawable/thumb_button_segment3_main" />
+
+        </FrameLayout>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/txtFPS"
+            android:layout_gravity="right|top"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible" />
 
 
     </RelativeLayout>

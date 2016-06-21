@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -32,19 +33,20 @@ public class RoomerDB extends SQLiteOpenHelper {
     private final String adf;
     public final String CREATE_TABLE;
     private boolean isCreating;
-    public RoomerDB(Context context, String  adf) {
-        super(context, "roomer_"+ adf +".db", null, 1);
+
+    public RoomerDB(Context context, String adf) {
+        super(context, "roomer_" + adf + ".db", null, 1);
         this.adf = adf;
-        CREATE_TABLE = "CREATE TABLE Points (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        CREATE_TABLE = "CREATE TABLE Points (ID INTEGER PRIMARY KEY, " +
                 "ISNAV STRING, TAG TEXT, POSX REAL, POSY REAL, POSZ REAL, NEIGHBOURS TEXT);";
-        isCreating=true;
+        isCreating = true;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
             db.execSQL(CREATE_TABLE);
-        }catch (SQLiteException e){
+        } catch (SQLiteException e) {
         }
     }
 
@@ -55,68 +57,68 @@ public class RoomerDB extends SQLiteOpenHelper {
 
     /**
      * Adds a Point to the Database
+     *
      * @param p The point that has to be added to added
      */
-    public void insert(Point p){
+    public void insert(Point p) {
 
-        try{
+        try {
 
             SQLiteDatabase db = getWritableDatabase();
-            if(isCreating) {
+            if (isCreating) {
                 db.execSQL("DROP TABLE IF EXISTS Points");
                 onCreate(db);
-                isCreating=false;
+                isCreating = false;
             }
             ContentValues ct = new ContentValues();
-            ct.put("ISNAV",(p instanceof NavigationPoint)+"");
-            ct.put("TAG",p.getTag());
-            ct.put("POSX",p.getPosition().x);
-            ct.put("POSY",p.getPosition().y);
-            ct.put("POSZ",p.getPosition().z);
-            db.insert("Points",null,ct);
+            ct.put("ID", p.getID());
+            ct.put("ISNAV", (p instanceof NavigationPoint) + "");
+            ct.put("TAG", p.getTag());
+            ct.put("POSX", p.getPosition().x);
+            ct.put("POSY", p.getPosition().y);
+            ct.put("POSZ", p.getPosition().z);
+            db.insert("Points", null, ct);
 
-        }catch (SQLiteException e){
-                Log.e(TAG, e.getMessage());
+        } catch (SQLiteException e) {
+            Log.e(TAG, e.getMessage());
         }
     }
 
     /**
-     *Updates the neighbour relationship for each  point in the database
+     * Updates the neighbour relationship for each  point in the database
+     *
      * @param list A list of Points that have to be updated
      */
-    public void update(ArrayList<Point> list){
-        try{
+    public void update(ArrayList<Point> list) {
+        try {
             SQLiteDatabase db = getWritableDatabase();
-            for(Point p: list){
-                int id = list.indexOf(p)+1;
-                String idN ="";
-                for (Point n : p.getNeighbours().keySet()){
-                    idN = idN + (list.indexOf(n)+1)+";";
+            for (Point p : list) {
+                int id = p.hashCode();
+                String idN = "";
+                for (Point n : p.getNeighbours().keySet()) {
+                    idN = idN + n.getID() + ";";
                 }
                 ContentValues ct = new ContentValues();
                 ct.put("NEIGHBOURS", idN);
-                db.update("Points",ct,"ID="+id,null);
+                db.update("Points", ct, "ID=" + id, null);
             }
-        }catch (SQLiteException e){
-            Log.e(TAG,e.getMessage());
+        } catch (SQLiteException e) {
+            Log.e(TAG, e.getMessage());
         }
-
-
     }
 
     /**
      * Exports the Database to a shared space
+     *
      * @param context
      */
     public void exportDB(Context context) {
 
         File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
 
-        if(!direct.exists())
-        {
-            if(direct.mkdir())
-            {
-               Log.d("DEBUGGER", "Directory is created");
+        if (!direct.exists()) {
+            if (direct.mkdir()) {
+                Log.d("DEBUGGER", "Directory is created");
             }
         }
         try {
@@ -124,8 +126,8 @@ public class RoomerDB extends SQLiteOpenHelper {
             File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
-                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer_"+ adf +".db";
-                String backupDBPath  = "/roomerDBBackups/roomer_"+ adf +".db";
+                String currentDBPath = "/data/" + context.getPackageName() + "/databases/roomer_" + adf + ".db";
+                String backupDBPath = "/roomerDBBackups/roomer_" + adf + ".db";
 
                 File currentDB = new File(data, currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
@@ -143,35 +145,44 @@ public class RoomerDB extends SQLiteOpenHelper {
 
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
                     .show();
-            Log.e(TAG,  e.toString());
+            Log.e(TAG, e.toString());
 
         }
     }
 
+    public void clearDB() {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            db.execSQL("DROP TABLE Points");
+        } catch (SQLiteException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+    }
+
     /**
      * Imports the Database for given ADF from shared space
+     *
      * @param context
      */
     public void importDB(Context context) {
         File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
 
-        if(!direct.exists())
-        {
-            if(direct.mkdir())
-            {
+        if (!direct.exists()) {
+            if (direct.mkdir()) {
                 Log.d("DEBUGGER", "Directory is created");
             }
         }
 
         try {
             File sd = Environment.getExternalStorageDirectory();
-            File data  = Environment.getDataDirectory();
+            File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
-                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer_"+ adf +".db";;
-                String backupDBPath  = "/roomerDBBackups/roomer_"+ adf +".db";
-                File  backupDB= new File(data, currentDBPath);
-                File currentDB  = new File(sd, backupDBPath);
+                String currentDBPath = "/data/" + context.getPackageName() + "/databases/roomer_" + adf + ".db";
+                String backupDBPath = "/roomerDBBackups/roomer_" + adf + ".db";
+                File backupDB = new File(data, currentDBPath);
+                File currentDB = new File(sd, backupDBPath);
                 FileChannel src = new FileInputStream(currentDB).getChannel();
                 FileChannel dst = new FileOutputStream(backupDB).getChannel();
                 dst.transferFrom(src, 0, src.size());
@@ -189,9 +200,10 @@ public class RoomerDB extends SQLiteOpenHelper {
 
     /**
      * Returns an ArrayList with all points
+     *
      * @return ArrayList of Points
      */
-    public ArrayList<Point> loadPoints(){
+    public ArrayList<Point> loadPoints() throws Exception {
         ArrayList<Point> points = new ArrayList<Point>();
         try {
             SQLiteDatabase db = getReadableDatabase();
@@ -199,35 +211,46 @@ public class RoomerDB extends SQLiteOpenHelper {
             if (c.moveToFirst()) {
 
                 while (!c.isAfterLast()) {
+                    int ID = c.getInt(c.getColumnIndex("ID"));
                     String isNav = c.getString(c.getColumnIndex("ISNAV"));
                     String tag = c.getString(c.getColumnIndex("TAG"));
                     double posx = c.getDouble(c.getColumnIndex("POSX"));
                     double posy = c.getDouble(c.getColumnIndex("POSY"));
                     double posz = c.getDouble(c.getColumnIndex("POSZ"));
                     Point point;
-                    if(isNav.equals("true")){
-                        point = new NavigationPoint(new Vector3(posx,posy,posz),null,tag);
-                    }else{
-                        point = new DestinationPoint(new Vector3(posx,posy,posz),null,tag);
+                    if (isNav.equals("true")) {
+                        point = new NavigationPoint(ID,new Vector3(posx, posy, posz), null, tag);
+                    } else {
+                        point = new DestinationPoint(ID,new Vector3(posx, posy, posz), null, tag);
                     }
                     points.add(point);
                     c.moveToNext();
                 }
             }
-            if (c.moveToFirst()) {
-                while (!c.isAfterLast()) {
-                    int id = c.getInt(c.getColumnIndex("ID"));
-                    String n = c.getString(c.getColumnIndex("NEIGHBOURS"));
+
+            for (Point point : points) {
+                int id = point.getID();
+                // get all neighbours from specific point
+                Cursor c1 = db.rawQuery("select NEIGHBOURS from Points where ID ='" + id + "' ", null);
+                if(c1.moveToFirst()) {
+                    String n = c1.getString(c1.getColumnIndex("NEIGHBOURS"));
+                    // tranform str to array
                     String[] ids = n.split(";");
-                    for(String s: ids){
-                        int i = Integer.parseInt(s);
-                        points.get(id-1).addNeighhbour(points.get(i-1));
+                    for (String s : ids) {
+                        try {
+                            int i = Integer.parseInt(s);
+                            for (Point neighbour : points) {
+                                // if the neighbour has the same id like one of the neighbours we are looking for....
+                                if(neighbour.getID() == i) point.addNeighhbour(neighbour);
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
                     }
-                    c.moveToNext();
                 }
             }
-        }catch  (SQLiteException e){
-                Log.e(TAG, e.getMessage());
+        } catch (SQLiteException e) {
+            Log.e(TAG, e.getMessage());
         }
         return points;
     }

@@ -16,9 +16,11 @@
 <resources>
     <string name="app_name">Roomer</string>
     <string name="app_name_long">Roomer the Indoor-Navigator</string>
-
     <string name="exception_tango_error">"Tango exception! Try again!"</string>
     <string name="exception_out_of_date">"Tango service outdated!"</string>
     <string name="permission_motion_tracking">"Motion Tracking permission needed!"</string>
     <string name="tryToLocate">Try to Locate</string>
+    <string name="zielbutton">Ziele</string>
+    <string name="dismiss">Cancel</string>
+    <string name="accept">Start</string>
 </resources>
