@@ -65,7 +65,7 @@ public class Visualize {
      *               at point.size()-1 ist destination
      */
     public static void setPoints(ArrayList<Point> points,RajawaliRenderer renderer) {
-        Visualize.points = points;
+       /* Visualize.points = points;
         Log.d("DEBUGGER","LoadPoints");
         LoaderOBJ objParser = new LoaderOBJ(renderer, R.raw.arrow);
         Log.d("DEBUGGER", "Zeichne Pfeil");
@@ -78,7 +78,7 @@ public class Visualize {
 
         } catch (ParsingException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 
@@ -102,10 +102,10 @@ public class Visualize {
         //Add the Backscreenquad back again
         scene.addChildAt(sq, 0);
         scene.addChild(debugObjects);
-        if(Object != null) scene.addChild(Object);
+       // if(Object != null) scene.addChild(Object);
 
-      /*  //generate a new Point for the actual position of the user
-        Vector3 cp = new Vector3(
+        //generate a new Point for the actual position of the user
+      /*  Vector3 cp = new Vector3(
                 scene.getCamera().getPosition().x,
                 scene.getCamera().getPosition().y - 1,
                 scene.getCamera().getPosition().z);
