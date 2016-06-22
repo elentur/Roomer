@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
@@ -195,6 +196,14 @@ public class DestinationDialog extends DialogFragment  {
             }
         }
         main.loadAreaDescription(uuid);
+        RoomerDB db  =new RoomerDB(main,uuid);
+        try {
+            Log.d("DEBUGGER", db.loadPoints() +"");
+            connectAdapter(db.loadPoints());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setTitel(main);
         clickOnDestinationTab(main);
     }
