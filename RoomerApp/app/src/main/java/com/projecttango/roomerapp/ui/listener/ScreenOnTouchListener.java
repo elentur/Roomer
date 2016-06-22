@@ -32,14 +32,15 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
             thumbButton.setEnabled(true);
             onOff=false;
         } else if (!onOff) {
+
             if (thumbOnTouchListener.countClicks){
                 thumbOnTouchListener.clearFragment();
-
 
             }
             thumbButton.setVisibility(View.INVISIBLE);
             thumbButton.setEnabled(false);
             onOff=true;
+            thumbOnTouchListener.countClicks=false;
         }
 
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {

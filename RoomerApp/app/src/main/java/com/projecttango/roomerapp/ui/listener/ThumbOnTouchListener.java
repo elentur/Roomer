@@ -70,10 +70,7 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
                 if (countClicks) {
 
                     clearFragment();
-                    fragmentManager.beginTransaction().remove(
-                            main.getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
-                    thumbButton.setImageResource(R.drawable.thumb_button_segment3_main);
-                    countClicks = false;
+
                     return true;
                 }
             }
@@ -99,7 +96,10 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
     private Runnable updateTimeTask = new Runnable() {
         @Override
         public void run() {
-            update();
+            if (countClicks){
+                update();
+            }
+
 
         }
     };
