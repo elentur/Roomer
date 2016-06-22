@@ -200,7 +200,6 @@ public class DestinationDialog extends DialogFragment  {
         try {
             Log.d("DEBUGGER", db.loadPoints() +"");
             connectAdapter(db.loadPoints());
-
         } catch (Exception e) {
             e.printStackTrace();
         }
