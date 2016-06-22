@@ -7,7 +7,6 @@ import android.widget.ImageButton;
 
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
-import com.projecttango.roomerapp.StartActivity;
 import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 
 /**

@@ -25,16 +25,14 @@
         <uses-library
             android:name="com.projecttango.libtango_device2"
             android:required="true" />
-            <activity android:name=".RoomerMainActivity">
-            </activity>
-        <activity android:name=".StartActivity"
-            android:icon="@drawable/ic_launcher">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <activity android:name=".RoomerMainActivity"
+                android:icon="@drawable/ic_launcher">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+            </activity>
     </application>
 
 </manifest>
