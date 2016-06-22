@@ -85,6 +85,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     private LinearLayout lltSavePoint;
     private TextView txtLocalized;
     private Button btnSaveCoordinates;
+    private Button btnSaveToSelectedADF;
 
     private EditText txtName;
     private ListView lstPoints;
@@ -116,12 +117,13 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
         portalDataTextField = (TextView) findViewById(R.id.portalCoordinates);
         btnSaveCoordinates =  (Button)findViewById(R.id.btnAddDestination);
+        btnSaveToSelectedADF = (Button) findViewById(R.id.btnSaveToSelectedADF);
 
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = setupTangoUxAndLayout();
 
         adapter = new ArrayAdapter<String>(AdfPointCoordinateActivity.this,
-                android.R.layout.simple_selectable_list_item);
+                android.R.layout.select_dialog_singlechoice);
 
         lstPoints.setAdapter(adapter);
 
@@ -142,6 +144,28 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
             }
         });
 
+
+        /**
+         * The listener for the button who performs the save of the new Meta data
+         * to the selected ADF.
+         */
+        btnSaveToSelectedADF.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Object selected = lstPoints.getAdapter().getItem(lstPoints.getCheckedItemPosition());
+
+
+                String uuu ="dummy";
+                for (String uu : fullUuidList) {
+                    if (uu.equals(selected.toString()));
+                    uuu=uu;
+                }
+                saveMetaDataToAdfB(uuu);
+
+            }
+        });
+
         lstPoints.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -152,6 +176,12 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         });
     }
 
+
+    /**
+     * This method gets the pose data of the device
+     * in the local coordinate system of the loaded ADF.
+     * It will be saved in a positionInADF.
+     */
     public void adfAPortal(){
 
         positionInADF = poseData.translation;
@@ -159,46 +189,38 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         portalDataTextField.setText(Arrays.toString(positionInADF));
 
     }
-    private void loadSelectedADF() {
 
-
-
-    }
+    /**
+     * This method performs the save to the selected uuid from the list to his metadata.
+     * @param uuid The uuid name of the ADF where the position point from the local
+     *             system will be exported to
+     */
     private void saveMetaDataToAdfB(String uuid) {
 
-
-        metaData = new TangoAreaDescriptionMetaData();
+        String point = positionInADF[0]+";"+positionInADF[1] + ";" +positionInADF[2];
         metaData = mTango.loadAreaDescriptionMetaData(uuid);
-        metaData.set("ADFAVector", toByteArray(positionInADF) );
+        metaData.set("ADFAVector", point.getBytes() );
+
+        String s = new String(metaData.get("ADFAVector"));
+
+        double[] as = stringToDoubleArray(s);
+        Log.d("DEBUGGER", Arrays.toString(as));
+
 
     }
 
-    /**
-     * This method converts a given double array to a byte array
-     * @param value the given
-     * @return
-     */
-    public static byte[] toByteArray(double[] value) {
-        byte[] bytes = new byte[8];
-        for (double values : value) {
-            ByteBuffer.wrap(bytes).putDouble(values);
-        }
+   private double[] stringToDoubleArray(String stringToConvert) {
 
-        return bytes;
-    }
+       String[] splittedString = stringToConvert.split(";");
 
-    /**
-     * This method converts a given byte array to a double
-     * @param bytes
-     * @return
-     */
-    public static double toDouble(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).getDouble();
+       double[] pointCoordinatesInDOuble = new double[splittedString.length];
+       for (int i = 0; i < pointCoordinatesInDOuble.length; i++) {
+           pointCoordinatesInDOuble[i] = Double.parseDouble(splittedString[i]);
+       }
+       return pointCoordinatesInDOuble;
     }
 
     private void setUpUUIDlist() {
-
-
 
         fullUuidList = mTango.listAreaDescriptions();
         Collections.reverse(fullUuidList);
@@ -346,7 +368,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
                         adapter.addAll(adfNames);
 
-                        Log.d("DEBUGGER", "TTTHHHHREAAADFDFDF");
 
                          if(mIsRelocalized)txtLocalized.setText( "Localized");
 

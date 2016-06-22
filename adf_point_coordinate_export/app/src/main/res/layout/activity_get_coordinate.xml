@@ -95,7 +95,7 @@
             android:id="@+id/lstPoints"
             android:layout_gravity="bottom"
             android:layout_weight="1"
-            android:choiceMode="multipleChoice" />
+            android:choiceMode="singleChoice" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
