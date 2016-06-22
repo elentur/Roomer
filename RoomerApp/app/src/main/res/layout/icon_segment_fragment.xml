@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/touch_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/restrooms"
+        android:background="@null"
+        android:layout_marginTop="383dp"
+        android:layout_marginLeft="696dp"
+        android:src="@drawable/thumb_button_segment1_blu" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/emergencyExit"
+        android:background="@null"
+        android:layout_marginTop="307dp"
+        android:layout_marginLeft="707dp"
+        android:src="@drawable/thumb_button_segment2_blu" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/show_favorites"
+        android:background="@null"
+        android:layout_marginTop="248dp"
+        android:layout_marginLeft="743dp"
+        android:src="@drawable/thumb_button_segment3_blu"
+        android:adjustViewBounds="false" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/all_destinations"
+        android:background="@null"
+        android:layout_marginTop="194dp"
+        android:layout_marginLeft="869dp"
+        android:src="@drawable/thumb_button_segment5_blu" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/change_building"
+        android:background="@null"
+        android:src="@drawable/thumb_button_segment44_blu"
+        android:layout_marginLeft="822dp"
+        android:layout_marginTop="231dp" />
+
+</FrameLayout>

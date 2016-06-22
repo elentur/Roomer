@@ -192,7 +192,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         for(Point point: points) {
             db.insert(point);
         }
-        db.update(mRenderer.getPoints());
+        db.update(points);
         db.exportDB(getBaseContext());
     }
 
@@ -501,5 +501,8 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         return super.onTouchEvent(event);
     }
 
+    public void clearPoints(View view){
+        mRenderer.clearPoints();
+    }
 
 }
