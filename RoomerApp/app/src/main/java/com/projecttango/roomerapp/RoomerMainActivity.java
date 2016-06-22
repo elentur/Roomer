@@ -184,6 +184,7 @@ public class RoomerMainActivity extends Activity {
                 mTango = new Tango(RoomerMainActivity.this, new ConnectRunnable(this));
 
             }
+            mRenderer.setPoints(null);
         }
     }
 

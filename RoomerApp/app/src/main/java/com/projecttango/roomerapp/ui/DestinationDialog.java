@@ -149,10 +149,7 @@ public class DestinationDialog extends DialogFragment  {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String uuid = main.mTango.listAreaDescriptions().get(main.mTango.listAreaDescriptions().size()-1-position);
-                main.loadAreaDescription(uuid);
-                setTitel(main);
-                clickOnDestinationTab(main);
+                selectADFFile(main,position);
             }
         });
 
@@ -186,6 +183,20 @@ public class DestinationDialog extends DialogFragment  {
 
         if (!onBuilding) clickOnDestinationTab(main);
         return destinationDialogView;
+    }
+
+    private void selectADFFile(RoomerMainActivity main, int position) {
+        String name  = adapterBuilding.getItem(position);
+        String uuid =null;
+        for(String adfID : main.mTango.listAreaDescriptions()){
+            if(new String(main.mTango.loadAreaDescriptionMetaData(adfID).get("name")).equals(name) ){
+                uuid=adfID;
+                break;
+            }
+        }
+        main.loadAreaDescription(uuid);
+        setTitel(main);
+        clickOnDestinationTab(main);
     }
 
     private void setTitel(RoomerMainActivity main) {

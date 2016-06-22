@@ -151,7 +151,7 @@ public class RoomerRenderer extends RajawaliRenderer {
             //Redraw Scene
             if (reDraw) {
                 //Log.d("DEBUGGER","redraw");
-                Visualize.draw(getCurrentScene());
+                Visualize.draw(getCurrentScene(),this);
             }
 
             if (isDebug && debugRerender) {
@@ -231,7 +231,7 @@ public class RoomerRenderer extends RajawaliRenderer {
     public void setPoints(ArrayList<Point> points) {
 
         this.points = points;
-        Visualize.setPoints(points);
+        Visualize.setPoints(points,this);
         reDraw = true;
     }
 
