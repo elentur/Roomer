@@ -95,47 +95,46 @@ public class RoomerMainActivity extends Activity {
     private boolean isDebug = false;
 
 
-    public static String adf;
+    public String adf;
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+       onResume();
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        loadPreferences();
+        //loadPreferences();
         setContentView(R.layout.activity_main_roomer);
-        ui = SetUpUI.getInstance(this);
-        final Intent i = getIntent();
-        uuid = i.getStringExtra("uuid");
-        mRenderer = setupGLViewAndRenderer();
-        mTangoUx = ui.setupTangoUxAndLayout();
+        if(!Tango.hasPermission(this,Tango.PERMISSIONTYPE_ADF_LOAD_SAVE)) {
+            startActivityForResult(
+            Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
+        }
+            ui = SetUpUI.getInstance(this);
+            //final Intent i = getIntent();
+            //uuid = i.getStringExtra("uuid");
 
-        db = new RoomerDB(this, uuid);
+            mTangoUx = ui.setupTangoUxAndLayout();
+
+       /* db = new RoomerDB(this, uuid);
         try {
             db.importDB(getBaseContext());
 
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
                     .show();
-        }
+        }*/
 
+        mRenderer = setupGLViewAndRenderer();
     }
 
-    /**
-     * This method loads the Preferences passed by the StartActivity
-     */
-    private void loadPreferences() {
 
-        SharedPreferences prefs = getSharedPreferences(Constants.ROOMER_PREFS, MODE_PRIVATE);
-        String adfName = prefs.getString("text", "null");
-        if (adfName != null) {
-             adf = prefs.getString("name", "No name defined");
-        } else {
-            Toast.makeText(this,"Could not load preferences",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
 
     /**
      * Sets Rajawalisurface view and its renderer. This is ideally called only once in onCreate.
@@ -154,7 +153,6 @@ public class RoomerMainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         if (mIsConnected.compareAndSet(true, false)) {
-
             mTangoUx.stop();
             mIsRelocalized = false;
             mRenderer.onPause();
@@ -175,18 +173,27 @@ public class RoomerMainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mIsConnected.compareAndSet(false, true)) {
-            // Initialize Tango Service as a normal Android Service, since we call
-            // mTango.disconnect() in onPause, this will unbind Tango Service, so
-            // everytime when onResume get called, we should create a new Tango object.
-            mTangoUx.start(new TangoUx.StartParams());
-            mTango = new Tango(RoomerMainActivity.this, new ConnectRunnable(this,uuid));
+        if(Tango.hasPermission(this,Tango.PERMISSIONTYPE_ADF_LOAD_SAVE)) {
+            if (mIsConnected.compareAndSet(false, true)) {
+                // Initialize Tango Service as a normal Android Service, since we call
+                // mTango.disconnect() in onPause, this will unbind Tango Service, so
+                // everytime when onResume get called, we should create a new Tango object.
+                TangoUx.StartParams params = new TangoUx.StartParams();
+                params.showConnectionScreen = false;
+                mTangoUx.start(params);
+                mTango = new Tango(RoomerMainActivity.this, new ConnectRunnable(this));
+
+            }
+         //   mRenderer.setPoints(null);
         }
     }
 
     public void loadAreaDescription(String uuid){
-        if(uuid == null)  mTango.experimentalLoadAreaDescription(this.uuid);
-        mTango.experimentalLoadAreaDescription(uuid);
+        if(uuid != null) {
+            mTango.experimentalLoadAreaDescription(uuid);
+            this.uuid = uuid;
+            adf = new String(mTango.loadAreaDescriptionMetaData(uuid).get("name"));
+        }
     }
 
     @Override

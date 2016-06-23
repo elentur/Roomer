@@ -4,19 +4,20 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.projecttango.DataStructure.DestinationPoint;
-import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.tangoutils.R;
 
 import org.rajawali3d.Object3D;
-import org.rajawali3d.curves.CatmullRomCurve3D;
+import org.rajawali3d.loader.LoaderOBJ;
+import org.rajawali3d.loader.ParsingException;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.primitives.Sphere;
+import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class Visualize {
     private final static Material material2 = new Material();
     private final static Material material1 = new Material();
     private final static Object3D debugObjects = new Object3D();
+    private static Object3D Object;
 
     static {
         material2.setDiffuseMethod(new DiffuseMethod.Lambert());
@@ -43,6 +45,7 @@ public class Visualize {
         material1.setSpecularMethod(new SpecularMethod.Phong());
         material1.setColor(Color.YELLOW);
         material1.enableLighting(true);
+
     }
 
     private static Material mSphereMaterial = new Material();
@@ -61,8 +64,21 @@ public class Visualize {
      * @param points An sorted ArrayList of Points that represents the NavPath. At 0 is start
      *               at point.size()-1 ist destination
      */
-    public static void setPoints(ArrayList<Point> points) {
-        Visualize.points = points;
+    public static void setPoints(ArrayList<Point> points,RajawaliRenderer renderer) {
+       /* Visualize.points = points;
+        Log.d("DEBUGGER","LoadPoints");
+        LoaderOBJ objParser = new LoaderOBJ(renderer, R.raw.arrow);
+        Log.d("DEBUGGER", "Zeichne Pfeil");
+        try {
+
+            objParser.parse();
+            Object = objParser.getParsedObject();
+          if(Object !=null)  Object.setMaterial(mSphereMaterialGreen);
+
+
+        } catch (ParsingException e) {
+            e.printStackTrace();
+        }*/
 
     }
 
@@ -77,7 +93,8 @@ public class Visualize {
      *
      * @param scene The Rajawali scene where the visualization has to be added
      */
-    public static void draw(RajawaliScene scene) {
+    public static void draw(RajawaliScene scene,RajawaliRenderer renderer ) {
+
         //Save the Backscreenquad
         ScreenQuad sq = (ScreenQuad) scene.getChildrenCopy().get(0);
         //Clear all Elements from Scene
@@ -85,8 +102,10 @@ public class Visualize {
         //Add the Backscreenquad back again
         scene.addChildAt(sq, 0);
         scene.addChild(debugObjects);
+       // if(Object != null) scene.addChild(Object);
+
         //generate a new Point for the actual position of the user
-        Vector3 cp = new Vector3(
+      /*  Vector3 cp = new Vector3(
                 scene.getCamera().getPosition().x,
                 scene.getCamera().getPosition().y - 1,
                 scene.getCamera().getPosition().z);
@@ -133,7 +152,7 @@ public class Visualize {
                 scene.addChild(s);
             }
 
-        }
+        }*/
 
     }
 
@@ -150,8 +169,8 @@ public class Visualize {
 
     public static void main(String[] args) {
         //Test Method
-        setPoints(new ArrayList<Point>());
-        draw(null);
+       //setPoints(new ArrayList<Point>());
+        //draw(null);
     }
 
 

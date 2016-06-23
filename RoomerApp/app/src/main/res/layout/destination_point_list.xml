@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
 
     android:layout_width="match_parent"
@@ -10,29 +10,97 @@
     android:weightSum="1"
     android:padding="@dimen/activity_vertical_margin">
 
-    <SearchView
-        android:id="@+id/searchView"
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="55dp"></SearchView>
+        android:id="@+id/relTabs">
 
-    <ListView
-        android:id="@+id/lv"
-        android:layout_width="fill_parent"
-        android:layout_height="485dp"
-        android:layout_weight="0.97"
-        android:choiceMode="singleChoice"
-        android:listSelector="@color/light_blue_roomer"
-        android:minHeight="75dp" />
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/btnBuilding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="88dp"
+            android:height="36dp"
+            android:typeface="monospace"
+            android:text="Building"
+            android:textSize="14pt"
+            android:paddingLeft="8dp"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentStart="true"
+            android:background="@color/light_blue_roomer" />
 
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/btnDestination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="88dp"
+            android:height="36dp"
+            android:text="Destination"
+            android:textSize="14pt"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id ="@+id/linBuilding"
+        android:layout_below="@+id/relTabs"
+        android:layout_above="@+id/linButtons">
+        <SearchView
+            android:id="@+id/srcBuilding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="55dp"></SearchView>
+
+        <ListView
+            android:id="@+id/lstBuilding"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="singleChoice"
+            android:listSelector="@color/light_blue_roomer"
+            android:minHeight="75dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relTabs"
+        android:layout_above="@+id/linButtons"
+        android:layout_alignParentStart="true"
+        android:id ="@+id/linDestination"
+        android:visibility="invisible">
+
+        <SearchView
+            android:id="@+id/srcDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="55dp"></SearchView>
+
+        <ListView
+            android:id="@+id/lstDestination"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="singleChoice"
+            android:listSelector="@color/light_blue_roomer"
+            android:minHeight="75dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
+        android:id="@+id/linButtons"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="25dp"
+        android:gravity="right">
 
         <Button
             android:id="@+id/cancel"
@@ -59,4 +127,4 @@
     </LinearLayout>
 
 
-</LinearLayout>
+</RelativeLayout>

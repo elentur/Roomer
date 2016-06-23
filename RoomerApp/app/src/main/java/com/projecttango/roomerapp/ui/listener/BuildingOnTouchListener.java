@@ -49,12 +49,6 @@ public class BuildingOnTouchListener implements View.OnTouchListener {
             imageButton.setX(1645);
             imageButton.setY(462);
 
-
-            // here jump back to startActivity where u can choose another ADF, workes but tango service crashes.
-            // Think the tanco service has to disconnect properly when aborting mainscreen :)
-            // Intent intent = new Intent(view.getContext(), StartActivity.class);
-            // main.startActivity(intent);
-
         }
 
         return false;

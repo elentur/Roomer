@@ -3,6 +3,7 @@ package com.projecttango.roomerapp.tango;
 import android.util.Log;
 
 import com.google.atap.tangoservice.Tango;
+import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoConfig;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
@@ -12,6 +13,7 @@ import com.google.atap.tangoservice.TangoPoseData;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
 import com.projecttango.roomerapp.renderer.RoomerSceneFrameCallBack;
+import com.projecttango.roomerapp.ui.SetUpUI;
 
 import java.util.ArrayList;
 
@@ -20,11 +22,10 @@ import java.util.ArrayList;
  */
 public class ConnectRunnable implements Runnable{
     private final RoomerMainActivity main;
-    private final String uuid;
+    private  String uuid;
     private  Tango tango;
-    public ConnectRunnable( final RoomerMainActivity main, final String uuid){
+    public ConnectRunnable( final RoomerMainActivity main){
         this.main =main;
-        this.uuid =uuid;
 
 
     }
@@ -65,6 +66,8 @@ public class ConnectRunnable implements Runnable{
 
 
         //Set adf file
+        uuid = tango.listAreaDescriptions().get(0);
+        main.adf = new String(tango.loadAreaDescriptionMetaData(uuid).get(TangoAreaDescriptionMetaData.KEY_NAME));
         config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION, uuid);
         tango.connect(config);
 
@@ -85,6 +88,8 @@ public class ConnectRunnable implements Runnable{
         main.mExtrinsics = new RoomerDeviceExtrinsics(tango);
         main.mIntrinsics = tango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
 
+        //open Dialog for adf selection
+        SetUpUI.getInstance(main).getDestinationDialog().show(main.getFragmentManager(), "Ziele", true);
     }
 
     /**
