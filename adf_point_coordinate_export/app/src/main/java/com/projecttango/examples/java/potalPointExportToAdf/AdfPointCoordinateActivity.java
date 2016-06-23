@@ -136,10 +136,11 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction()==MotionEvent.ACTION_DOWN){
 
-                    adfAPortal();
+                    positionInADF = poseData.translation;
+                    Log.d("DEBUGGER", "position" +Arrays.toString(positionInADF) );
+                    portalDataTextField.setText(Arrays.toString(positionInADF));
 
                 }
-
                 return false;
             }
         });
@@ -153,16 +154,18 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
             @Override
             public void onClick(View view) {
+
                 Object selected = lstPoints.getAdapter().getItem(lstPoints.getCheckedItemPosition());
 
+                String searchedUUID="hull";
 
-                String uuu ="dummy";
-                for (String uu : fullUuidList) {
-                    if (uu.equals(selected.toString()));
-                    uuu=uu;
+                searchedUUID = getUuidforSelectedName(selected.toString());
+
+                if (searchedUUID.equals("hull")){
+                    throw new IllegalStateException();
+                } else {
+                    saveMetaDataToAdfB(searchedUUID);
                 }
-                saveMetaDataToAdfB(uuu);
-
             }
         });
 
@@ -176,18 +179,41 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         });
     }
 
-
     /**
-     * This method gets the pose data of the device
-     * in the local coordinate system of the loaded ADF.
-     * It will be saved in a positionInADF.
+     * This method searches for the selected KEY_Name in the UUID list and
+     * returns the UUID for the found name.
+     * @param selected the name u want the UUID for.
+     * @return the UUID. Is the passed String returned by the method the search was not successful.
      */
-    public void adfAPortal(){
+    public String getUuidforSelectedName(String selected) {
 
-        positionInADF = poseData.translation;
-        Log.d("DEBUGGER", "position" +Arrays.toString(positionInADF) );
-        portalDataTextField.setText(Arrays.toString(positionInADF));
 
+        /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
+        Toast.makeText(AdfPointCoordinateActivity.this,"Selected name:  " + selected , Toast.LENGTH_SHORT).show();
+        Log.d("DEBUGGER", "Selected name :  " + uuid );
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        for (String uuidSearched : fullUuidList) {
+
+            TangoAreaDescriptionMetaData meta = new TangoAreaDescriptionMetaData();
+            meta = mTango.loadAreaDescriptionMetaData(uuidSearched);
+            byte[] nameBytes = meta.get(TangoAreaDescriptionMetaData.KEY_NAME);
+            if (nameBytes != null) {
+                String name = new String(nameBytes);
+                if (name.equals(selected)) {
+
+                    /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
+                    Toast.makeText(AdfPointCoordinateActivity.this,"UUID name:  " + uuidSearched , Toast.LENGTH_SHORT).show();
+                    Log.d("DEBUGGER", "UUID name :  " + uuidSearched );
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    return uuidSearched;
+                }
+            }
+        }
+
+        return selected;
     }
 
     /**
@@ -201,11 +227,10 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         metaData = mTango.loadAreaDescriptionMetaData(uuid);
         metaData.set("ADFAVector", point.getBytes() );
 
-        String s = new String(metaData.get("ADFAVector"));
+        //String s = new String(metaData.get("ADFAVector"));
 
-        double[] as = stringToDoubleArray(s);
-        Log.d("DEBUGGER", Arrays.toString(as));
-
+        //double[] as = stringToDoubleArray(s);
+        //Log.d("DEBUGGER", Arrays.toString(as));
 
     }
 
