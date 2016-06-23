@@ -7,14 +7,19 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
+
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
@@ -43,19 +48,21 @@ public class DestinationDialog extends DialogFragment  {
     private static Button cancel;
     private static Button accept;
     private static ListView lstDestinations;
-    private static SearchView searchView;
+    private static AutoCompleteTextView srcDestination;
     private static ArrayAdapter<Point> adapter;
     private ArrayList<Point> pointsDialog = new ArrayList<Point>();
     private ArrayList<String> adfList = new ArrayList<String>();
     private DestinationPoint selectedPoint = null;
     private ArrayList<Point> allPoints;
     private ListView lstBuildings;
-    private SearchView srcBuilding;
+    private AutoCompleteTextView srcBuilding;
     private boolean isBuilding =true;
     private ArrayAdapter<String> adapterBuilding;
     private Button btnBuilding;
     private Button btnDestination;
     private boolean onBuilding;
+    private LinearLayout linDestinations;
+    private LinearLayout linBuilding;
 
 
     @Override
@@ -80,10 +87,13 @@ public class DestinationDialog extends DialogFragment  {
 
 
         lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
-        searchView = (SearchView) destinationDialogView.findViewById(R.id.srcDestination);
+        srcDestination = (AutoCompleteTextView) destinationDialogView.findViewById(R.id.srcDestination);
 
         lstBuildings = (ListView) destinationDialogView.findViewById(R.id.lstBuilding);
-        srcBuilding = (SearchView) destinationDialogView.findViewById(R.id.srcBuilding);
+        srcBuilding = (AutoCompleteTextView) destinationDialogView.findViewById(R.id.srcBuilding);
+
+        linDestinations = (LinearLayout) destinationDialogView.findViewById(R.id.linDestination);
+        linBuilding = (LinearLayout) destinationDialogView.findViewById(R.id.linBuilding);
 
         cancel = (Button) destinationDialogView.findViewById(R.id.cancel);
         accept = (Button) destinationDialogView.findViewById(R.id.accept);
@@ -102,26 +112,26 @@ public class DestinationDialog extends DialogFragment  {
         adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialog);
         adapterBuilding = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice,adfList);
         lstDestinations.setAdapter(adapter);
+        ArrayAdapter<Point> adapterSrcDestination = new ArrayAdapter<Point>
+                (getActivity(),android.R.layout.select_dialog_item, pointsDialog);
+        srcDestination.setAdapter(adapterSrcDestination);
         lstBuildings.setAdapter(adapterBuilding);
+        ArrayAdapter<String> adapterSrcBuilding = new ArrayAdapter<String>
+                (getActivity(),android.R.layout.select_dialog_item, adfList);
+        srcBuilding.setAdapter(adapterSrcBuilding);
 
         selectedPoint = null;
-        searchView.setQueryHint("Search..");
+        //srcDestination.setQueryHint("Search..");
 
+srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        Log.d("DEBUGGER",srcBuilding.getText().toString() );
+        lstBuildings.setFilterText(srcBuilding.getText().toString());
+        return false;
+    }
+});
 
-        //listener for the search view
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                adapter.getFilter().filter(s);
-                return false;
-            }
-        });
 
         //listener for the accept button
         accept.setOnClickListener(new View.OnClickListener() {
@@ -198,8 +208,10 @@ public class DestinationDialog extends DialogFragment  {
         main.loadAreaDescription(uuid);
         RoomerDB db  =new RoomerDB(main,uuid);
         try {
-            Log.d("DEBUGGER", db.loadPoints() +"");
-            connectAdapter(db.loadPoints());
+            db.importDB(main.getBaseContext());
+            ArrayList<Point> points =  db.loadPoints();
+           // Log.d("DEBUGGER", points +"");
+            connectAdapter(points);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -218,23 +230,23 @@ public class DestinationDialog extends DialogFragment  {
     public void show(FragmentManager manager, String tag, boolean onBuilding) {
         super.show(manager, tag);
         this.onBuilding = onBuilding;
-        Log.d("DEBUGGER" , onBuilding +"");
+       // Log.d("DEBUGGER" , onBuilding +"");
     }
 
     public void clickOnDestinationTab(RoomerMainActivity main) {
-        Log.d("DEBUGGER","onDestination");
+      //  Log.d("DEBUGGER","onDestination");
         btnBuilding.setBackgroundColor(Color.TRANSPARENT);
         btnDestination.setBackgroundColor(main.getResources().getColor(R.color.light_blue_roomer));
-        lstDestinations.setVisibility(View.VISIBLE);
-        lstBuildings.setVisibility(View.INVISIBLE);
+        linDestinations.setVisibility(View.VISIBLE);
+        linBuilding.setVisibility(View.INVISIBLE);
     }
 
     public void clickOnBuildingTab(RoomerMainActivity main) {
-        Log.d("DEBUGGER","onBuilding");
+       // Log.d("DEBUGGER","onBuilding");
         btnDestination.setBackgroundColor(Color.TRANSPARENT);
         btnBuilding.setBackgroundColor(main.getResources().getColor(R.color.light_blue_roomer));
-        lstBuildings.setVisibility(View.VISIBLE);
-        lstDestinations.setVisibility(View.INVISIBLE);
+        linBuilding.setVisibility(View.VISIBLE);
+        linDestinations.setVisibility(View.INVISIBLE);
     }
 
 
@@ -264,9 +276,11 @@ public class DestinationDialog extends DialogFragment  {
 
         for (Point p : list){
             if (p instanceof DestinationPoint){
+              //  Log.d("DEBUGGER", p.getClass().getSimpleName());
                 pointsDialog.add(p);
             }
         }
+       // Log.d("DEBUGGER", lstDestinations.getAdapter().getCount() +"");
     }
 
     /**
