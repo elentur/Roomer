@@ -90,8 +90,8 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                             TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                             TangoPoseData.COORDINATE_FRAME_DEVICE);
                     try {
-                        main.points = main.db.loadPoints();
-                        main.mRenderer.setAllPoints(main.points);
+                       // main.points = main.db.loadPoints();
+                       // main.mRenderer.setAllPoints(main.points);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

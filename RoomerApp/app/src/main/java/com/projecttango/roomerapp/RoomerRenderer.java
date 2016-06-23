@@ -79,6 +79,8 @@ public class RoomerRenderer extends RajawaliRenderer {
     private long fps = 0;
     public int globalFPS = 0;
 
+    public Visualize vis;
+
     public RoomerRenderer(Context context) {
         super(context);
     }
@@ -123,9 +125,8 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
         getCurrentCamera().setFarPlane(CAMERA_FAR);
 
-
-        Visualize.init(getCurrentScene());
-
+        vis = Visualize.getInstance(this);
+        //vis.setPoints(null);
         timeStamp = System.currentTimeMillis();
     }
 
@@ -145,22 +146,22 @@ public class RoomerRenderer extends RajawaliRenderer {
             if (clear) {
                 clear = false;
                 reDraw = false;
-                Visualize.clear(getCurrentScene());
+                vis.clear(getCurrentScene());
 
             }
             //Redraw Scene
             if (reDraw) {
                 //Log.d("DEBUGGER","redraw");
-                Visualize.draw(getCurrentScene(),this);
+                vis.draw(getCurrentScene());
             }
 
             if (isDebug && debugRerender) {
 
                 debugRerender = false;
-                Visualize.debugDraw(allPoints);
+                vis.debugDraw(allPoints);
             } else if (!isDebug && debugRerender) {
                 debugRerender = false;
-                Visualize.debugClear();
+                vis.debugClear();
             }
 
         } catch (Exception e) {
@@ -231,7 +232,7 @@ public class RoomerRenderer extends RajawaliRenderer {
     public void setPoints(ArrayList<Point> points) {
 
         this.points = points;
-        Visualize.setPoints(points,this);
+        vis.setPoints(points);
         reDraw = true;
     }
 
