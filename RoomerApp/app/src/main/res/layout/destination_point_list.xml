@@ -40,7 +40,9 @@
             android:height="36dp"
             android:text="Destination"
             android:textSize="14pt"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="false"
+            android:layout_toEndOf="@id/btnBuilding"
+            android:layout_marginLeft="8dp" />
     </RelativeLayout>
 
     <LinearLayout
@@ -57,7 +59,9 @@
             android:id="@+id/srcBuilding"
             android:password="false"
             android:phoneNumber="false"
-            android:singleLine="false" />
+            android:singleLine="false"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp" />
 
         <ListView
             android:id="@+id/lstBuilding"
@@ -85,7 +89,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/srcDestination"
             android:selectAllOnFocus="true"
-            android:autoText="false" />
+            android:autoText="false"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
 
         <ListView
             android:id="@+id/lstDestination"
@@ -104,7 +110,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/linButtons"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="25dp"
+
         android:gravity="right">
 
         <Button
@@ -115,7 +121,7 @@
             android:minWidth="88dp"
             android:height="36dp"
             android:text="CANCEL"
-            android:textSize="14pt" />
+            android:textSize="12pt" />
 
         <Button
             android:id="@+id/accept"
@@ -124,9 +130,8 @@
             android:layout_height="wrap_content"
             android:minWidth="88dp"
             android:height="36dp"
-            android:typeface="monospace"
             android:text="ACCEPT"
-            android:textSize="14pt"
+            android:textSize="12pt"
             android:paddingLeft="8dp"
             android:layout_marginLeft="8dp" />
     </LinearLayout>

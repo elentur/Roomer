@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -83,7 +84,9 @@ public class DestinationDialog extends DialogFragment  {
         final RoomerMainActivity main = SetUpUI.getInstance(null).main;
 
 
-        setTitel(main);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        //setTitel(main);
+
 
 
         lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
@@ -101,6 +104,7 @@ public class DestinationDialog extends DialogFragment  {
 
         cancel.setTypeface(robotoMedium);
         accept.setTypeface(robotoMedium);
+
 
 
         ArrayList<String> fullUuidList =main.mTango.listAreaDescriptions();
@@ -123,14 +127,14 @@ public class DestinationDialog extends DialogFragment  {
         selectedPoint = null;
         //srcDestination.setQueryHint("Search..");
 
-srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        Log.d("DEBUGGER",srcBuilding.getText().toString() );
-        lstBuildings.setFilterText(srcBuilding.getText().toString());
-        return false;
-    }
-});
+        srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Log.d("DEBUGGER",srcBuilding.getText().toString() );
+                lstBuildings.setFilterText(srcBuilding.getText().toString());
+                return false;
+            }
+        });
 
 
         //listener for the accept button
@@ -168,6 +172,9 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
         btnBuilding = (Button) destinationDialogView.findViewById(R.id.btnBuilding);
 
         btnDestination = (Button) destinationDialogView.findViewById(R.id.btnDestination);
+
+        btnBuilding.setTypeface(robotoMedium);
+        btnDestination.setTypeface(robotoMedium);
 
         btnBuilding.setOnClickListener(new View.OnClickListener() {
             @Override
