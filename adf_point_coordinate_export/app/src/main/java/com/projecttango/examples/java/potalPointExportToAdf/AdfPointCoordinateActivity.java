@@ -190,7 +190,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
         Toast.makeText(AdfPointCoordinateActivity.this,"Selected name:  " + selected , Toast.LENGTH_SHORT).show();
-        Log.d("DEBUGGER", "Selected name :  " + uuid );
+        Log.d("DEBUGGER", "Selected name :  " + selected );
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -204,7 +204,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
                 if (name.equals(selected)) {
 
                     /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-                    Toast.makeText(AdfPointCoordinateActivity.this,"UUID name:  " + uuidSearched , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdfPointCoordinateActivity.this,"UUID name(uuidSearched):  " + uuidSearched , Toast.LENGTH_SHORT).show();
                     Log.d("DEBUGGER", "UUID name :  " + uuidSearched );
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -218,14 +218,30 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     /**
      * This method performs the save to the selected uuid from the list to his metadata.
-     * @param uuid The uuid name of the ADF where the position point from the local
+     * @param uuidInside The uuid name of the ADF where the position point from the local
      *             system will be exported to
      */
-    private void saveMetaDataToAdfB(String uuid) {
+    private void saveMetaDataToAdfB(String uuidInside) {
+
+        byte[]loadedADFADFA =  mTango.loadAreaDescriptionMetaData(uuid).get("ADFAVector");
+        if (loadedADFADFA!=null){
+
+            /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
+            Toast.makeText(AdfPointCoordinateActivity.this,"loadedADFADFA:  " + Arrays.toString(loadedADFADFA) , Toast.LENGTH_SHORT).show();
+            Log.d("DEBUGGER", "loadedADFADFA :  " + uuid );
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        }
+        /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
+        Toast.makeText(AdfPointCoordinateActivity.this,"loadedADFADFA is null:  " + Arrays.toString(loadedADFADFA) , Toast.LENGTH_SHORT).show();
+        Log.d("DEBUGGER", "loadedADFADFA is null :  " + uuid );
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         String point = positionInADF[0]+";"+positionInADF[1] + ";" +positionInADF[2];
-        metaData = mTango.loadAreaDescriptionMetaData(uuid);
-        metaData.set("ADFAVector", point.getBytes() );
+        TangoAreaDescriptionMetaData metaOfExport = mTango.loadAreaDescriptionMetaData(uuidInside);
+        metaOfExport.set("ADFAVector", point.getBytes() );
 
         //String s = new String(metaData.get("ADFAVector"));
 
