@@ -74,4 +74,5 @@ public class RoomerUIThread implements Runnable {
             ui.getTxtFPS().setText("FPS: " + main.mRenderer.globalFPS);
         }
 
+
 }

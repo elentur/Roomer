@@ -85,7 +85,7 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                 main.mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
 
                 if (main.mIsRelocalized) {
-
+                    main.mRenderer.isRelocated=true;
                     main.FRAME_PAIR = new TangoCoordinateFramePair(
                             TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                             TangoPoseData.COORDINATE_FRAME_DEVICE);

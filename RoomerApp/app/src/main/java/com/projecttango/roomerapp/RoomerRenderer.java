@@ -80,6 +80,7 @@ public class RoomerRenderer extends RajawaliRenderer {
     public int globalFPS = 0;
 
     public Visualize vis;
+    public boolean isRelocated = false;
 
     public RoomerRenderer(Context context) {
         super(context);
@@ -134,12 +135,12 @@ public class RoomerRenderer extends RajawaliRenderer {
     protected void onRender(long ellapsedRealtime, double deltaTime) {
 
         //For debug representation of framerate
-            fps++;
-            globalFPS = (int) (fps / ((System.currentTimeMillis() - timeStamp) / 1000.0));
-            if (fps > 1000) {
-                fps = 0;
-                timeStamp = System.currentTimeMillis();
-            }
+        fps++;
+        globalFPS = (int) (fps / ((System.currentTimeMillis() - timeStamp) / 1000.0));
+        if (fps > 1000) {
+            fps = 0;
+            timeStamp = System.currentTimeMillis();
+        }
 
         try {
             //Clear Scene
@@ -150,9 +151,9 @@ public class RoomerRenderer extends RajawaliRenderer {
 
             }
             //Redraw Scene
-            if (reDraw) {
+            if (reDraw && isRelocated) {
                 //Log.d("DEBUGGER","redraw");
-                vis.draw(getCurrentScene());
+                vis.draw(getCurrentScene(),getCurrentCamera());
             }
 
             if (isDebug && debugRerender) {

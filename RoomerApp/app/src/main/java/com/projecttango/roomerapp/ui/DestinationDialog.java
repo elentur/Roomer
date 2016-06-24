@@ -11,6 +11,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -68,8 +70,11 @@ public class DestinationDialog extends DialogFragment  {
     @Override
     public void onResume() {
         super.onResume();
+        getDialog().getWindow().setSoftInputMode(WindowManager.
+                LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         accept.setEnabled(false);
+
         lstDestinations.clearChoices();
     }
 
@@ -85,8 +90,7 @@ public class DestinationDialog extends DialogFragment  {
 
         setTitel(main);
 
-
-        lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
+       lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
         srcDestination = (AutoCompleteTextView) destinationDialogView.findViewById(R.id.srcDestination);
 
         lstBuildings = (ListView) destinationDialogView.findViewById(R.id.lstBuilding);
@@ -169,6 +173,8 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
         btnDestination = (Button) destinationDialogView.findViewById(R.id.btnDestination);
 
+        btnBuilding.setTypeface(robotoMedium);
+        btnDestination.setTypeface(robotoMedium);
         btnBuilding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -205,6 +211,8 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 break;
             }
         }
+        setTitel(main);
+        clickOnDestinationTab(main);
         main.loadAreaDescription(uuid);
         RoomerDB db  =new RoomerDB(main,uuid);
         try {
@@ -215,8 +223,6 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        setTitel(main);
-        clickOnDestinationTab(main);
     }
 
     private void setTitel(RoomerMainActivity main) {
@@ -276,10 +282,11 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
         for (Point p : list){
             if (p instanceof DestinationPoint){
-              //  Log.d("DEBUGGER", p.getClass().getSimpleName());
+
                 pointsDialog.add(p);
             }
         }
+        lstDestinations.setAdapter(adapter);
        // Log.d("DEBUGGER", lstDestinations.getAdapter().getCount() +"");
     }
 
@@ -306,6 +313,7 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                                 destpoint,
                                 allPoints)
                 );
+            mRenderer.setAllPoints(allPoints);
             }
         }
 

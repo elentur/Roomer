@@ -7,6 +7,7 @@ import android.widget.ImageButton;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
 import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
+import com.projecttango.roomerapp.ui.SetUpUI;
 
 
 /**
@@ -33,6 +34,8 @@ public class FavoritesOnTouchListener implements View.OnTouchListener {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment3_red);
             thumbOnTouchListener.upaDateUI();
+            Log.d("DEBUGGER", "debug");
+            SetUpUI.getInstance(null).main.setDebug(view);
 
         }
 
