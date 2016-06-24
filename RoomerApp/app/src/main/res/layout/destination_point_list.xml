@@ -50,11 +50,14 @@
         android:id ="@+id/linBuilding"
         android:layout_below="@+id/relTabs"
         android:layout_above="@+id/linButtons">
-        <SearchView
-            android:id="@+id/srcBuilding"
+
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="55dp"></SearchView>
+            android:id="@+id/srcBuilding"
+            android:password="false"
+            android:phoneNumber="false"
+            android:singleLine="false" />
 
         <ListView
             android:id="@+id/lstBuilding"
@@ -64,6 +67,7 @@
             android:listSelector="@color/light_blue_roomer"
             android:minHeight="75dp"
             android:layout_weight="1" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -76,11 +80,12 @@
         android:id ="@+id/linDestination"
         android:visibility="invisible">
 
-        <SearchView
-            android:id="@+id/srcDestination"
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="55dp"></SearchView>
+            android:id="@+id/srcDestination"
+            android:selectAllOnFocus="true"
+            android:autoText="false" />
 
         <ListView
             android:id="@+id/lstDestination"
