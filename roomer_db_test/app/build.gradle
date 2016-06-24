@@ -36,6 +36,7 @@ dependencies {
     compile 'org.rajawali3d:rajawali:1.0.294-SNAPSHOT@aar'
     compile project(':java_examples_utils')
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
 }
 
 

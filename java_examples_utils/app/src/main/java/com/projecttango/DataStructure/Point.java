@@ -1,5 +1,7 @@
 package com.projecttango.DataStructure;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.io.Serializable;
@@ -8,14 +10,34 @@ import java.util.HashMap;
 /**
  * Created by marcu_000 on 23.05.2016.
  */
+@DatabaseTable(tableName = Point.TABLE_NAME_POINTS)
 public abstract class Point implements Serializable{
+
+    /********************** table *********************************/
+
+    public static final String TABLE_NAME_POINTS = "points";
+    public static final String FIELD_NAME_ID     = "id";
+    public static final String FIELD_NAME_TAG   = "tag";
+
+    /********************* table *******************************/
+
     private static final long serialVersionUID = 1L;
-    private final Vector3 position;
-    private final HashMap<Point,Double> neighbours;
+
+    private Vector3 position;
+
+    private HashMap<Point,Double> neighbours;
+
+    @DatabaseField(columnName = FIELD_NAME_TAG)
     private String tag;
+    @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int ID = 0;
 
+    public Point(){
+        // Don't forget the empty constructor, needed by ORMLite.
+    }
+
     public Point(Vector3 position, HashMap<Point, Double> neighbours,  String tag) {
+
         this.position = position;
         this.neighbours = neighbours!= null? neighbours: new  HashMap<Point,Double>();
         this.tag = tag;
