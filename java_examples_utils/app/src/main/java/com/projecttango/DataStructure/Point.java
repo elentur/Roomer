@@ -10,12 +10,10 @@ import java.util.HashMap;
 /**
  * Created by marcu_000 on 23.05.2016.
  */
-@DatabaseTable(tableName = Point.TABLE_NAME_POINTS)
 public abstract class Point implements Serializable{
 
     /********************** table *********************************/
 
-    public static final String TABLE_NAME_POINTS = "points";
     public static final String FIELD_NAME_ID     = "id";
     public static final String FIELD_NAME_TAG   = "tag";
 

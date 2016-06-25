@@ -13,7 +13,7 @@ public class DestinationPoint extends Point {
 
     /********************** table *********************************/
 
-    public static final String TABLE_NAME_POINTS = "navigationpoints";
+    public static final String TABLE_NAME_POINTS = "points";
 
     /********************* table *******************************/
 
