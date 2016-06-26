@@ -35,6 +35,7 @@ import com.projecttango.DataStructure.RoomerDB;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -73,7 +74,9 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     private double mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
     private Tango mTango;
+    private int i = 0;
 
+    public static final String ROOMER_PREFS = "roomer_prefs";
     private TangoUx mTangoUx;
     private TangoConfig mConfig;
     private AdfPointCoordinateRenderer mRenderer;
@@ -86,6 +89,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     private TextView txtLocalized;
     private Button btnSaveCoordinates;
     private Button btnSaveToSelectedADF;
+    private Button deleteAllAdfFiles;
 
     private EditText txtName;
     private ListView lstPoints;
@@ -102,6 +106,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     private ArrayList<String> fullUuidList;
     private double[] positionInADF;
+    private double[] added_points_double_array;
 
 
     @Override
@@ -111,6 +116,8 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         Intent i = getIntent();
         uuid = i.getStringExtra("uuid");
 
+        Log.d("DEBUGGER", uuid);
+
 
         lstPoints = (ListView)findViewById(R.id.lstPoints);
 
@@ -118,6 +125,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         portalDataTextField = (TextView) findViewById(R.id.portalCoordinates);
         btnSaveCoordinates =  (Button)findViewById(R.id.btnAddDestination);
         btnSaveToSelectedADF = (Button) findViewById(R.id.btnSaveToSelectedADF);
+        deleteAllAdfFiles = (Button) findViewById(R.id.delete_all_adf_files);
 
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = setupTangoUxAndLayout();
@@ -127,9 +135,16 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         lstPoints.setAdapter(adapter);
 
+
         db = new RoomerDB(this,uuid);
 
 
+        deleteAllAdfFiles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteAllAreaDescriptionFiles();
+            }
+        });
 
         btnSaveCoordinates.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -173,8 +188,8 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    mRenderer.reDraw = true;
-                }
+                mRenderer.reDraw = true;
+            }
 
         });
     }
@@ -205,7 +220,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
                     /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
                     Toast.makeText(AdfPointCoordinateActivity.this,"UUID name(uuidSearched):  " + uuidSearched , Toast.LENGTH_SHORT).show();
-                    Log.d("DEBUGGER", "UUID name :  " + uuidSearched );
+                    Log.d("DEBUGGER", "UUID name of the selected name from list :  " + uuidSearched );
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     return uuidSearched;
@@ -223,42 +238,91 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
      */
     private void saveMetaDataToAdfB(String uuidInside) {
 
-        byte[]loadedADFADFA =  mTango.loadAreaDescriptionMetaData(uuid).get("ADFAVector");
-        if (loadedADFADFA!=null){
-
-            /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-            Toast.makeText(AdfPointCoordinateActivity.this,"loadedADFADFA:  " + Arrays.toString(loadedADFADFA) , Toast.LENGTH_SHORT).show();
-            Log.d("DEBUGGER", "loadedADFADFA :  " + uuid );
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        }
-        /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-        Toast.makeText(AdfPointCoordinateActivity.this,"loadedADFADFA is null:  " + Arrays.toString(loadedADFADFA) , Toast.LENGTH_SHORT).show();
-        Log.d("DEBUGGER", "loadedADFADFA is null :  " + uuid );
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        // set starting point of second adf
 
         String point = positionInADF[0]+";"+positionInADF[1] + ";" +positionInADF[2];
-        TangoAreaDescriptionMetaData metaOfExport = mTango.loadAreaDescriptionMetaData(uuidInside);
-        metaOfExport.set("ADFAVector", point.getBytes() );
 
-        //String s = new String(metaData.get("ADFAVector"));
+        // first i have to ask if there is any key/value with the loaded uuid...
+        // so  search for uuid ==null if yes just save the point with the uuidInside else get the
+        // value of the point and add it to the value of the uuid value then save it
+        SharedPreferences prefs = getSharedPreferences(ROOMER_PREFS, MODE_PRIVATE);
 
-        //double[] as = stringToDoubleArray(s);
-        //Log.d("DEBUGGER", Arrays.toString(as));
+        String loadedUUIDKeyString = prefs.getString(uuid,null);
+
+        // checks if there is a key saved to the prefs under the loaded uuid
+        if (loadedUUIDKeyString!= null) {
+
+            //if yes get the point value string
+
+            String point_loaded_uuid = prefs.getString(uuid, "No point defined");
+            Log.d("DEBUGGER","there is a point saved to the loaded uuid  "+ uuid + "  "  +  point_loaded_uuid);
+
+            // convert the string to a double array
+
+            double[] loaded_uuid_point_values = stringToDoubleArray(loadedUUIDKeyString);
+
+            Log.d("DEBUGGER", "value of the point saved from another adf " + Arrays.toString(loaded_uuid_point_values) );
+
+
+            double x = positionInADF[0];
+            double x1 = loaded_uuid_point_values[0];
+
+            double y = positionInADF[1];
+            double y1 = loaded_uuid_point_values[1];
+
+            double z = positionInADF[2];
+            double z1 = loaded_uuid_point_values[2];
+
+
+            double newX = x + x1;
+            double newy = y + y1;
+            double newZ = z + z1;
+
+            added_points_double_array = new double[3];
+            added_points_double_array[0] = newX;
+            added_points_double_array[1] = newy;
+            added_points_double_array[2] = newZ;
+        }
+
+
+        if (added_points_double_array!=null){
+            point = added_points_double_array[0]+";"+added_points_double_array[1] + ";" +added_points_double_array[2];
+            Log.d("DEBUGGER", "resultpoint: "  + Arrays.toString(added_points_double_array));
+
+        }
+
+
+
+        SharedPreferences.Editor editor = getSharedPreferences(ROOMER_PREFS, MODE_PRIVATE).edit();
+        // save point with selected uuid as key
+        editor.putString(uuidInside, point);
+
+        editor.commit();
+
+
+        String restoredText = prefs.getString(uuidInside, null);
+        if (restoredText != null) {
+            String name = prefs.getString(uuidInside, "No name defined");//"No name defined" is the default value.
+            Log.d("DEBUGGER","key" + name);
+        }
+
+
+
+
 
     }
 
-   private double[] stringToDoubleArray(String stringToConvert) {
 
-       String[] splittedString = stringToConvert.split(";");
 
-       double[] pointCoordinatesInDOuble = new double[splittedString.length];
-       for (int i = 0; i < pointCoordinatesInDOuble.length; i++) {
-           pointCoordinatesInDOuble[i] = Double.parseDouble(splittedString[i]);
-       }
-       return pointCoordinatesInDOuble;
+    private double[] stringToDoubleArray(String stringToConvert) {
+
+        String[] splittedString = stringToConvert.split(";");
+
+        double[] pointCoordinatesInDOuble = new double[splittedString.length];
+        for (int i = 0; i < pointCoordinatesInDOuble.length; i++) {
+            pointCoordinatesInDOuble[i] = Double.parseDouble(splittedString[i]);
+        }
+        return pointCoordinatesInDOuble;
     }
 
     private void setUpUUIDlist() {
@@ -266,7 +330,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         fullUuidList = mTango.listAreaDescriptions();
         Collections.reverse(fullUuidList);
         adfNames = new ArrayList<String>();
-        ArrayList<Double> adfPortals = new ArrayList<Double>();
         for(String uuid: fullUuidList){
             adfNames.add(new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")));
         }
@@ -274,6 +337,11 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         Log.d("DEBUGGER","adfNames" + adfNames.toString());
 
 
+
+
+    }
+
+    private void addPoints() {
 
     }
 
@@ -286,11 +354,19 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         // OpenGL view where all of the graphics are drawn
         RajawaliSurfaceView glView = (RajawaliSurfaceView) findViewById(R.id.gl_surface_view);
         glView.setEGLContextClientVersion(2);
-       // glView.setZOrderOnTop(false);
-       // glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
+        // glView.setZOrderOnTop(false);
+        // glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
         glView.setSurfaceRenderer(renderer);
         glView.setOnTouchListener(this);
         return renderer;
+
+    }
+
+    private void deleteAllAreaDescriptionFiles(){
+
+        for (String uuid : fullUuidList) {
+            mTango.deleteAreaDescription(uuid);
+        }
 
     }
 
@@ -338,6 +414,8 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
                         connectRenderer();
                         setUpUUIDlist();
 
+
+
                     } catch (TangoOutOfDateException outDateEx) {
                         if (mTangoUx != null) {
                             mTangoUx.showTangoOutOfDate();
@@ -366,13 +444,13 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
 
         config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
-           config.putBoolean(
-                  TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
+        config.putBoolean(
+                TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
 
 
 
-         //Set adf file
-            config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,uuid);
+        //Set adf file
+        config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,uuid);
 
         mTango.connect(config);
 
@@ -403,20 +481,27 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
                 if (mTimeToNextUpdate < 0.0) {
                     mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        adapter.addAll(adfNames);
 
 
-                         if(mIsRelocalized)txtLocalized.setText( "Localized");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
 
-                           //here i can do smthing when successfully localized
+                            if (i == 0){
+                                adapter.addAll(adfNames);
+                                i = i+1;
+                            }
 
-                    }
-                });
+
+
+                            if(mIsRelocalized)txtLocalized.setText( "Localized");
+
+
+                            //here i can do smthing when successfully localized
+
+                        }
+                    });
                 }
             }
 
