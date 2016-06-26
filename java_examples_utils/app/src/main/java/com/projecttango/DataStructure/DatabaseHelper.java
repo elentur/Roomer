@@ -10,16 +10,26 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 /**
- * Created by roberto on 23.06.16.
+ * Created by
+ * roberto on 23.06.16.
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
-    private static final String DATABASE_NAME    = "roomer.db";
-    private static final int    DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "roomer.db";
+    private static final int DATABASE_VERSION = 1;
 
     private Dao<Point, Integer> mPointDao = null;
+    private Dao<Point2Point, Integer> mPoint2PointDao = null;
+
+    private static DatabaseHelper sDatabaseHelper;
+
+    public static DatabaseHelper getInstance() {
+        if(sDatabaseHelper == null) throw new IllegalAccessError("DatabaseHelper has to be initialized as an object before makeing a static call!");
+        return sDatabaseHelper;
+    }
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        sDatabaseHelper = this;
     }
 
     @Override
@@ -27,6 +37,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         // creats a new table
         try {
             TableUtils.createTable(connectionSource, Point.class);
+            TableUtils.createTable(connectionSource, Point2Point.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -36,6 +47,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
             TableUtils.dropTable(connectionSource, Point.class, true);
+            TableUtils.dropTable(connectionSource, Point2Point.class, true);
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -52,9 +64,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mPointDao;
     }
 
+     /* Point2Point */
+
+    public Dao<Point2Point, Integer> getPoint2PointDao() throws SQLException {
+        if (mPoint2PointDao == null) {
+            mPoint2PointDao = getDao(Point2Point.class);
+        }
+
+        return mPoint2PointDao;
+    }
+
     @Override
     public void close() {
         mPointDao = null;
+        mPoint2PointDao = null;
         super.close();
     }
 }
