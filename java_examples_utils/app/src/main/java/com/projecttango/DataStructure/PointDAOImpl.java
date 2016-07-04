@@ -29,6 +29,8 @@ public class PointDAOImpl extends BaseDaoImpl<Point, String> implements PointDAO
         data.setY(v.y);
         data.setZ(v.z);
 
+        int id = super.create(data);;
+
         Dao<Point2Point, Integer> point2PointDao = null;
 
         try {
@@ -38,15 +40,15 @@ public class PointDAOImpl extends BaseDaoImpl<Point, String> implements PointDAO
             e.printStackTrace();
         }
 
-        /*for(Point n : data.getNeighbours().keySet()){
+        for(Point n : data.getNeighbours().keySet()){
             try {
                 point2PointDao.create(new Point2Point(data, n));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
 
-        return super.create(data);
+        return id;
     }
 
     @Override

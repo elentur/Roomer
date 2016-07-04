@@ -29,8 +29,6 @@ public class MainActivity extends Activity {
         DatabaseHelper helper  = new DatabaseHelper(this);
         Dao<Point, Integer> pointDao = null;
 
-        Dao<Point2Point, Integer> neighbourDao = null;
-
         Point p1 = new Point(new Vector3(1,2,3),new HashMap<Point, Double>(),"test1");
         p1.setProperty("navigation", true);
 
@@ -42,29 +40,8 @@ public class MainActivity extends Activity {
 
         try {
             pointDao = helper.getPointDao();
-            neighbourDao = helper.getPoint2PointDao();
             pointDao.create(p1);
             pointDao.create(p2);
-
-            for(Point n : p1.getNeighbours().keySet()){
-                try {
-                    neighbourDao.create(new Point2Point(p1, n));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            for(Point n : p2.getNeighbours().keySet()){
-                Log.d("GETNEIGHBOUR_DB", "" + n);
-                Point2Point neighbour = new Point2Point(p2, n);
-                Log.d("Point2Point", "" + neighbour);
-                try {
-                    neighbourDao.create(neighbour);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -73,22 +50,11 @@ public class MainActivity extends Activity {
 
         try {
             final List<Point> points = pointDao.queryForAll();
-
-            Log.d("POINTS_DB", "" + points.size());
-
             for(Point point : points){
-                Log.d("POINT_DB", "" + point);
-
                 editText = new EditText(this);
                 editText.setHint(point.toString());
                 ll.addView(editText);
             }
-
-            final List<Point2Point> neighbour = neighbourDao.queryForAll();
-            Log.d("NEIGHBOUR_DB", "" + neighbour.size());
-            Log.d("NEIGHBOUR_DB", "" + neighbour.toString());
-
-
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -28,10 +28,10 @@ public class Point2Point {
     @DatabaseField(columnName = FIELD_NAME_POINT2POINT_ID, generatedId = true)
     private int mId;
 
-    @DatabaseField(foreign = true, columnName = FIELD_NAME_POINT_ID)
+    @DatabaseField(foreign = true, columnName = FIELD_NAME_POINT_ID, foreignAutoCreate = true, foreignAutoRefresh = true)
     private Point point;
 
-    @DatabaseField(foreign = true, columnName = FIELD_NAME_NEIGHBOUR_ID)
+    @DatabaseField(foreign = true, columnName = FIELD_NAME_NEIGHBOUR_ID, foreignAutoCreate = true, foreignAutoRefresh = true)
     private Point neighbour;
 
     public Point2Point(){
