@@ -25,9 +25,9 @@ public class PointDAOImpl extends BaseDaoImpl<Point, String> implements PointDAO
     public int create(Point data) throws SQLException {
         Vector3 v = data.getPosition();
 
-        data.setX(v.x);
-        data.setY(v.y);
-        data.setZ(v.z);
+        //data.setX(v.x);
+        //data.setY(v.y);
+        //data.setZ(v.z);
 
         int id = super.create(data);;
 
@@ -57,7 +57,7 @@ public class PointDAOImpl extends BaseDaoImpl<Point, String> implements PointDAO
         List<Point> list = super.queryForAll();
 
         for (Point p : list){
-            p.setPosition();
+            //p.setPosition();
             //List neighbours = Point2Point.getNeighbours(p);
         }
 

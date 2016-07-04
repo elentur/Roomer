@@ -15,48 +15,19 @@ import java.util.HashMap;
  * Created by
  * marcu_000 on 23.05.2016.
  */
-@DatabaseTable(tableName = Point.TABLE_NAME_POINTS, daoClass=PointDAOImpl.class)
 public class Point implements Serializable{
-
-    public static final String TABLE_NAME_POINTS = "points";
-
-    public static final String FIELD_NAME_ID     = "id";
-    public static final String FIELD_NAME_TAG   = "tag";
-    public static final String FIELD_NAME_PROPERTIES   = "properties";
-    public static final String FIELD_NAME_X   = "x";
-    public static final String FIELD_NAME_Y   = "y";
-    public static final String FIELD_NAME_Z   = "z";
 
     private static final long serialVersionUID = 1L;
 
     /**
      * unique id of the point. Will be automaticly set by its hashCode()
      */
-    @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
-    private int id = 0;
+    private long id;
 
     /**
      * position of the point
      */
     private Vector3 position;
-
-    /**
-     * x position of the point
-     */
-    @DatabaseField(columnName = FIELD_NAME_X)
-    private double x;
-
-    /**
-     * y position of the point
-     */
-    @DatabaseField(columnName = FIELD_NAME_Y)
-    private double y;
-
-    /**
-     * z position of the point
-     */
-    @DatabaseField(columnName = FIELD_NAME_Z)
-    private double z;
 
     /**
      * all related neighbours, the key is the neighbour point and the value is the distance between it and this point.
@@ -66,13 +37,11 @@ public class Point implements Serializable{
     /**
      * all related property. !IMPORTANT: all values have to be serializable!
      */
-    @DatabaseField(columnName = FIELD_NAME_PROPERTIES, dataType = DataType.SERIALIZABLE)
     private HashMap<String,Object> properties;
 
     /**
      * designation of the point
      */
-    @DatabaseField(columnName = FIELD_NAME_TAG)
     private String tag;
 
 
@@ -117,10 +86,6 @@ public class Point implements Serializable{
             this.id = this.hashCode();
         }
 
-        this.x = position.x;
-        this.y = position.y;
-        this.z = position.z;
-
         this.position = position;
 
         this.neighbours = neighbours!= null? neighbours: new  HashMap<Point,Double>();
@@ -141,36 +106,20 @@ public class Point implements Serializable{
        return Vector3.distanceTo(p1.getPosition(),p2.getPosition());
     }
 
-    public double getX() {
-        return x;
+    public long getId() {
+        return id;
     }
 
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    public void setZ(double z) {
-        this.z = z;
-    }
-
-    public void setPosition() {
-        this.position = new Vector3(this.x,this.y,this.z);
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Vector3 getPosition() {
         return position;
+    }
+
+    public void setPosition(Vector3 position) {
+        this.position = position;
     }
 
     public HashMap<Point, Double> getNeighbours() {
@@ -226,10 +175,6 @@ public class Point implements Serializable{
     public void setProperties(HashMap<String, Object> properties) {
         if(properties == null) throw new IllegalArgumentException("The properties can not be null!");
         this.properties = properties;
-    }
-
-    public int getID() {
-        return id;
     }
 
     public String getTag() {

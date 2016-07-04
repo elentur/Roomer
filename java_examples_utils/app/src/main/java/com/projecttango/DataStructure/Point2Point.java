@@ -70,7 +70,7 @@ public class Point2Point {
         pointPostQb.selectColumns(Point2Point.FIELD_NAME_POINT_ID);
         pointPostQb.where().eq(Point2Point.FIELD_NAME_NEIGHBOUR_ID, new SelectArg());
         QueryBuilder<Point, Integer> postQb = getPointDao().queryBuilder();
-        postQb.where().in(Point.FIELD_NAME_ID, pointPostQb);
+        //postQb.where().in(Point.FIELD_NAME_ID, pointPostQb);
         return postQb.prepare();
     }
 
@@ -97,7 +97,7 @@ public class Point2Point {
     }
 
     public void setPosition() {
-        point.setPosition();
-        neighbour.setPosition();
+        //point.setPosition();
+        //neighbour.setPosition();
     }
 }

@@ -71,7 +71,7 @@ public class RoomerDB extends SQLiteOpenHelper {
                 isCreating = false;
             }
             ContentValues ct = new ContentValues();
-            ct.put("ID", p.getID());
+            ct.put("ID", p.getId());
             ct.put("ISNAV", (p instanceof NavigationPoint) + "");
             ct.put("TAG", p.getTag());
             ct.put("POSX", p.getPosition().x);
@@ -94,9 +94,9 @@ public class RoomerDB extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             for (Point p : list) {
                 int id = p.hashCode();
-                String idN = "";
+                long idN = 0;
                 for (Point n : p.getNeighbours().keySet()) {
-                    idN = idN + n.getID() + ";";
+                    idN = idN + n.getId();
                 }
                 ContentValues ct = new ContentValues();
                 ct.put("NEIGHBOURS", idN);
@@ -229,7 +229,7 @@ public class RoomerDB extends SQLiteOpenHelper {
             }
 
             for (Point point : points) {
-                int id = point.getID();
+                long id = point.getId();
                 // get all neighbours from specific point
                 Cursor c1 = db.rawQuery("select NEIGHBOURS from Points where ID ='" + id + "' ", null);
                 if(c1.moveToFirst()) {
@@ -241,7 +241,7 @@ public class RoomerDB extends SQLiteOpenHelper {
                             int i = Integer.parseInt(s);
                             for (Point neighbour : points) {
                                 // if the neighbour has the same id like one of the neighbours we are looking for....
-                                if(neighbour.getID() == i) point.addNeighhbour(neighbour);
+                                if(neighbour.getId() == i) point.addNeighhbour(neighbour);
                             }
                         } catch (Exception e) {
                             Log.e(TAG, e.getMessage());
