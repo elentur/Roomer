@@ -65,7 +65,6 @@ public class Visualize {
             ob.setRotation(0, -90, 0);
             ob.setMaterial(material2);
             ob.getGeometry().getBoundingBox();
-            // ob.getGeometry().getBoundingBox().transform(ob.getModelMatrix());
             arrow = new Object3D();
             arrow.addChild(ob);
             objParser.parse();
@@ -76,14 +75,6 @@ public class Visualize {
             futureArrow = new Object3D();
             futureArrow.addChild(ob);
             futureArrow.setTransparent(true);
-          /*  if (arrow !=  null){
-                arrow.setMaterial(material2);
-                arrow.setScale(0.5);
-                futureArrow.setMaterial(m);
-                futureArrow.setScale(0.5);
-                futureArrow.setColor(0x5500ff00);
-            }*/
-
         } catch (ParsingException e) {
             e.printStackTrace();
         }
@@ -128,19 +119,43 @@ public class Visualize {
             if (futureArrow != null) {
                 scene.addChild(futureArrow);
             }
+            double dist = Double.MAX_VALUE;
+
+            for (int i = 0; i < points.size(); i++) {
+                double distTemp = points.get(i).getPosition().distanceTo(camera.getPosition());
+
+                if (distTemp > dist) {
+                    if (i>0) {
+                        Vector3 p1 = points.get(i-1).getPosition();
+                        Vector3 p2 = points.get(i).getPosition();
+                        if (p1.distanceTo(p2) < camera.getPosition().distanceTo(p2)) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                dist = distTemp;
+                nextPoint = i;
+            }
+
+            if (dist < 2.0) nextPoint++;
+            Log.d("DEBUGGER", "size: " + points.size());
             double d = 0;
-            if (nextPoint < points.size() - 2) {
+            if (nextPoint < points.size() - 1) {
                 Vector3 p = points.get(nextPoint).getPosition();
+                Log.d("DEBUGGER", "p: " + p);
                 arrowPosition = new Vector3(p.x, p.y + 0.5, p.z);
                 arrow.enableLookAt();
                 Vector3 p2 = points.get(nextPoint + 1).getPosition();
+                Log.d("DEBUGGER", "p2: " + p2);
                 arrow.setLookAt(p2.x, p2.y + 0.5, p2.z);
 
                 Vector3 dir = Vector3.subtractAndCreate(p, camera.getPosition());
                 dir.normalize();
                 d = camera.getOrientation().getZAxis().dot(dir);
             }
-            if (nextPoint < points.size() - 3) {
+            if (nextPoint < points.size() - 2) {
                 Vector3 p = points.get(nextPoint + 1).getPosition();
                 futureArrowPosition = new Vector3(p.x, p.y + 0.5, p.z);
                 futureArrow.enableLookAt();
@@ -149,7 +164,7 @@ public class Visualize {
             }
 
 
-            if (d>0.6){
+            if (d > 0.6) {
                 Log.d("DEBUGGER", " not in Focus");
             }
             //  Log.d("DEBUGGER", nextPoint +"");
@@ -161,6 +176,7 @@ public class Visualize {
 
 
     }
+
 
     public void clear(RajawaliScene scene) {
         points.clear();
@@ -210,7 +226,6 @@ public class Visualize {
         }
 
     }
-
 
     public static Visualize getInstance(RajawaliRenderer renderer) {
         if (renderer == null) return null;
