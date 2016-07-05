@@ -37,6 +37,11 @@ dependencies {
     compile project(':java_examples_utils')
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
     compile 'com.j256.ormlite:ormlite-android:4.48'
+    compile (
+            [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.4.1'],
+            [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.4.1'],
+            [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.4.1']
+    )
 }
 
 

@@ -43,12 +43,29 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
-        pointDao.createPoint(new Vector3(1,2,3),new HashMap<Point, Double>(),"test1",a,b);
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        properties.put("test","properties");
 
-        pointDao.createPoint(new Vector3(3,2,1),new HashMap<Point, Double>(),"test2",a,b);
+        Point p1 = pointDao.createPoint(new Vector3(1,2,3),properties,"test1",a,b);
+
+        Point p2 = pointDao.createPoint(new Vector3(3,2,1),properties,"test2",a,b);
 
         Log.d("debug", "" + pointDao.getAllPoints());
 
+        p1.setPosition(new Vector3(4,5,6));
+
+        pointDao.updatePoint(p1,a,b);
+
+        Log.d("debug", "" + pointDao.getAllPoints());
+
+        pointDao.setEdge(p1,p2);
+
+        Log.d("debug", "" + p1.getNeighbours());
+
+        pointDao.deleteEdge(p1,p2);
+
+
+        Log.d("debug", "" + p1.getNeighbours());
 
     }
 }
