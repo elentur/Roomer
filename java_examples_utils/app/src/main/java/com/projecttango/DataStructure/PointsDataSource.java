@@ -107,8 +107,8 @@ public class PointsDataSource extends DAO{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        point.setProperties(result);
 
+        point.setProperties(result);
         return point;
     }
 

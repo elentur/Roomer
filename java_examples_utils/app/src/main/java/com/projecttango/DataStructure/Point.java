@@ -88,7 +88,7 @@ public class Point implements Serializable{
 
         this.position = position;
 
-        this.neighbours = neighbours!= null ? neighbours: new  HashMap<Point,Double>();
+        this.neighbours = neighbours != null ? neighbours: new  HashMap<Point,Double>();
 
         this.tag = tag;
 
@@ -133,6 +133,9 @@ public class Point implements Serializable{
     public void addNeighhbour(Point p){
         if(p == null) throw new IllegalArgumentException("The Point can not be null!");
         if(!this.equals(p)) {
+
+            if(neighbours == null) neighbours = new HashMap<Point, Double>();
+
             Double x = distance(this, p);
             neighbours.put(p, x);
         }
