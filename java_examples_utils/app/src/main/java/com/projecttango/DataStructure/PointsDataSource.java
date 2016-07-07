@@ -251,7 +251,7 @@ public class PointsDataSource extends DAO{
 
         while (!cursor.isAfterLast()) {
             Point neighbour = cursorToPoint(cursor);
-            p.addNeighhbour(neighbour);
+            p.addNeighbour(neighbour);
             cursor.moveToNext();
         }
         // make sure to close the cursor

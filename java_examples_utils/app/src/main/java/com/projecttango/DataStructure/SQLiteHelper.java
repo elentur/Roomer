@@ -132,14 +132,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public static void showTableContent(SQLiteDatabase database, String table, String[] allPointsColumns ){
 
-        Cursor cursor = database.query(table, allPointsColumns, null, null, null, null, null);
+    /**
+     * Shows all fields of a database table
+     * @param database of the table
+     * @param table name
+     * @param allColumns Array of all columns you are looking for.
+     */
+    public static void showTableContent(SQLiteDatabase database, String table, String[] allColumns ){
+
+        Cursor cursor = database.query(table, allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
 
-            for(int i=0; i< allPointsColumns.length; i++) {
+            for(int i=0; i< allColumns.length; i++) {
                 Log.d("TABLE_"+ table, "" + cursor.getString(i));
             }
 

@@ -54,7 +54,7 @@ public class EdgesDataSource extends DAO{
 
         long insertId = database.insert(SQLiteHelper.TABLE_EDGES, null, values);
 
-        p.addNeighhbour(n);
+        p.addNeighbour(n);
     }
 
     /**
