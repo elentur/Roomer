@@ -20,7 +20,7 @@ public class Point implements Serializable{
     private static final long serialVersionUID = 1L;
 
     /**
-     * unique id of the point. Will be automaticly set by its hashCode()
+     * unique id of the point. Will be automatically set by its hashCode()
      */
     private long id;
 
@@ -148,7 +148,7 @@ public class Point implements Serializable{
      * adds a new neighbour to this point. Ignores neighbours which are the equals!
      * @param p neighbour point
      */
-    public void addNeighhbour(Point p){
+    public void addNeighbour(Point p){
         if(p == null) throw new IllegalArgumentException("The Point can not be null!");
         if(!this.equals(p)) {
 

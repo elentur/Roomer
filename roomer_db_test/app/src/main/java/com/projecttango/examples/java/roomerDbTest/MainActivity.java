@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
 
-        properties.put("type", "navgation");
+        properties.put("type", "navigation");
 
         Point p1 = db.createPoint(new Vector3(1,2,3),properties,"test1");
         Point p2 = db.createPoint(new Vector3(2,3,4),properties,"test2");

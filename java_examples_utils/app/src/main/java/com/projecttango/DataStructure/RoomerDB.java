@@ -2,9 +2,7 @@ package com.projecttango.DataStructure;
 
 import android.content.Context;
 import org.rajawali3d.math.vector.Vector3;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.List;
 
 /**
@@ -66,7 +64,7 @@ public class RoomerDB {
 
     /**
      * Deletes a building from database.
-     * Also will be delete all adf's and points from building in the database!
+     * Also will be delete all adfs and points from building in the database!
      * @param building object to delete
      */
     public void deleteBuilding(Building building){
@@ -159,7 +157,7 @@ public class RoomerDB {
 
     /**
      * Updates the point values in the database. Also updates all edges from point.
-     * ATTENTION: only updates the edges from point side, mot from neighbour side
+     * ATTENTION: only updates the edges from point side, not from neighbour side
      * @param p the point
      */
     public void updatePoint(Point p){

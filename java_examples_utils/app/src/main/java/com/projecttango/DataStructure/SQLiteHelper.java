@@ -62,7 +62,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + ");";
 
     /**
-     * COLUMNS POINS
+     * COLUMNS POINTS
      */
     public static final String POINTS_COLUMN_ID = "_id";
     public static final String POINTS_COLUMN_X = "position_x";
