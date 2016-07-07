@@ -3,6 +3,8 @@ package com.projecttango.DataStructure;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class BuildingsDataSource extends DAO{
         database.delete(SQLiteHelper.TABLE_BUILDINGS, SQLiteHelper.BUILDINGS_COLUMN_ID + " = " + id, null);
     }
 
-    public List<Building> getAllPoints() {
+    public List<Building> getAllBuildings() {
         List<Building> buildings = new ArrayList<Building>();
 
         Cursor cursor = database.query(SQLiteHelper.TABLE_BUILDINGS, allColumns, null, null, null, null, null);
@@ -66,12 +68,66 @@ public class BuildingsDataSource extends DAO{
         return buildings;
     }
 
-    private Building cursorToBuilding(Cursor cursor) {
+    public Building getBuilding(long id){
+        Building b;
 
+        Cursor cursor = database.query(
+                SQLiteHelper.TABLE_BUILDINGS,
+                allColumns,
+                SQLiteHelper.BUILDINGS_COLUMN_ID + "=?",
+                new String[] { "" + id },
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+        b = cursorToBuilding(cursor);
+        cursor.close();
+        return b;
+    }
+
+    public Building getBuilding(String name){
+        Building b;
+
+        Cursor cursor = database.query(
+                SQLiteHelper.TABLE_BUILDINGS,
+                allColumns,
+                SQLiteHelper.BUILDINGS_COLUMN_NAME + "=?",
+                new String[] { name },
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+        b = cursorToBuilding(cursor);
+        cursor.close();
+        return b;
+    }
+
+    private Building cursorToBuilding(Cursor cursor) {
         Log.d("DEBUGGER", "" + cursor);
         Building building = new Building();
         building.setId(cursor.getLong(0));
         building.setName(cursor.getString(1));
         return building;
+    }
+
+    public boolean exist(String name){
+
+        Cursor cursor = database.query(
+                SQLiteHelper.TABLE_BUILDINGS,
+                new String[] { SQLiteHelper.BUILDINGS_COLUMN_ID },
+                SQLiteHelper.BUILDINGS_COLUMN_NAME,
+                new String[] { name },
+                null,
+                null,
+                null
+        );
+
+        Log.d("DEBUGGER", "" + cursor.getCount());
+
+        return cursor.getCount() > 0;
     }
 }

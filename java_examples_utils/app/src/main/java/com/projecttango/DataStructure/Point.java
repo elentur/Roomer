@@ -44,6 +44,11 @@ public class Point implements Serializable{
      */
     private String tag;
 
+    /**
+     * ADF file where the point pertinence
+     */
+    private ADF adf;
+
 
     /**
      * Empty Constructor for DB integration
@@ -56,21 +61,28 @@ public class Point implements Serializable{
      * Instance of a point object.
      */
     public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag) {
-        this(0,position,neighbours,tag,new HashMap<String,Object>());
+        this(0,position,neighbours,tag,new HashMap<String,Object>(),null);
     }
 
     /**
      * Instance of a point object.
      */
-    public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag) {
-        this(id,position,neighbours,tag,new HashMap<String,Object>());
+    public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag, ADF adf) {
+        this(0,position,neighbours,tag,new HashMap<String,Object>(),adf);
     }
 
     /**
      * Instance of a point object.
      */
-    public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<String,Object> properties) {
-        this(0,position,neighbours,tag,properties);
+    public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag, ADF adf) {
+        this(id,position,neighbours,tag,new HashMap<String,Object>(),adf);
+    }
+
+    /**
+     * Instance of a point object.
+     */
+    public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<String,Object> properties, ADF adf) {
+        this(0,position,neighbours,tag,properties,adf);
     }
 
     /**
@@ -81,7 +93,7 @@ public class Point implements Serializable{
      * @param tag designation of the point
      * @param properties HashMap with all properties of the point, dynamically extensible. !IMPORTANT: all values have to be serializable!
      */
-    public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<String,Object> properties) {
+    public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<String,Object> properties, ADF adf) {
         if(id == 0){
             this.id = this.hashCode();
         }
@@ -93,6 +105,8 @@ public class Point implements Serializable{
         this.tag = tag;
 
         this.properties = properties;
+
+        this.adf = adf;
     }
 
     /**
@@ -124,6 +138,10 @@ public class Point implements Serializable{
 
     public HashMap<Point, Double> getNeighbours() {
         return neighbours;
+    }
+
+    public void setNeighbours( HashMap<Point, Double> neighbours) {
+        this.neighbours = neighbours;
     }
 
     /**
@@ -196,6 +214,14 @@ public class Point implements Serializable{
     public void setTag( String tag) {
         if(tag.isEmpty()) throw new IllegalArgumentException("The tag can not be empty!");
         this.tag = tag;
+    }
+
+    public ADF getAdf() {
+        return adf;
+    }
+
+    public void setAdf(ADF adf) {
+        this.adf = adf;
     }
 
     @Override

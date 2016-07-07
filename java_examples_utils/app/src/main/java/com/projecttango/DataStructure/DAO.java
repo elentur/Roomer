@@ -23,6 +23,11 @@ public abstract class DAO {
 
     public DAO(Context context) {
         dbHelper = new SQLiteHelper(context);
+        try {
+            open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void open() throws SQLException {

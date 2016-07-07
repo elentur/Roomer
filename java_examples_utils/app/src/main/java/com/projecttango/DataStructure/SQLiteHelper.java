@@ -1,6 +1,7 @@
 package com.projecttango.DataStructure;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -36,7 +37,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     // Database creation sql statement
     private static final String BUILDINGS_CREATE = "create table " + TABLE_BUILDINGS
             + "( " + BUILDINGS_COLUMN_ID + " integer primary key autoincrement,"
-            + BUILDINGS_COLUMN_NAME + " TEXT not null"
+            + BUILDINGS_COLUMN_NAME + " TEXT not null unique"
             + ");";
 
     /**
@@ -46,7 +47,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String ADFS_COLUMN_X = "position_x";
     public static final String ADFS_COLUMN_Y = "position_y";
     public static final String ADFS_COLUMN_Z = "position_z";
-    public static final String ADFS_COLUMN_NAME = "name";
+    public static final String ADFS_COLUMN_UUID = "uuid";
     public static final String ADFS_COLUMN_BUILDING = "building_id";
 
     // Database creation sql statement
@@ -55,7 +56,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + ADFS_COLUMN_X + " REAL,"
             + ADFS_COLUMN_Y + " REAL,"
             + ADFS_COLUMN_Z + " REAL,"
-            + ADFS_COLUMN_NAME + " TEXT not null,"
+            + ADFS_COLUMN_UUID + " TEXT not null unique,"
             + ADFS_COLUMN_BUILDING + " integer not null,"
             + "FOREIGN KEY(" + ADFS_COLUMN_BUILDING + ") REFERENCES " + TABLE_BUILDINGS + "(" + BUILDINGS_COLUMN_ID + ")"
             + ");";
@@ -70,7 +71,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String POINTS_COLUMN_TAG ="tag";
     public static final String POINTS_COLUMN_PROPERTIES ="properties";
     public static final String POINTS_COLUMN_ADF = "adf_id";
-    public static final String POINTS_COLUMN_BUILDING = "building_id";
 
     // Database creation sql statement
     private static final String POINTS_CREATE = "create table " + TABLE_POINTS
@@ -81,9 +81,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + POINTS_COLUMN_TAG + " TEXT not null,"
             + POINTS_COLUMN_PROPERTIES + " TEXT,"
             + POINTS_COLUMN_ADF + " integer not null,"
-            + POINTS_COLUMN_BUILDING + " integer not null,"
-            + "FOREIGN KEY(" + POINTS_COLUMN_ADF + ") REFERENCES " + TABLE_ADFS + "(" + BUILDINGS_COLUMN_ID + "),"
-            + "FOREIGN KEY(" + POINTS_COLUMN_BUILDING + ") REFERENCES " + TABLE_BUILDINGS + "(" + ADFS_COLUMN_ID + ")"
+            + "UNIQUE ("+POINTS_COLUMN_X+", "+POINTS_COLUMN_Y+","+POINTS_COLUMN_Z+"),"
+            + "FOREIGN KEY(" + POINTS_COLUMN_ADF + ") REFERENCES " + TABLE_ADFS + "(" + BUILDINGS_COLUMN_ID + ")"
             + ");";
 
     /**
@@ -97,8 +96,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + "( " + EDGES_COLUMN_POINT_ID + " integer not null,"
             + EDGES_COLUMN_NEIGHBOUR_ID + " integer not null,"
             + "PRIMARY KEY("+ EDGES_COLUMN_POINT_ID +", "+ EDGES_COLUMN_NEIGHBOUR_ID +"),"
-            + "FOREIGN KEY(" + EDGES_COLUMN_POINT_ID + ") REFERENCES " + TABLE_POINTS + "(" + POINTS_COLUMN_ID + "),"
-            + "FOREIGN KEY(" + EDGES_COLUMN_NEIGHBOUR_ID + ") REFERENCES " + TABLE_POINTS + "(" + POINTS_COLUMN_ID + ")"
+            + "FOREIGN KEY(" + EDGES_COLUMN_POINT_ID + ") REFERENCES " + TABLE_POINTS + "(" + POINTS_COLUMN_ID + ") ON DELETE CASCADE,"
+            + "FOREIGN KEY(" + EDGES_COLUMN_NEIGHBOUR_ID + ") REFERENCES " + TABLE_POINTS + "(" + POINTS_COLUMN_ID + ") ON DELETE CASCADE"
             + ");";
 
 
@@ -125,6 +124,22 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public static void showTableContent(SQLiteDatabase database, String table, String[] allPointsColumns ){
+
+        Cursor cursor = database.query(table, allPointsColumns, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+
+            for(int i=0; i< allPointsColumns.length; i++) {
+                Log.d("TABLE_"+ table, "" + cursor.getString(i));
+            }
+
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+    }
 
 
 }

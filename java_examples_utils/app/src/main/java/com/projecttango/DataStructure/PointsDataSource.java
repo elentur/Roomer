@@ -3,18 +3,17 @@ package com.projecttango.DataStructure;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.List;
 
 /**
@@ -22,28 +21,36 @@ import java.util.List;
  */
 public class PointsDataSource extends DAO{
 
-    private String[] allColumns = { 
-            SQLiteHelper.POINTS_COLUMN_ID,
+    private String[] allPointsColumns = {
             SQLiteHelper.POINTS_COLUMN_X,
             SQLiteHelper.POINTS_COLUMN_Y,
             SQLiteHelper.POINTS_COLUMN_Z,
             SQLiteHelper.POINTS_COLUMN_TAG,
             SQLiteHelper.POINTS_COLUMN_PROPERTIES,
-            SQLiteHelper.POINTS_COLUMN_ADF,
-            SQLiteHelper.POINTS_COLUMN_BUILDING
+            SQLiteHelper.POINTS_COLUMN_ADF
     };
+
+    Context context;
 
     public PointsDataSource(Context context) {
         super(context);
+        this.context = context;
     }
 
-    public Point createPoint(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf, Building building) {
+    public Point createPoint(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf) {
 
-        ContentValues values = setContentValues(position,properties,tag,adf,building);
+        ContentValues values = setContentValues(position,properties,tag,adf);
 
         long insertId = database.insert(SQLiteHelper.TABLE_POINTS, null, values);
 
-        Cursor cursor = database.query(SQLiteHelper.TABLE_POINTS, allColumns, SQLiteHelper.POINTS_COLUMN_ID + " = " + insertId, null, null, null, null);
+        Cursor cursor = database.query(
+                SQLiteHelper.TABLE_POINTS,
+                allPointsColumns,
+                SQLiteHelper.POINTS_COLUMN_ID + "=?",
+                new String[] { "" + insertId },
+                null,
+                null,
+                null);
 
         cursor.moveToFirst();
 
@@ -54,7 +61,7 @@ public class PointsDataSource extends DAO{
         return newPoint;
     }
 
-    private ContentValues setContentValues(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf, Building building) {
+    private ContentValues setContentValues(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf) {
 
         ContentValues values = new ContentValues();
 
@@ -64,7 +71,6 @@ public class PointsDataSource extends DAO{
         values.put(SQLiteHelper.POINTS_COLUMN_TAG, tag);
         values.put(SQLiteHelper.POINTS_COLUMN_PROPERTIES, new JSONObject(properties).toString());
         values.put(SQLiteHelper.POINTS_COLUMN_ADF, adf.getId());
-        values.put(SQLiteHelper.POINTS_COLUMN_BUILDING, building.getId());
 
         return values;
     }
@@ -77,14 +83,58 @@ public class PointsDataSource extends DAO{
     }
 
     public List<Point> getAllPoints() {
+
+        Cursor cursor = database.query(SQLiteHelper.TABLE_POINTS, allPointsColumns, null, null, null, null, null);
+
+        return cursorLoop(cursor);
+    }
+
+    public List<Point> getAllPoints(Building building) {
+
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(SQLiteHelper.TABLE_POINTS +
+                " LEFT OUTER JOIN " + SQLiteHelper.TABLE_ADFS + " ON " +
+                SQLiteHelper.POINTS_COLUMN_ADF + " = " + SQLiteHelper.ADFS_COLUMN_ID);
+
+        qb.appendWhere(SQLiteHelper.ADFS_COLUMN_BUILDING + " = " + building.getId());
+
+        Cursor cursor = qb.query(
+                dbHelper.getReadableDatabase(),
+                allPointsColumns,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        return cursorLoop(cursor);
+    }
+
+    public List<Point> getAllPoints(ADF adf) {
+        Cursor cursor = database.query(
+                SQLiteHelper.TABLE_POINTS,
+                allPointsColumns,
+                SQLiteHelper.POINTS_COLUMN_ADF + "=?",
+                new String[] { "" + adf.getId() },
+                null,
+                null,
+                null
+        );
+
+        return cursorLoop(cursor);
+    }
+
+    private List<Point> cursorLoop(Cursor cursor){
         List<Point> points = new ArrayList<Point>();
 
-        Cursor cursor = database.query(SQLiteHelper.TABLE_POINTS, allColumns, null, null, null, null, null);
-
         cursor.moveToFirst();
+
         while (!cursor.isAfterLast()) {
             Point point = cursorToPoint(cursor);
             points.add(point);
+            setAllEdgesToPoint(point);
             cursor.moveToNext();
         }
         // make sure to close the cursor
@@ -93,13 +143,10 @@ public class PointsDataSource extends DAO{
     }
 
     private Point cursorToPoint(Cursor cursor) {
-
-        Log.d("DEBUGGER", "" + cursor);
         Point point = new Point();
         point.setId(cursor.getLong(0));
         point.setPosition(new Vector3(cursor.getDouble(1),cursor.getDouble(2),cursor.getDouble(3)));
         point.setTag(cursor.getString(4));
-
         HashMap result = new HashMap<String,Object>();
 
         try {
@@ -109,38 +156,44 @@ public class PointsDataSource extends DAO{
         }
 
         point.setProperties(result);
+
+        ADFDataSource adfDao = new ADFDataSource(context);
+
+        ADF adf = adfDao.getADF(cursor.getLong(6));
+
+        point.setAdf(adf);
+
         return point;
     }
 
-    public int updatePoint(Point point, ADF adf, Building building) {
-        ContentValues values = setContentValues(point.getPosition(),point.getProperties(),point.getTag(),adf,building);
+    public int updatePoint(Point point) {
+        ContentValues values = setContentValues(point.getPosition(),point.getProperties(),point.getTag(),point.getAdf());
         return database.update(SQLiteHelper.TABLE_POINTS, values,SQLiteHelper.POINTS_COLUMN_ID + " = " + point.getId(),null );
     }
 
-    public void setEdge(Point p, Point n){
+    public void setAllEdgesToPoint(Point p) {
 
-        long p_id = p.getId();
-        long n_id = n.getId();
+        HashMap<Point, Double> edges = new HashMap<Point, Double>();
 
-        if(p_id <= 0 || n_id <= 0 ) throw new IllegalArgumentException("The point and/or the neighbour are not in the DB. Please inter them first!");
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        ContentValues values = new ContentValues();
+        qb.setTables(SQLiteHelper.TABLE_POINTS +
+                " LEFT OUTER JOIN " + SQLiteHelper.TABLE_EDGES + " ON " +
+                SQLiteHelper.POINTS_COLUMN_ID + " = " + SQLiteHelper.EDGES_COLUMN_NEIGHBOUR_ID);
 
-        values.put(SQLiteHelper.EDGES_COLUMN_POINT_ID, p_id);
-        values.put(SQLiteHelper.EDGES_COLUMN_NEIGHBOUR_ID, n_id);
+        qb.appendWhere(SQLiteHelper.EDGES_COLUMN_POINT_ID + " = " + p.getId());
 
-        long insertId = database.insert(SQLiteHelper.TABLE_EDGES, null, values);
+        Cursor cursor = qb.query(dbHelper.getReadableDatabase(), allPointsColumns, null, null, null, null, null );
 
-        p.addNeighhbour(n);
-    }
+        cursor.moveToFirst();
 
-    public void deleteEdge(Point p, Point n){
-        long p_id = p.getId();
-        long n_id = n.getId();
-        Log.d("DEBUGGER", "Comment deleted with id: " + p_id + " and " + n_id);
-        database.delete(SQLiteHelper.TABLE_EDGES, SQLiteHelper.EDGES_COLUMN_POINT_ID + " = " + p_id + " AND " + SQLiteHelper.EDGES_COLUMN_NEIGHBOUR_ID + " = " + n_id, null);
-
-        p.rmNeighbour(n);
+        while (!cursor.isAfterLast()) {
+            Point neighbour = cursorToPoint(cursor);
+            p.addNeighhbour(neighbour);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
     }
 
 }
