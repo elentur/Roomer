@@ -3,8 +3,6 @@ package com.projecttango.DataStructure;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -16,16 +14,27 @@ import java.util.List;
  */
 public class BuildingsDataSource extends DAO{
 
+    /**
+     *
+     */
     private String[] allColumns = {
             SQLiteHelper.BUILDINGS_COLUMN_ID,
             SQLiteHelper.BUILDINGS_COLUMN_NAME
     };
 
-
+    /**
+     *
+     * @param context
+     */
     public BuildingsDataSource(Context context) {
         super(context);
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public Building createBuilding(String name) {
 
         ContentValues values = new ContentValues();
@@ -46,12 +55,20 @@ public class BuildingsDataSource extends DAO{
     }
 
 
+    /**
+     *
+     * @param building
+     */
     public void deleteBuilding(Building building) {
         long id = building.getId();
         Log.d("DEBUGGER", "Comment deleted with id: " + id);
         database.delete(SQLiteHelper.TABLE_BUILDINGS, SQLiteHelper.BUILDINGS_COLUMN_ID + " = " + id, null);
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Building> getAllBuildings() {
         List<Building> buildings = new ArrayList<Building>();
 
@@ -68,6 +85,11 @@ public class BuildingsDataSource extends DAO{
         return buildings;
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Building getBuilding(long id){
         Building b;
 
@@ -87,6 +109,11 @@ public class BuildingsDataSource extends DAO{
         return b;
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public Building getBuilding(String name){
         Building b;
 
@@ -106,28 +133,35 @@ public class BuildingsDataSource extends DAO{
         return b;
     }
 
+    /**
+     *
+     * @param cursor
+     * @return
+     */
     private Building cursorToBuilding(Cursor cursor) {
-        Log.d("DEBUGGER", "" + cursor);
         Building building = new Building();
         building.setId(cursor.getLong(0));
         building.setName(cursor.getString(1));
         return building;
     }
 
-    public boolean exist(String name){
+    /**
+     * Returns the number of rows with the given name
+     * @param name of the building
+     * @return int number of rows
+     */
+    public int rowNum(String name){
 
         Cursor cursor = database.query(
                 SQLiteHelper.TABLE_BUILDINGS,
                 new String[] { SQLiteHelper.BUILDINGS_COLUMN_ID },
-                SQLiteHelper.BUILDINGS_COLUMN_NAME,
+                SQLiteHelper.BUILDINGS_COLUMN_NAME + "=?",
                 new String[] { name },
                 null,
                 null,
                 null
         );
 
-        Log.d("DEBUGGER", "" + cursor.getCount());
-
-        return cursor.getCount() > 0;
+        return cursor.getCount();
     }
 }

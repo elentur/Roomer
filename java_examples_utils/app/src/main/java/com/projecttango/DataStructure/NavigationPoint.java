@@ -8,14 +8,7 @@ import java.util.HashMap;
 /**
  * Created by marcu_000 on 23.05.2016.
  */
-@DatabaseTable(tableName = NavigationPoint.TABLE_NAME_POINTS)
 public class NavigationPoint extends Point {
-
-    /********************** table *********************************/
-
-    public static final String TABLE_NAME_POINTS = "points";
-
-    /********************* table *******************************/
 
     public NavigationPoint(){}
 

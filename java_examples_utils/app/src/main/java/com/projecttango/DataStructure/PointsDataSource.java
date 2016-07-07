@@ -21,7 +21,11 @@ import java.util.List;
  */
 public class PointsDataSource extends DAO{
 
+    /**
+     *
+     */
     private String[] allPointsColumns = {
+            SQLiteHelper.POINTS_COLUMN_ID,
             SQLiteHelper.POINTS_COLUMN_X,
             SQLiteHelper.POINTS_COLUMN_Y,
             SQLiteHelper.POINTS_COLUMN_Z,
@@ -30,13 +34,28 @@ public class PointsDataSource extends DAO{
             SQLiteHelper.POINTS_COLUMN_ADF
     };
 
+    /**
+     *
+     */
     Context context;
 
+    /**
+     *
+     * @param context
+     */
     public PointsDataSource(Context context) {
         super(context);
         this.context = context;
     }
 
+    /**
+     *
+     * @param position
+     * @param properties
+     * @param tag
+     * @param adf
+     * @return
+     */
     public Point createPoint(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf) {
 
         ContentValues values = setContentValues(position,properties,tag,adf);
@@ -61,6 +80,14 @@ public class PointsDataSource extends DAO{
         return newPoint;
     }
 
+    /**
+     *
+     * @param position
+     * @param properties
+     * @param tag
+     * @param adf
+     * @return
+     */
     private ContentValues setContentValues(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf) {
 
         ContentValues values = new ContentValues();
@@ -75,13 +102,20 @@ public class PointsDataSource extends DAO{
         return values;
     }
 
-
+    /**
+     *
+     * @param point
+     */
     public void deletePoint(Point point) {
         long id = point.getId();
         Log.d("DEBUGGER", "Comment deleted with id: " + id);
         database.delete(SQLiteHelper.TABLE_POINTS, SQLiteHelper.POINTS_COLUMN_ID + " = " + id, null);
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Point> getAllPoints() {
 
         Cursor cursor = database.query(SQLiteHelper.TABLE_POINTS, allPointsColumns, null, null, null, null, null);
@@ -89,6 +123,11 @@ public class PointsDataSource extends DAO{
         return cursorLoop(cursor);
     }
 
+    /**
+     *
+     * @param building
+     * @return
+     */
     public List<Point> getAllPoints(Building building) {
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
@@ -112,6 +151,11 @@ public class PointsDataSource extends DAO{
         return cursorLoop(cursor);
     }
 
+    /**
+     *
+     * @param adf
+     * @return
+     */
     public List<Point> getAllPoints(ADF adf) {
         Cursor cursor = database.query(
                 SQLiteHelper.TABLE_POINTS,
@@ -126,11 +170,15 @@ public class PointsDataSource extends DAO{
         return cursorLoop(cursor);
     }
 
+    /**
+     *
+     * @param cursor
+     * @return
+     */
     private List<Point> cursorLoop(Cursor cursor){
+
         List<Point> points = new ArrayList<Point>();
-
         cursor.moveToFirst();
-
         while (!cursor.isAfterLast()) {
             Point point = cursorToPoint(cursor);
             points.add(point);
@@ -142,6 +190,11 @@ public class PointsDataSource extends DAO{
         return points;
     }
 
+    /**
+     *
+     * @param cursor
+     * @return
+     */
     private Point cursorToPoint(Cursor cursor) {
         Point point = new Point();
         point.setId(cursor.getLong(0));
@@ -166,11 +219,20 @@ public class PointsDataSource extends DAO{
         return point;
     }
 
+    /**
+     *
+     * @param point
+     * @return
+     */
     public int updatePoint(Point point) {
         ContentValues values = setContentValues(point.getPosition(),point.getProperties(),point.getTag(),point.getAdf());
         return database.update(SQLiteHelper.TABLE_POINTS, values,SQLiteHelper.POINTS_COLUMN_ID + " = " + point.getId(),null );
     }
 
+    /**
+     *
+     * @param p
+     */
     public void setAllEdgesToPoint(Point p) {
 
         HashMap<Point, Double> edges = new HashMap<Point, Double>();

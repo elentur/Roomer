@@ -12,18 +12,34 @@ import java.util.HashMap;
  */
 public class EdgesDataSource extends DAO{
 
+    /**
+     *
+     */
     private Context context;
 
-    public EdgesDataSource(Context context) {
-        super(context);
-        this.context = context;
-    }
-
+    /**
+     *
+     */
     private String[] allEdgesColumns = {
             SQLiteHelper.EDGES_COLUMN_POINT_ID,
             SQLiteHelper.EDGES_COLUMN_NEIGHBOUR_ID
     };
 
+    /**
+     *
+     * @param context
+     */
+    public EdgesDataSource(Context context) {
+        super(context);
+        this.context = context;
+    }
+
+
+    /**
+     *
+     * @param p
+     * @param n
+     */
     public void createEdge(Point p, Point n){
 
         long p_id = p.getId();
@@ -41,6 +57,11 @@ public class EdgesDataSource extends DAO{
         p.addNeighhbour(n);
     }
 
+    /**
+     *
+     * @param p
+     * @param n
+     */
     public void deleteEdge(Point p, Point n){
         long p_id = p.getId();
         long n_id = n.getId();
@@ -50,6 +71,10 @@ public class EdgesDataSource extends DAO{
         p.rmNeighbour(n);
     }
 
+    /**
+     *
+     * @param p
+     */
     public void deleteEdges(Point p){
         long p_id = p.getId();
         Log.d("DEBUGGER", "Comment deleted with id: " + p_id);

@@ -33,7 +33,7 @@ public class ADFDataSource extends DAO{
     /**
      *
      */
-    private static String[] allColumns = {
+    private String[] allColumns = {
             SQLiteHelper.ADFS_COLUMN_ID,
             SQLiteHelper.ADFS_COLUMN_X,
             SQLiteHelper.ADFS_COLUMN_Y,

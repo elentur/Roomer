@@ -8,14 +8,8 @@ import java.util.HashMap;
 /**
  * Created by marcu_000 on 23.05.2016.
  */
-@DatabaseTable(tableName = DestinationPoint.TABLE_NAME_POINTS)
+
 public class DestinationPoint extends Point {
-
-    /********************** table *********************************/
-
-    public static final String TABLE_NAME_POINTS = "points";
-
-    /********************* table *******************************/
 
     public DestinationPoint(){}
 

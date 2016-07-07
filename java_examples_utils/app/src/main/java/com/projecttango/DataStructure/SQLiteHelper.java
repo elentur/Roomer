@@ -37,7 +37,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     // Database creation sql statement
     private static final String BUILDINGS_CREATE = "create table " + TABLE_BUILDINGS
             + "( " + BUILDINGS_COLUMN_ID + " integer primary key autoincrement,"
-            + BUILDINGS_COLUMN_NAME + " TEXT not null unique"
+            + BUILDINGS_COLUMN_NAME + " TEXT not null UNIQUE ON CONFLICT REPLACE"
             + ");";
 
     /**
@@ -56,9 +56,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + ADFS_COLUMN_X + " REAL,"
             + ADFS_COLUMN_Y + " REAL,"
             + ADFS_COLUMN_Z + " REAL,"
-            + ADFS_COLUMN_UUID + " TEXT not null unique,"
+            + ADFS_COLUMN_UUID + " TEXT not null UNIQUE ON CONFLICT FAIL,"
             + ADFS_COLUMN_BUILDING + " integer not null,"
-            + "FOREIGN KEY(" + ADFS_COLUMN_BUILDING + ") REFERENCES " + TABLE_BUILDINGS + "(" + BUILDINGS_COLUMN_ID + ")"
+            + "FOREIGN KEY(" + ADFS_COLUMN_BUILDING + ") REFERENCES " + TABLE_BUILDINGS + "(" + BUILDINGS_COLUMN_ID + ") ON DELETE CASCADE"
             + ");";
 
     /**
@@ -81,8 +81,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + POINTS_COLUMN_TAG + " TEXT not null,"
             + POINTS_COLUMN_PROPERTIES + " TEXT,"
             + POINTS_COLUMN_ADF + " integer not null,"
-            + "UNIQUE ("+POINTS_COLUMN_X+", "+POINTS_COLUMN_Y+","+POINTS_COLUMN_Z+"),"
-            + "FOREIGN KEY(" + POINTS_COLUMN_ADF + ") REFERENCES " + TABLE_ADFS + "(" + BUILDINGS_COLUMN_ID + ")"
+            + "UNIQUE ("+POINTS_COLUMN_X+", "+POINTS_COLUMN_Y+","+POINTS_COLUMN_Z+") ON CONFLICT FAIL,"
+            + "FOREIGN KEY(" + POINTS_COLUMN_ADF + ") REFERENCES " + TABLE_ADFS + "(" + BUILDINGS_COLUMN_ID + ") ON DELETE CASCADE"
             + ");";
 
     /**
@@ -111,6 +111,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(EDGES_CREATE);
         db.execSQL(ADFS_CREATE);
         db.execSQL(BUILDINGS_CREATE);
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (!db.isReadOnly()) {
+            db.execSQL("PRAGMA foreign_keys=ON;");
+        }
     }
 
     @Override
