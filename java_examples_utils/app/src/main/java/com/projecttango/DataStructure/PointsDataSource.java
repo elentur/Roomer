@@ -195,25 +195,28 @@ public class PointsDataSource extends DAO{
      * @return
      */
     private Point cursorToPoint(Cursor cursor) {
-        Point point = new Point();
-        point.setId(cursor.getLong(0));
-        point.setPosition(new Vector3(cursor.getDouble(1),cursor.getDouble(2),cursor.getDouble(3)));
-        point.setTag(cursor.getString(4));
-        HashMap result = new HashMap<String,Object>();
+        Point point = null;
+        if(cursor.getCount() > 0) {
+            point = new Point();
+            point.setId(cursor.getLong(0));
+            point.setPosition(new Vector3(cursor.getDouble(1), cursor.getDouble(2), cursor.getDouble(3)));
+            point.setTag(cursor.getString(4));
+            HashMap result = new HashMap<String, Object>();
 
-        try {
-            result = new ObjectMapper().readValue(cursor.getString(5), HashMap.class);
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                result = new ObjectMapper().readValue(cursor.getString(5), HashMap.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            point.setProperties(result);
+
+            ADFDataSource adfDao = new ADFDataSource(context);
+
+            ADF adf = adfDao.getADF(cursor.getLong(6));
+
+            point.setAdf(adf);
         }
-
-        point.setProperties(result);
-
-        ADFDataSource adfDao = new ADFDataSource(context);
-
-        ADF adf = adfDao.getADF(cursor.getLong(6));
-
-        point.setAdf(adf);
 
         return point;
     }
