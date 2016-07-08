@@ -111,15 +111,8 @@ public class RoomerMainActivity extends Activity {
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = ui.setupTangoUxAndLayout();
 
-        db = new RoomerDB(this, uuid);
-        try {
-            db.importDB(getBaseContext());
-
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
-                    .show();
-        }
-
+        // we start the database
+        db = new RoomerDB(this);
     }
 
     /**

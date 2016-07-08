@@ -4,9 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by
@@ -69,8 +67,8 @@ public class BuildingsDataSource extends DAO{
      *
      * @return
      */
-    public List<Building> getAllBuildings() {
-        List<Building> buildings = new ArrayList<Building>();
+    public ArrayList<Building> getAllBuildings() {
+        ArrayList<Building> buildings = new ArrayList<Building>();
 
         Cursor cursor = database.query(SQLiteHelper.TABLE_BUILDINGS, allColumns, null, null, null, null, null);
 

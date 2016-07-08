@@ -9,15 +9,14 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.rajawali3d.math.vector.Vector3;
-
 import java.io.IOException;
 import java.util.ArrayList;
-
 import java.util.HashMap;
-import java.util.List;
+
 
 /**
- * Created by roberto on 04.07.16.
+ * Created by
+ * Roberto on 04.07.16.
  */
 public class PointsDataSource extends DAO{
 
@@ -116,7 +115,7 @@ public class PointsDataSource extends DAO{
      *
      * @return
      */
-    public List<Point> getAllPoints() {
+    public ArrayList<Point> getAllPoints() {
 
         Cursor cursor = database.query(SQLiteHelper.TABLE_POINTS, allPointsColumns, null, null, null, null, null);
 
@@ -128,7 +127,7 @@ public class PointsDataSource extends DAO{
      * @param building
      * @return
      */
-    public List<Point> getAllPoints(Building building) {
+    public ArrayList<Point> getAllPoints(Building building) {
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -156,7 +155,7 @@ public class PointsDataSource extends DAO{
      * @param adf
      * @return
      */
-    public List<Point> getAllPoints(ADF adf) {
+    public ArrayList<Point> getAllPoints(ADF adf) {
         Cursor cursor = database.query(
                 SQLiteHelper.TABLE_POINTS,
                 allPointsColumns,
@@ -175,9 +174,9 @@ public class PointsDataSource extends DAO{
      * @param cursor
      * @return
      */
-    private List<Point> cursorLoop(Cursor cursor){
+    private ArrayList<Point> cursorLoop(Cursor cursor){
 
-        List<Point> points = new ArrayList<Point>();
+        ArrayList<Point> points = new ArrayList<Point>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Point point = cursorToPoint(cursor);

@@ -2,8 +2,8 @@ package com.projecttango.DataStructure;
 
 import android.content.Context;
 import org.rajawali3d.math.vector.Vector3;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Marcus Bätz on 24.05.2016.
@@ -75,7 +75,7 @@ public class RoomerDB {
      * Returns a list of all buildings
      * @return building list
      */
-    public List<Building> getAllBuildings(){
+    public ArrayList<Building> getAllBuildings(){
         return buildingDao.getAllBuildings();
     }
 
@@ -125,7 +125,7 @@ public class RoomerDB {
      * Returns a list of all adfs
      * @return adf list
      */
-    public List<ADF> getAllADFs(){
+    public ArrayList<ADF> getAllADFs(){
         return adfDao.getAllADFs();
     }
 
@@ -184,7 +184,7 @@ public class RoomerDB {
      * Returns a list of all points
      * @return point list
      */
-    public List<Point> getAllPoints(){
+    public ArrayList<Point> getAllPoints(){
         return pointDao.getAllPoints();
     }
 
@@ -193,7 +193,7 @@ public class RoomerDB {
      * @param building where the points belongs
      * @return point list
      */
-    public List<Point> getAllPoints(Building building){
+    public ArrayList<Point> getAllPoints(Building building){
         return pointDao.getAllPoints(building);
     }
 
@@ -202,7 +202,7 @@ public class RoomerDB {
      * @param adf where the points belongs
      * @return point list
      */
-    public List<Point> getAllPoints(ADF adf){
+    public ArrayList<Point> getAllPoints(ADF adf){
         return pointDao.getAllPoints(adf);
     }
 
@@ -229,7 +229,7 @@ public class RoomerDB {
      * @param building where the adfs belongs
      * @return list of adfs
      */
-    public List<ADF> getAllADF(Building building){
+    public ArrayList<ADF> getAllADF(Building building){
         return adfDao.getAllADFs(building);
     }
 
@@ -237,7 +237,7 @@ public class RoomerDB {
      * Returns a list of all ADFs
      * @return list of adfs
      */
-    public List<ADF> getAllADF(){
+    public ArrayList<ADF> getAllADF(){
         return adfDao.getAllADFs();
     }
 

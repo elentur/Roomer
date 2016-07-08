@@ -5,10 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 import org.rajawali3d.math.vector.Vector3;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by 
@@ -86,8 +83,8 @@ public class ADFDataSource extends DAO{
      *
      * @return
      */
-    public List<ADF> getAllADFs() {
-        List<ADF> ADFs = new ArrayList<ADF>();
+    public ArrayList<ADF> getAllADFs() {
+        ArrayList<ADF> ADFs = new ArrayList<ADF>();
 
         Cursor cursor = database.query(SQLiteHelper.TABLE_ADFS, allColumns, null, null, null, null, null);
 
@@ -106,8 +103,8 @@ public class ADFDataSource extends DAO{
      *
      * @return
      */
-    public List<ADF> getAllADFs(Building building) {
-        List<ADF> ADFs = new ArrayList<ADF>();
+    public ArrayList<ADF> getAllADFs(Building building) {
+        ArrayList<ADF> ADFs = new ArrayList<ADF>();
 
         Cursor cursor = database.query(
                 SQLiteHelper.TABLE_ADFS,
