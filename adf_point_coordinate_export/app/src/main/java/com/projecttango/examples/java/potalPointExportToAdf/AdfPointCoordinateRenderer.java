@@ -62,22 +62,12 @@ public class AdfPointCoordinateRenderer extends RajawaliRenderer {
     // http://developer.android.com/reference/android/view/Surface.html#ROTATION_0
     private int mCurrentScreenRotation = 0;
 
-
-    public boolean reloadList = false;
-
-
-
-    private LinkedHashMap<Object3D,Point> points = new LinkedHashMap<Object3D, Point>();
     public boolean reDraw = false;
 
     public boolean isRelocated = false;
-    private Sphere sphere =new Sphere(0.5f,20,20);
-    private ObjectColorPicker mPicker;
-    private Point selectetPoint;
 
 
     private Material mSphereMaterial = new Material();
-    private boolean pointsClear =  false;
 
     { mSphereMaterial.enableLighting(true);
         mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
@@ -88,20 +78,12 @@ public class AdfPointCoordinateRenderer extends RajawaliRenderer {
         mSphereMaterial.setSpecularMethod(new SpecularMethod.Phong());
     mSphereMaterialGreen.setColor(Color.GREEN);}
 
-    private ArrayList<Line3D> lines = new ArrayList<Line3D>();
 
 
     public AdfPointCoordinateRenderer(Context context) {
         super(context);
     }
 
-
-
-
-    public void setCurrentScreenRotation(int currentRotation) {
-        mCurrentScreenRotation = currentRotation;
-        //Zeigt an ob Tablet in Hoch oder querformat und wie herum
-    }
   
     @Override
     protected void initScene() {
@@ -181,17 +163,7 @@ public class AdfPointCoordinateRenderer extends RajawaliRenderer {
         super.onRender(ellapsedRealtime, deltaTime);
     }
 
-    private void addPortalPoint(double[] portalPosition) {
 
-        Vector3 position = new Vector3(portalPosition[0], portalPosition[1], portalPosition[2]);
-
-        Sphere s = new Sphere(0.1f, 20, 20);
-        s.setMaterial(mSphereMaterial);
-        getCurrentScene().addChild(s);
-        s.setPosition(position);
-
-
-    }
 
     @Override
     public void onOffsetsChanged(float v, float v1, float v2, float v3, int i, int i1) {
@@ -203,10 +175,7 @@ public class AdfPointCoordinateRenderer extends RajawaliRenderer {
       // Unused, but needs to be declared to adhere to the IRajawaliSurfaceRenderer interface.
     }
 
-    public Vector3 getPosition() {
-        Vector3 p = new Vector3(getCurrentCamera().getPosition().x,getCurrentCamera().getPosition().y-1,getCurrentCamera().getPosition().z);
-        return p;
-    }
+
 
 
 

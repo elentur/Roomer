@@ -163,7 +163,7 @@ public class ADFDataSource extends DAO{
         Cursor cursor = database.query(
                 SQLiteHelper.TABLE_ADFS,
                 allColumns,
-                SQLiteHelper.ADFS_COLUMN_UUID + "=" + uuid,
+                SQLiteHelper.ADFS_COLUMN_UUID + "='" + uuid +"'",
                 null,
                 null,
                 null,

@@ -144,7 +144,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         deleteAllAdfFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteAllAreaDescriptionFiles();
+                //deleteAllAreaDescriptionFiles();
             }
         });
 
@@ -219,12 +219,11 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         for (String uuidSearched : fullUuidList) {
 
-            TangoAreaDescriptionMetaData meta = new TangoAreaDescriptionMetaData();
-            meta = mTango.loadAreaDescriptionMetaData(uuidSearched);
+
+           TangoAreaDescriptionMetaData meta = mTango.loadAreaDescriptionMetaData(uuidSearched);
             byte[] nameBytes = meta.get(TangoAreaDescriptionMetaData.KEY_NAME);
             if (nameBytes != null) {
-                String name = new String(nameBytes);
-                if (name.equals(selected)) {
+                if (new String(nameBytes).equals(selected)) {
 
                     /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
                     Toast.makeText(AdfPointCoordinateActivity.this,"UUID name(uuidSearched):  " + uuidSearched , Toast.LENGTH_SHORT).show();
@@ -284,21 +283,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     }
 
-    /**
-     * converts string to double array
-     * @param stringToConvert the string to convert
-     * @return The double array
-     */
-    private double[] stringToDoubleArray(String stringToConvert) {
-
-        String[] splittedString = stringToConvert.split(";");
-
-        double[] pointCoordinatesInDOuble = new double[splittedString.length];
-        for (int i = 0; i < pointCoordinatesInDOuble.length; i++) {
-            pointCoordinatesInDOuble[i] = Double.parseDouble(splittedString[i]);
-        }
-        return pointCoordinatesInDOuble;
-    }
 
     private void setUpUUIDlist() {
 
@@ -313,9 +297,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     }
 
-    private void addPoints() {
-
-    }
 
     /**
      * Sets Rajawalisurface view and its renderer. This is ideally called only once in onCreate.
@@ -347,7 +328,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     @Override
     protected void onPause() {
         super.onPause();
-
+        db.exportDB(getBaseContext());
         if (mIsConnected.compareAndSet(true, false)) {
             mTangoUx.stop();
             mIsRelocalized = false;

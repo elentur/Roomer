@@ -1,9 +1,17 @@
 package com.projecttango.DataStructure;
 
 import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.math.vector.Vector3;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.*;
 
 /**
@@ -12,6 +20,7 @@ import java.util.*;
  */
 public class RoomerDB {
 
+    private static final String TAG = RoomerDB.class.getSimpleName();
     /**
      * All dao objects for the database interaction
      */
@@ -31,10 +40,12 @@ public class RoomerDB {
      * @param context for the database
      */
     public RoomerDB(Context context) {
+        importDB(context);
         this.buildingDao = new BuildingsDataSource(context);
         this.adfDao = new ADFDataSource(context);
         this.pointDao = new PointsDataSource(context);
         this.edgeDao = new EdgesDataSource(context);
+
     }
 
     public Building getBuilding() {
@@ -261,4 +272,87 @@ public class RoomerDB {
             pointDao.deletePoint(p);
         }
     }
+
+    /**
+     * Exports the Database to a shared space
+     * @param context
+     */
+    public void exportDB(Context context) {
+
+        File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
+
+        if(!direct.exists())
+        {
+            if(direct.mkdir())
+            {
+                Log.d("DEBUGGER", "Directory is created");
+            }
+        }
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer.db";
+                String backupDBPath  = "/roomerDBBackups/roomer.db";
+
+                File currentDB = new File(data, currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+                Log.d("DEBUGGER", "BackupPath: " + backupDB.toString());
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                Toast.makeText(context, backupDB.toString(),
+                        Toast.LENGTH_LONG).show();
+
+            }
+        } catch (Exception e) {
+
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
+                    .show();
+            Log.e(TAG,  e.toString());
+
+        }
+    }
+    /**
+     * Imports the Database for given ADF from shared space
+     * @param context
+     */
+    public void importDB(Context context) {
+        File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
+
+        if(!direct.exists())
+        {
+            if(direct.mkdir())
+            {
+                Log.d("DEBUGGER", "Directory is created");
+            }
+        }
+
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data  = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer.db";
+                String backupDBPath  = "/roomerDBBackups/roomer.db";
+                File  backupDB= new File(data, currentDBPath);
+                File currentDB  = new File(sd, backupDBPath);
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                Toast.makeText(context, backupDB.toString(),
+                        Toast.LENGTH_LONG).show();
+
+            }
+        } catch (Exception e) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
+
 }

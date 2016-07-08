@@ -147,8 +147,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
             }
         });
         mRenderer.db = db;
-        ADF adf = db.getAdf(uuid);
-        mRenderer.adf = adf;
+
 
     }
 
@@ -174,6 +173,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     protected void onPause() {
         super.onPause();
         savePoints();
+
         if (mIsConnected.compareAndSet(true, false)) {
             mTangoUx.stop();
             mIsRelocalized = false;
@@ -195,6 +195,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         for (Point point : points) {
             db.updatePoint(point);
         }
+        db.exportDB(getBaseContext());
     }
 
     private void loadPoints() {
@@ -226,6 +227,12 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
                         mRenderer.onResume();
                         connectRenderer();
                         loadPoints();
+                        Log.d("DEBUGGER", db.getAllADFs().size() +"");
+                        for(ADF a : db.getAllADFs()){
+                            Log.d("DEBUGGER", a.getName() +"   " + a.getUuid());
+                        }
+                        ADF adf = db.getAdf(uuid);
+                        mRenderer.adf = adf;
                     } catch (TangoOutOfDateException outDateEx) {
                         if (mTangoUx != null) {
                             mTangoUx.showTangoOutOfDate();
