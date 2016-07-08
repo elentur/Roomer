@@ -56,30 +56,30 @@ public class Main {
         pZ = new NavigationPoint(new Vector3(0, 30, 0), new HashMap<Point, Double>(), "Z");
 
         // Neighbours A
-        pA.addNeighhbour(pB);
-        pA.addNeighhbour(pD);
+        pA.addNeighbour(pB);
+        pA.addNeighbour(pD);
 
         // Neighbours B
-        pB.addNeighhbour(pA);
-        pB.addNeighhbour(pC);
+        pB.addNeighbour(pA);
+        pB.addNeighbour(pC);
 
         // Neighbours C
-        pC.addNeighhbour(pB);
-        pC.addNeighhbour(pD);
-        pC.addNeighhbour(pF);
+        pC.addNeighbour(pB);
+        pC.addNeighbour(pD);
+        pC.addNeighbour(pF);
 
         // Neighbours D
-        pD.addNeighhbour(pA);
-        pD.addNeighhbour(pC);
-        pD.addNeighhbour(pE);
+        pD.addNeighbour(pA);
+        pD.addNeighbour(pC);
+        pD.addNeighbour(pE);
 
         // Neighbours E
-        pE.addNeighhbour(pD);
-        pE.addNeighhbour(pF);
+        pE.addNeighbour(pD);
+        pE.addNeighbour(pF);
 
         // Neighbours F
-        pF.addNeighhbour(pC);
-        pF.addNeighhbour(pE);
+        pF.addNeighbour(pC);
+        pF.addNeighbour(pE);
 
         pZ = pF;
 
@@ -152,90 +152,90 @@ public class Main {
         pZ = p18;
 
         // Neighbours 1
-        p1.addNeighhbour(p2);
+        p1.addNeighbour(p2);
 
         // Neighbours 2
-        p2.addNeighhbour(p1);
-        p2.addNeighhbour(p3);
-        //p2.addNeighhbour(p8);
+        p2.addNeighbour(p1);
+        p2.addNeighbour(p3);
+        //p2.addNeighbour(p8);
 
         // Neighbours 3
-        p3.addNeighhbour(p2);
-        p3.addNeighhbour(p4);
+        p3.addNeighbour(p2);
+        p3.addNeighbour(p4);
 
         // Neighbours 4
-        p4.addNeighhbour(p3);
-        p4.addNeighhbour(p5);
-        p4.addNeighhbour(p10);
+        p4.addNeighbour(p3);
+        p4.addNeighbour(p5);
+        p4.addNeighbour(p10);
 
         // Neighbours 5
-        p5.addNeighhbour(p4);
-        p5.addNeighhbour(p6);
-        p5.addNeighhbour(p12);
+        p5.addNeighbour(p4);
+        p5.addNeighbour(p6);
+        p5.addNeighbour(p12);
 
         // Neighbours 6
-        p6.addNeighhbour(p5);
+        p6.addNeighbour(p5);
 
         // Neighbours 7
-        p7.addNeighhbour(p8);
+        p7.addNeighbour(p8);
 
         // Neighbours 8
-        p8.addNeighhbour(p2);
-        p8.addNeighhbour(p7);
-        p8.addNeighhbour(p9);
-        p8.addNeighhbour(p15);
+        p8.addNeighbour(p2);
+        p8.addNeighbour(p7);
+        p8.addNeighbour(p9);
+        p8.addNeighbour(p15);
 
         // Neighbours 9
-        p9.addNeighhbour(p8);
-        p9.addNeighhbour(p10);
+        p9.addNeighbour(p8);
+        p9.addNeighbour(p10);
 
         // Neighbours 10
-        p10.addNeighhbour(p4);
-        p10.addNeighhbour(p9);
-        p10.addNeighhbour(p11);
-        p10.addNeighhbour(p17);
+        p10.addNeighbour(p4);
+        p10.addNeighbour(p9);
+        p10.addNeighbour(p11);
+        p10.addNeighbour(p17);
 
         // Neighbours 11
-        p11.addNeighhbour(p10);
-        p11.addNeighhbour(p11);
+        p11.addNeighbour(p10);
+        p11.addNeighbour(p11);
 
         // Neighbours 12
-        p12.addNeighhbour(p5);
-        p12.addNeighhbour(p11);
-        p12.addNeighhbour(p13);
-        p12.addNeighhbour(p19);
+        p12.addNeighbour(p5);
+        p12.addNeighbour(p11);
+        p12.addNeighbour(p13);
+        p12.addNeighbour(p19);
 
         // Neighbours 13
-        p13.addNeighhbour(p12);
+        p13.addNeighbour(p12);
 
         // Neighbours 14
-        p14.addNeighhbour(p15);
+        p14.addNeighbour(p15);
 
         // Neighbours 15
-        //p15.addNeighhbour(p8);
-        p15.addNeighhbour(p14);
-        p15.addNeighhbour(p16);
+        //p15.addNeighbour(p8);
+        p15.addNeighbour(p14);
+        p15.addNeighbour(p16);
 
         // Neighbours 16
-        p16.addNeighhbour(p15);
-        p16.addNeighhbour(p17);
+        p16.addNeighbour(p15);
+        p16.addNeighbour(p17);
 
         // Neighbours 17
-        p17.addNeighhbour(p10);
-        p17.addNeighhbour(p16);
-        p17.addNeighhbour(p18);
+        p17.addNeighbour(p10);
+        p17.addNeighbour(p16);
+        p17.addNeighbour(p18);
 
         // Neighbours 18
-        p18.addNeighhbour(p17);
-        p18.addNeighhbour(p19);
+        p18.addNeighbour(p17);
+        p18.addNeighbour(p19);
 
         // Neighbours 19
-        p19.addNeighhbour(p12);
-        p19.addNeighhbour(p18);
-        p19.addNeighhbour(p20);
+        p19.addNeighbour(p12);
+        p19.addNeighbour(p18);
+        p19.addNeighbour(p20);
 
         // Neighbours 20
-        p20.addNeighhbour(p19);
+        p20.addNeighbour(p19);
 
         return new Point[]{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20};
     }
@@ -260,39 +260,39 @@ public class Main {
         Point p = new NavigationPoint(new Vector3(5.1, -1, 1), null, "p");
 
         // setting Neighbours
-        a.addNeighhbour(b);
-        a.addNeighhbour(g);
-        b.addNeighhbour(a);
-        b.addNeighhbour(c);
-        c.addNeighhbour(b);
-        c.addNeighhbour(d);
-        c.addNeighhbour(i);
-        i.addNeighhbour(c);
-        d.addNeighhbour(c);
-        d.addNeighhbour(e);
-        e.addNeighhbour(d);
-        e.addNeighhbour(f);
-        e.addNeighhbour(j);
-        j.addNeighhbour(e);
-        f.addNeighhbour(k);
-        g.addNeighhbour(a);
-        h.addNeighhbour(i);
-        i.addNeighhbour(h);
-        i.addNeighhbour(j);
-        j.addNeighhbour(k);
-        j.addNeighhbour(i);
-        k.addNeighhbour(f);
-        k.addNeighhbour(j);
-        l.addNeighhbour(m);
-        m.addNeighhbour(l);
-        m.addNeighhbour(n);
-        n.addNeighhbour(m);
-        n.addNeighhbour(i);
-        i.addNeighhbour(n);
-        o.addNeighhbour(j);
-        j.addNeighhbour(o);
-        o.addNeighhbour(p);
-        p.addNeighhbour(o);
+        a.addNeighbour(b);
+        a.addNeighbour(g);
+        b.addNeighbour(a);
+        b.addNeighbour(c);
+        c.addNeighbour(b);
+        c.addNeighbour(d);
+        c.addNeighbour(i);
+        i.addNeighbour(c);
+        d.addNeighbour(c);
+        d.addNeighbour(e);
+        e.addNeighbour(d);
+        e.addNeighbour(f);
+        e.addNeighbour(j);
+        j.addNeighbour(e);
+        f.addNeighbour(k);
+        g.addNeighbour(a);
+        h.addNeighbour(i);
+        i.addNeighbour(h);
+        i.addNeighbour(j);
+        j.addNeighbour(k);
+        j.addNeighbour(i);
+        k.addNeighbour(f);
+        k.addNeighbour(j);
+        l.addNeighbour(m);
+        m.addNeighbour(l);
+        m.addNeighbour(n);
+        n.addNeighbour(m);
+        n.addNeighbour(i);
+        i.addNeighbour(n);
+        o.addNeighbour(j);
+        j.addNeighbour(o);
+        o.addNeighbour(p);
+        p.addNeighbour(o);
 
         pZ = a;
 

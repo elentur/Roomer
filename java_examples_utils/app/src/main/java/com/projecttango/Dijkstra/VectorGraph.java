@@ -93,7 +93,7 @@ public class VectorGraph {
         Point point = new NavigationPoint(new Vector3(pos),new HashMap<Point, Double>(),"Start");
 
         for(Point candidate : pointList){
-            point.addNeighhbour(candidate);
+            point.addNeighbour(candidate);
         }
 
         if (!graph.containsKey(point)) graph.put(point, new Vertex(point));

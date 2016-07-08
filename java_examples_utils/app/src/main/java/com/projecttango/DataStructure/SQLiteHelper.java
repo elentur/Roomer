@@ -101,6 +101,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + ");";
 
 
+    /**
+     * Generates a SQLiteHelper Object and creates the database roomer.db with all tables.
+     * On app uninstall removes the roomer.db with all tables
+     * @param context
+     */
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -115,6 +120,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onOpen(SQLiteDatabase db) {
+        // enables the foreign key cascading
         super.onOpen(db);
         if (!db.isReadOnly()) {
             db.execSQL("PRAGMA foreign_keys=ON;");
