@@ -249,7 +249,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         Vector3 startingPointofADFyInAdfx = new Vector3(positionInADF[0],positionInADF[1],positionInADF[2]);
 
 
-
         // list with all ADF saved in the DB
         ArrayList<ADF> adfListFromDB = db.getAllADF();
 
@@ -258,7 +257,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         if (adfListFromDB.isEmpty()) {
 
-            db.createADF("BAUWESEN",new Vector3(0,0,0),uuid);
+            db.createADF(new Vector3(0,0,0),"BAUWESEN",uuid);
             //make a new query to get the point of A
             adfListFromDB = db.getAllADF();
 
@@ -266,7 +265,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         // get the uuid from the loaded ADF
         for(ADF adf : adfListFromDB) {
-            if (adf.getUUid.equals(uuid));
+            if (adf.getUuid().equals(uuid));
 
                 // add the position of ADF A to ADF B
                 startingPointofADFyInAdfx.add(adf.getPosition());
@@ -274,7 +273,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         }
 
         // save the new ADFB to BD
-        db.createADF("BAUWESEN",startingPointofADFyInAdfx,uuidSelected);
+        db.createADF(startingPointofADFyInAdfx,"BAUWESEN",uuidSelected);
 
     }
 
