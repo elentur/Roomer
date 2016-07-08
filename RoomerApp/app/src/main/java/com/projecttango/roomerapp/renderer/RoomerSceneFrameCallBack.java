@@ -3,6 +3,7 @@ package com.projecttango.roomerapp.renderer;
 import android.util.Log;
 
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
+import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.projecttango.roomerapp.RoomerMainActivity;
 
@@ -61,6 +62,7 @@ public class RoomerSceneFrameCallBack extends ASceneFrameCallback {
                     if (lastFramePose.statusCode == TangoPoseData.POSE_VALID) {
                         // Update the camera pose from the renderer
                         main.mRenderer.updateRenderCameraPose(lastFramePose, main.mExtrinsics);
+
                         main.mCameraPoseTimestamp = lastFramePose.timestamp;
                     } else {
                         Log.w(main.TAG, "Can't get device pose at time: " + main.mRgbTimestampGlThread);

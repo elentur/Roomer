@@ -36,7 +36,9 @@ import com.projecttango.rajawali.renderables.Grid;
 import com.projecttango.tangosupport.TangoSupport;
 
 import org.rajawali3d.Object3D;
+import org.rajawali3d.lights.ALight;
 import org.rajawali3d.lights.DirectionalLight;
+import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
@@ -51,6 +53,7 @@ import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Stack;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -118,10 +121,17 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentScene().addLight(light);
 
         DirectionalLight light2 = new DirectionalLight(-1, 0.2, -1);
-        light.setColor(1, 4, 4);
-        light.setPower(0.8f);
-        light.setPosition(3, 3, 3);
+        light2.setColor(1, 1, 1);
+        light2.setPower(0.8f);
+        light2.setPosition(3, 3, 3);
         getCurrentScene().addLight(light2);
+
+        PointLight light3 = new PointLight();
+
+        light3.setColor(1, 1, 1);
+        light3.setPower(0.8f);
+        light3.setPosition(100, -100, 100);
+        getCurrentScene().addLight(light3);
 
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
         getCurrentCamera().setFarPlane(CAMERA_FAR);
@@ -149,11 +159,15 @@ public class RoomerRenderer extends RajawaliRenderer {
                 reDraw = false;
                 vis.clear(getCurrentScene());
 
+
             }
             //Redraw Scene
             if (reDraw && isRelocated) {
                 //Log.d("DEBUGGER","redraw");
                 vis.draw(getCurrentScene(),getCurrentCamera());
+                //Notwendig wegen GrafikBug
+                vis.debugDraw(allPoints);
+                vis.debugClear();
             }
 
             if (isDebug && debugRerender) {
@@ -201,6 +215,7 @@ public class RoomerRenderer extends RajawaliRenderer {
                 intrinsics.width, intrinsics.height,
                 intrinsics.fx, intrinsics.fy, intrinsics.cx, intrinsics.cy);
         getCurrentCamera().setProjectionMatrix(projectionMatrix);
+
     }
 
     @Override
@@ -218,7 +233,13 @@ public class RoomerRenderer extends RajawaliRenderer {
         Pose cameraPose = ScenePoseCalculator.toOpenGlCameraPose(devicePose, extrinsics);
         getCurrentCamera().setRotation(cameraPose.getOrientation());
         getCurrentCamera().setPosition(cameraPose.getPosition());
+
+        vis.setCompasArrow(cameraPose);
+
+
+
     }
+
 
     /**
      * It returns the ID currently assigned to the texture where the Tango color camera contents
