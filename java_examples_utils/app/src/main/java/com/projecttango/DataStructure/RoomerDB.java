@@ -1,9 +1,10 @@
 package com.projecttango.DataStructure;
 
 import android.content.Context;
+import org.rajawali3d.Object3D;
 import org.rajawali3d.math.vector.Vector3;
-import java.util.ArrayList;
-import java.util.HashMap;
+
+import java.util.*;
 
 /**
  * Created by Marcus Bätz on 24.05.2016.
@@ -86,10 +87,10 @@ public class RoomerDB {
      * @param uuid from the ADF.
      * @return ADF Object
      */
-    public ADF createADF(Vector3 position, String uuid ){
+    public ADF createADF(Vector3 position, String name, String uuid ){
         if(building == null) throw new NullPointerException("Building is not set! Please set building or give a building name.");
-        String name = building.getName();
-        return createADF(name, position, uuid );
+        String buildingName = building.getName();
+        return createADF(buildingName, position, name, uuid );
     }
 
     /**
@@ -99,7 +100,7 @@ public class RoomerDB {
      * @param uuid from the ADF.
      * @return ADF Object
      */
-    public ADF createADF(String buildingName, Vector3 position, String uuid ){
+    public ADF createADF(String buildingName, Vector3 position, String name, String uuid ){
 
         Building b;
 
@@ -109,7 +110,7 @@ public class RoomerDB {
             b = buildingDao.createBuilding(buildingName);
         }
 
-        return adfDao.createADF(position, uuid, b);
+        return adfDao.createADF(position, name, uuid, b);
     }
 
     /**
@@ -130,6 +131,15 @@ public class RoomerDB {
     }
 
     /**
+     *
+     * @param uuid
+     * @return
+     */
+    public ADF getAdf(String uuid) {
+        return adfDao.getADF(uuid);
+    }
+
+    /**
      * Creates a Point object and saves it in the database.
      * If Point already exist with the same coordinates in the database query will be fail and throw an exception!
      * @param position of the point
@@ -138,7 +148,7 @@ public class RoomerDB {
 
      * @return a point object
      */
-    public Point createPoint(Vector3 position, HashMap<String,Object> properties,String tag){
+    public Point createPoint(Vector3 position, HashMap<PointProperties,PointProperties> properties,String tag){
         if(adf == null) throw new NullPointerException("ADF is not set! You have to set a ADF object by the set method or in the createPoint Method.");
         return pointDao.createPoint(position,properties,tag,adf);
     }
@@ -151,23 +161,24 @@ public class RoomerDB {
      * @param adf of the point
      * @return a point object
      */
-    public Point createPoint(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf){
+    public Point createPoint(Vector3 position, HashMap<PointProperties,PointProperties> properties,String tag, ADF adf){
         return pointDao.createPoint(position,properties,tag,adf);
     }
 
     /**
-     * Updates the point values in the database. Also updates all edges from point.
-     * ATTENTION: only updates the edges from point side, not from neighbour side
+     * Updates the point values in the database.
      * @param p the point
      */
     public void updatePoint(Point p){
 
         pointDao.updatePoint(p);
-        edgeDao.deleteEdges(p);
+
+        //Also updates all edges from point. ATTENTION: only updates the edges from point side, not from neighbour side
+        /*edgeDao.deleteEdges(p);
 
         for(Point n : p.getNeighbours().keySet()){
             edgeDao.createEdge(p,n);
-        }
+        }*/
     }
 
     /**
@@ -241,4 +252,13 @@ public class RoomerDB {
         return adfDao.getAllADFs();
     }
 
+    /**
+     * Removes a Collection of points from database.
+     * @param points Collection
+     */
+    public void deletePoints(Collection<Point> points) {
+        for(Point p : points){
+            pointDao.deletePoint(p);
+        }
+    }
 }

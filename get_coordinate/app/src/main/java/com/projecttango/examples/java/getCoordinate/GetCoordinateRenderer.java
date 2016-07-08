@@ -27,6 +27,7 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.projecttango.DataStructure.*;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
@@ -43,9 +44,6 @@ import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnObjectPickedListener;
 
-import com.projecttango.DataStructure.DestinationPoint;
-import com.projecttango.DataStructure.NavigationPoint;
-import com.projecttango.DataStructure.Point;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.renderables.Grid;
 
@@ -59,6 +57,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.Stack;
 import java.util.TreeMap;
+import static com.projecttango.DataStructure.PointProperties.*;
 
 /**
  * This class implements the rendering logic for the Motion Tracking application using Rajawali.
@@ -95,6 +94,8 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
 
     private Material mSphereMaterial = new Material();
     private boolean pointsClear =  false;
+    public RoomerDB db;
+    public ADF adf;
 
     { mSphereMaterial.enableLighting(true);
         mSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
@@ -258,7 +259,12 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
         s.setPosition(p);
 
         mPicker.registerObject(s);
-        Point point = new NavigationPoint(p,null,"NavPoint" +countNavPoints);
+
+        HashMap<PointProperties,PointProperties> properties = new HashMap<PointProperties, PointProperties>();
+
+        properties.put(type,navigation);
+
+        Point point = db.createPoint(p,properties,"NavPoint" +countNavPoints,adf);
 
         countNavPoints++;
         points.put(s,point);
@@ -274,7 +280,13 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
         s.setPosition(p);
 
         mPicker.registerObject(s);
-        Point point = new DestinationPoint(p,null,"DestPoint" +countDestPoints);
+
+        HashMap<PointProperties,PointProperties> properties = new HashMap<PointProperties, PointProperties>();
+
+        properties.put(type,destination);
+
+        Point point = db.createPoint(p,properties,"DestPoint" +countDestPoints,adf);
+
         countDestPoints++;
         points.put(s,point);
         selectetPoint = point;
@@ -293,21 +305,20 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
 
     public ArrayList<Point> getPoints(){
         ArrayList<Point> p = new ArrayList<Point>( points.values());
-
-
         return p;
     }
 
     public void clearPoints(){
         pointsClear = true;
+        db.deletePoints(points.values());
         points.clear();
         reDraw =true;
         countDestPoints=0;
         countNavPoints=0;
         selectetPoint=null;
         reloadList=true;
-
     }
+
     public Point getSelectetPoint() {
         return selectetPoint;
     }
