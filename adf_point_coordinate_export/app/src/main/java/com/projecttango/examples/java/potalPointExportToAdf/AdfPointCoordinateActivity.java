@@ -30,6 +30,7 @@ import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
+import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
 
@@ -136,7 +137,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         lstPoints.setAdapter(adapter);
 
 
-        db = new RoomerDB(this,uuid);
+        db = new RoomerDB(this);
 
 
         deleteAllAdfFiles.setOnClickListener(new View.OnClickListener() {
@@ -233,93 +234,47 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     /**
      * This method performs the save to the selected uuid from the list to his metadata.
-     * @param uuidInside The uuid name of the ADF where the position point from the local
+     * @param uuidSelected The uuid name of the ADF where the position point from the local
      *             system will be exported to
+
+
+
      */
-    private void saveMetaDataToAdfB(String uuidInside) {
-
-        // set starting point of second adf
-        
-        String point = positionInADF[0]+";"+positionInADF[1] + ";" +positionInADF[2];
-
-        /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-        Toast.makeText(AdfPointCoordinateActivity.this,"point to save:  " +  point , Toast.LENGTH_SHORT).show();
-        Log.d("DEBUGGER", "point to save:  " +  point  );
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // first i have to ask if there is any key/value with the loaded uuid...
-        // so  search for uuid ==null if yes just save the point with the uuidInside else get the
-        // value of the point and add it to the value of the uuid value then save it
-        SharedPreferences prefs = getSharedPreferences(ROOMER_PREFS, MODE_PRIVATE);
-
-        String loadedUUIDKeyString = prefs.getString(uuid,null);
-
-        /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-        Toast.makeText(AdfPointCoordinateActivity.this,"loadedUUIDKeyString:  " +  loadedUUIDKeyString , Toast.LENGTH_SHORT).show();
-        Log.d("DEBUGGER", "loadedUUIDKeyString:  " +  loadedUUIDKeyString  );
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private void saveMetaDataToAdfB(String uuidSelected) {
 
 
-        // checks if there is a key saved to the prefs under the loaded uuid
-        if (loadedUUIDKeyString!= null) {
 
-            //if yes get the point value string
+        // define the position in adf a which we want ot save in adf b (the point is the starting position from adfb)
 
-            String point_loaded_uuid = prefs.getString(uuid, "No point defined");
-            Log.d("DEBUGGER","there is a point saved to the loaded uuid  "+ uuid + "  "  +  point_loaded_uuid);
-
-            /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-            Toast.makeText(AdfPointCoordinateActivity.this,"there is a point saved to the loaded uuid  "+ uuid + "  "  +  point_loaded_uuid , Toast.LENGTH_SHORT).show();
-
-            // convert the string to a double array
-
-            double[] loaded_uuid_point_values = stringToDoubleArray(loadedUUIDKeyString);
-
-            Log.d("DEBUGGER", "value of the point saved from another adf " + Arrays.toString(loaded_uuid_point_values) );
-            Toast.makeText(AdfPointCoordinateActivity.this,"value of the point saved from another adf " + Arrays.toString(loaded_uuid_point_values)  , Toast.LENGTH_SHORT).show();
-
-            double x = positionInADF[0];
-            double x1 = loaded_uuid_point_values[0];
-
-            double y = positionInADF[1];
-            double y1 = loaded_uuid_point_values[1];
-
-            double z = positionInADF[2];
-            double z1 = loaded_uuid_point_values[2];
+        Vector3 startingPointofADFyInAdfx = new Vector3(positionInADF[0],positionInADF[1],positionInADF[2]);
 
 
-            double newX = x + x1;
-            double newy = y + y1;
-            double newZ = z + z1;
 
-            added_points_double_array = new double[3];
-            added_points_double_array[0] = newX;
-            added_points_double_array[1] = newy;
-            added_points_double_array[2] = newZ;
-        }
+        // list with all ADF saved in the DB
+        ArrayList<ADF> adfListFromDB = db.getAllADF();
 
 
-        if (added_points_double_array!=null){
-            point = added_points_double_array[0]+";"+added_points_double_array[1] + ";" +added_points_double_array[2];
-            Log.d("DEBUGGER", "resultpoint: "  + Arrays.toString(added_points_double_array));
-            Toast.makeText(AdfPointCoordinateActivity.this,"resultpoint: "  + Arrays.toString(added_points_double_array)  , Toast.LENGTH_SHORT).show();
+        // When no AFD is saved yet save ADF A
+
+        if (adfListFromDB.isEmpty()) {
+
+            db.createADF("BAUWESEN",new Vector3(0,0,0),uuid);
+            //make a new query to get the point of A
+            adfListFromDB = db.getAllADF();
 
         }
 
+        // get the uuid from the loaded ADF
+        for(ADF adf : adfListFromDB) {
+            if (adf.getUUid.equals(uuid));
 
+                // add the position of ADF A to ADF B
+                startingPointofADFyInAdfx.add(adf.getPosition());
 
-        SharedPreferences.Editor editor = getSharedPreferences(ROOMER_PREFS, MODE_PRIVATE).edit();
-        // save point with selected uuid as key
-        editor.putString(uuidInside, point);
-
-        editor.commit();
-
-
-        String restoredText = prefs.getString(uuidInside, null);
-        if (restoredText != null) {
-            String name = prefs.getString(uuidInside, "No name defined");//"No name defined" is the default value.
-            Log.d("DEBUGGER","key" + name);
         }
+
+        // save the new ADFB to BD
+        db.createADF("BAUWESEN",startingPointofADFyInAdfx,uuidSelected);
 
     }
 
