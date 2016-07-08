@@ -29,10 +29,7 @@ import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
-import com.projecttango.DataStructure.DestinationPoint;
-import com.projecttango.DataStructure.NavigationPoint;
-import com.projecttango.DataStructure.Point;
-import com.projecttango.DataStructure.RoomerDB;
+import com.projecttango.DataStructure.*;
 
 import android.app.Activity;
 import android.content.Context;
@@ -59,6 +56,7 @@ import org.rajawali3d.surface.RajawaliSurfaceView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static com.projecttango.DataStructure.PointProperties.*;
 
 /**
  * Main Activity class for the Motion Tracking API Sample. Handles the connection to the Tango
@@ -71,7 +69,8 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     private static final int SECS_TO_MILLISECS = 1000;
     private static final double UPDATE_INTERVAL_MS = 100.0;
 
-    private double mXyIjPreviousTimeStamp;;
+    private double mXyIjPreviousTimeStamp;
+    ;
     private double mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
     private Tango mTango;
@@ -99,23 +98,21 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     // Handles the debug text UI update loop.
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_coordinate);
         Intent i = getIntent();
         uuid = i.getStringExtra("uuid");
-        txtName = (EditText)findViewById(R.id.txtPointName);
-        lstPoints = (ListView)findViewById(R.id.lstPoints);
-        lltSavePoint = (LinearLayout)findViewById(R.id.lltSavePoint);
+        txtName = (EditText) findViewById(R.id.txtPointName);
+        lstPoints = (ListView) findViewById(R.id.lstPoints);
+        lltSavePoint = (LinearLayout) findViewById(R.id.lltSavePoint);
         lltSavePoint.setVisibility(View.INVISIBLE);
 
-        btnDestPoint =  (Button)findViewById(R.id.btnAddDestination);
-        btnNavPoint =  (Button)findViewById(R.id.btnAddNavPoint);
+        btnDestPoint = (Button) findViewById(R.id.btnAddDestination);
+        btnNavPoint = (Button) findViewById(R.id.btnAddNavPoint);
 
-        adapter = new ArrayAdapter<Point>(this,
-                android.R.layout.simple_list_item_multiple_choice, android.R.id.text1);
+        adapter = new ArrayAdapter<Point>(this, android.R.layout.simple_list_item_multiple_choice, android.R.id.text1);
 
         lstPoints.setAdapter(adapter);
         mRenderer = setupGLViewAndRenderer();
@@ -123,28 +120,35 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
 
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
 
-        db = new RoomerDB(this,uuid);
+        db = new RoomerDB(this);
 
         lstPoints.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Point p =(Point) lstPoints.getItemAtPosition(position);
-                if(mRenderer.getSelectetPoint()!=null) {
-                    if (mRenderer.getSelectetPoint().getNeighbours().keySet().contains(p)){
-                        mRenderer.getSelectetPoint().getNeighbours().remove(p);
-                        p.getNeighbours().remove(mRenderer.getSelectetPoint());
-                        lstPoints.setItemChecked(position,false);
+
+                Point neighbour = (Point) lstPoints.getItemAtPosition(position);
+                Point p = mRenderer.getSelectetPoint();
+                
+                if (p != null) {
+                    if (p.getNeighbours().keySet().contains(neighbour)) {
+                        db.deleteEdge(p,neighbour);
+                        db.deleteEdge(neighbour,p);
+                        lstPoints.setItemChecked(position, false);
                         Log.d("DEBUGGER", "Nachbar entfernt");
-                    }else{
-                        mRenderer.getSelectetPoint().addNeighhbour(p);
-                        p.addNeighhbour(mRenderer.getSelectetPoint());
-                        lstPoints.setItemChecked(position,true);
+                        
+                    } else {
+                        db.createEdge(p,neighbour);
+                        db.createEdge(neighbour,p);
+                        lstPoints.setItemChecked(position, true);
                         Log.d("DEBUGGER", "Nachbar hinzugefügt");
                     }
                     mRenderer.reDraw = true;
                 }
             }
         });
+        mRenderer.db = db;
+        ADF adf = db.getAdf(uuid);
+        mRenderer.adf = adf;
 
     }
 
@@ -157,14 +161,13 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         // OpenGL view where all of the graphics are drawn
         RajawaliSurfaceView glView = (RajawaliSurfaceView) findViewById(R.id.gl_surface_view);
         glView.setEGLContextClientVersion(2);
-       // glView.setZOrderOnTop(false);
-       // glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
+        // glView.setZOrderOnTop(false);
+        // glView.setRenderMode(IRajawaliSurface.RENDERMODE_CONTINUOUSLY);
         glView.setSurfaceRenderer(renderer);
         glView.setOnTouchListener(this);
         return renderer;
 
     }
-
 
 
     @Override
@@ -188,19 +191,17 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     private void savePoints() {
         ArrayList<Point> points = mRenderer.getPoints();
         Collections.reverse(points);
-        db.clearDB();
-        for(Point point: points) {
-            db.insert(point);
+
+        for (Point point : points) {
+            db.updatePoint(point);
         }
-        db.update(points);
-        db.exportDB(getBaseContext());
     }
 
-    private void loadPoints(){
+    private void loadPoints() {
         try {
-            ArrayList<Point> points = db.loadPoints();
+            ArrayList<Point> points = db.getAllPoints(mRenderer.adf);
             mRenderer.setPoints(points);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -253,14 +254,13 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
 
         config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
-           config.putBoolean(
-                  TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
+        config.putBoolean(
+                TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
 
 
-
-   //Set adf file
-            config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
-                    uuid);
+        //Set adf file
+        config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,
+                uuid);
 
         mTango.connect(config);
 
@@ -291,17 +291,17 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
                 if (mTimeToNextUpdate < 0.0) {
                     mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                         if(mIsRelocalized)txtLocalized.setText( "Localized");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mIsRelocalized) txtLocalized.setText("Localized");
 
-                        if(mRenderer.reloadList) {
-                            setUpSavePointInterface();
+                            if (mRenderer.reloadList) {
+                                setUpSavePointInterface();
+                            }
+
                         }
-
-                    }
-                });
+                    });
                 }
             }
 
@@ -347,21 +347,19 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     }
 
 
-
-
     public synchronized void addNavPoint(View view) {
-
-        mRenderer.addNavPoint =false;
+        mRenderer.addNavPoint = false;
     }
 
     public synchronized void addDestPoint(View view) {
-        mRenderer.addDestPoint=false;
+        mRenderer.addDestPoint = false;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
+
     /**
      * Sets up TangoUX layout and sets its listener.
      */
@@ -441,21 +439,21 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
             }
         });
     }
+
     private void setUpSavePointInterface() {
 
-
-
-        mRenderer.reloadList=false;
+        mRenderer.reloadList = false;
         adapter.clear();
 
         final Point point = mRenderer.getSelectetPoint();
-        if(point==null){
+        if (point == null) {
             lltSavePoint.setVisibility(View.INVISIBLE);
             ((TextView) findViewById(R.id.txtPointCord)).setText("");
-        }else {
+        } else {
             lltSavePoint.setVisibility(View.VISIBLE);
             ArrayList<Point> points = mRenderer.getPoints();
             Collections.reverse(points);
+            db.deletePoint(point);
             points.remove(point);
             ((TextView) findViewById(R.id.txtPointCord)).setText(point.toString());
             adapter.addAll(points);
@@ -468,23 +466,21 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
                 }
             }
 
-
             txtName.setText(point.getTag());
             txtName.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     Log.d("DEBUGGER", point + "  geht");
-                    point.setTag( txtName.getText().toString());
+                    point.setTag(txtName.getText().toString());
+                    db.updatePoint(point);
                     return false;
                 }
             });
-            txtName.setEnabled(point instanceof DestinationPoint);
+            txtName.setEnabled(point.getProperties().containsValue(destination));
         }
-
     }
 
-
-    public void deletePoint(View view){
+    public void deletePoint(View view) {
         mRenderer.removePoint();
         setUpSavePointInterface();
 
@@ -492,8 +488,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_DOWN)
-        {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             // this needs to be defined on the renderer:
             mRenderer.getObjectAt(event.getX(), event.getY());
             setUpSavePointInterface();
@@ -501,7 +496,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         return super.onTouchEvent(event);
     }
 
-    public void clearPoints(View view){
+    public void clearPoints(View view) {
         mRenderer.clearPoints();
     }
 

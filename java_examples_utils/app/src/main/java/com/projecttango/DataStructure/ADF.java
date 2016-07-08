@@ -10,15 +10,17 @@ public class ADF {
     private long id;
     private Vector3 position;
     private String name;
+    private String uuid;
     private Building building;
 
     public ADF() {
     }
 
-    public ADF(long id, Vector3 position, String name,Building building) {
+    public ADF(long id, Vector3 position, String name,String uuid, Building building) {
         this.id = id;
         this.position = position;
         this.name = name;
+        this.uuid = uuid;
         this.building = building;
     }
 
@@ -44,6 +46,14 @@ public class ADF {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public Building getBuilding() {

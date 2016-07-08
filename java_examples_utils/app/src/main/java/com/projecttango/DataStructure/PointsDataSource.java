@@ -55,7 +55,7 @@ public class PointsDataSource extends DAO{
      * @param adf
      * @return
      */
-    public Point createPoint(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf) {
+    public Point createPoint(Vector3 position, HashMap<PointProperties,PointProperties> properties,String tag, ADF adf) {
 
         ContentValues values = setContentValues(position,properties,tag,adf);
 
@@ -87,7 +87,7 @@ public class PointsDataSource extends DAO{
      * @param adf
      * @return
      */
-    private ContentValues setContentValues(Vector3 position, HashMap<String,Object> properties,String tag, ADF adf) {
+    private ContentValues setContentValues(Vector3 position, HashMap<PointProperties,PointProperties> properties,String tag, ADF adf) {
 
         ContentValues values = new ContentValues();
 

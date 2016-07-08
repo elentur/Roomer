@@ -1,5 +1,6 @@
 package com.projecttango.DataStructure;
 
+import android.graphics.Color;
 import android.util.Log;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DataType;
@@ -37,7 +38,7 @@ public class Point implements Serializable{
     /**
      * all related property. !IMPORTANT: all values have to be serializable!
      */
-    private HashMap<String,Object> properties;
+    private HashMap<PointProperties,PointProperties> properties;
 
     /**
      * designation of the point
@@ -61,27 +62,27 @@ public class Point implements Serializable{
      * Instance of a point object.
      */
     public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag) {
-        this(0,position,neighbours,tag,new HashMap<String,Object>(),null);
+        this(0,position,neighbours,tag,new HashMap<PointProperties,PointProperties>(),null);
     }
 
     /**
      * Instance of a point object.
      */
     public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag, ADF adf) {
-        this(0,position,neighbours,tag,new HashMap<String,Object>(),adf);
+        this(0,position,neighbours,tag,new HashMap<PointProperties,PointProperties>(),adf);
     }
 
     /**
      * Instance of a point object.
      */
     public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag, ADF adf) {
-        this(id,position,neighbours,tag,new HashMap<String,Object>(),adf);
+        this(id,position,neighbours,tag,new HashMap<PointProperties,PointProperties>(),adf);
     }
 
     /**
      * Instance of a point object.
      */
-    public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<String,Object> properties, ADF adf) {
+    public Point(Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<PointProperties,PointProperties> properties, ADF adf) {
         this(0,position,neighbours,tag,properties,adf);
     }
 
@@ -93,7 +94,7 @@ public class Point implements Serializable{
      * @param tag designation of the point
      * @param properties HashMap with all properties of the point, dynamically extensible. !IMPORTANT: all values have to be serializable!
      */
-    public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<String,Object> properties, ADF adf) {
+    public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<PointProperties,PointProperties> properties, ADF adf) {
         if(id == 0){
             this.id = this.hashCode();
         }
@@ -183,8 +184,8 @@ public class Point implements Serializable{
      * @param key name of the property
      * @param value the object to save
      */
-    public void setProperty(String key, Object value) {
-        if(key.isEmpty()) throw new IllegalArgumentException("To set a property the key can not be empty!");
+    public void setProperty(PointProperties key, PointProperties value) {
+        if(key == null) throw new IllegalArgumentException("To set a property the key can not be empty!");
         if(value == null) throw new IllegalArgumentException("To set a property the value can not be null!");
         this.properties.put(key,value);
     }
@@ -198,11 +199,11 @@ public class Point implements Serializable{
         this.properties.remove(key);
     }
 
-    public HashMap<String, Object> getProperties() {
+    public HashMap<PointProperties,PointProperties> getProperties() {
         return properties;
     }
 
-    public void setProperties(HashMap<String, Object> properties) {
+    public void setProperties(HashMap<PointProperties,PointProperties> properties) {
         if(properties == null) throw new IllegalArgumentException("The properties can not be null!");
         this.properties = properties;
     }

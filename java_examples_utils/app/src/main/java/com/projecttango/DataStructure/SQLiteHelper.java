@@ -47,6 +47,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String ADFS_COLUMN_X = "position_x";
     public static final String ADFS_COLUMN_Y = "position_y";
     public static final String ADFS_COLUMN_Z = "position_z";
+    public static final String ADFS_COLUMN_NAME = "name";
     public static final String ADFS_COLUMN_UUID = "uuid";
     public static final String ADFS_COLUMN_BUILDING = "building_id";
 
@@ -56,6 +57,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + ADFS_COLUMN_X + " REAL,"
             + ADFS_COLUMN_Y + " REAL,"
             + ADFS_COLUMN_Z + " REAL,"
+            + ADFS_COLUMN_NAME + " TEXT not null,"
             + ADFS_COLUMN_UUID + " TEXT not null UNIQUE ON CONFLICT FAIL,"
             + ADFS_COLUMN_BUILDING + " integer not null,"
             + "FOREIGN KEY(" + ADFS_COLUMN_BUILDING + ") REFERENCES " + TABLE_BUILDINGS + "(" + BUILDINGS_COLUMN_ID + ") ON DELETE CASCADE"

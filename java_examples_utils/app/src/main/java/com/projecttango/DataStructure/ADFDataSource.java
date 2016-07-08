@@ -35,6 +35,7 @@ public class ADFDataSource extends DAO{
             SQLiteHelper.ADFS_COLUMN_X,
             SQLiteHelper.ADFS_COLUMN_Y,
             SQLiteHelper.ADFS_COLUMN_Z,
+            SQLiteHelper.ADFS_COLUMN_NAME,
             SQLiteHelper.ADFS_COLUMN_UUID,
             SQLiteHelper.ADFS_COLUMN_BUILDING
     };
@@ -46,14 +47,15 @@ public class ADFDataSource extends DAO{
      * @param building in where the ADF is situated
      * @return ADF object
      */
-    public ADF createADF(Vector3 position, String name, Building building) {
+    public ADF createADF(Vector3 position, String name, String uuid, Building building) {
 
         ContentValues values = new ContentValues();
 
         values.put(SQLiteHelper.ADFS_COLUMN_X, position.x);
         values.put(SQLiteHelper.ADFS_COLUMN_Y, position.y);
         values.put(SQLiteHelper.ADFS_COLUMN_Z, position.z);
-        values.put(SQLiteHelper.ADFS_COLUMN_UUID, name);
+        values.put(SQLiteHelper.ADFS_COLUMN_NAME, name);
+        values.put(SQLiteHelper.ADFS_COLUMN_UUID, uuid);
         values.put(SQLiteHelper.ADFS_COLUMN_BUILDING, building.getId());
 
         long insertId = database.insert(SQLiteHelper.TABLE_ADFS, null, values);
@@ -152,6 +154,30 @@ public class ADFDataSource extends DAO{
     }
 
     /**
+     * Returns ADF object containing the uuid.
+     * @param uuid is the uuid of the ADF
+     * @return ADF
+     */
+    public ADF getADF(String uuid){
+        ADF adf;
+        Cursor cursor = database.query(
+                SQLiteHelper.TABLE_ADFS,
+                allColumns,
+                SQLiteHelper.ADFS_COLUMN_UUID + "=" + uuid,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+        adf = cursorToADF(cursor);
+        cursor.close();
+        return adf;
+    }
+
+    /**
      *
      * @param cursor
      * @return
@@ -161,9 +187,10 @@ public class ADFDataSource extends DAO{
         adf.setId(cursor.getLong(0));
         adf.setPosition(new Vector3(cursor.getDouble(1),cursor.getDouble(2),cursor.getDouble(3)));
         adf.setName(cursor.getString(4));
+        adf.setUuid(cursor.getString(5));
 
         BuildingsDataSource buildingDao = new BuildingsDataSource(context);
-        Building b = buildingDao.getBuilding(cursor.getLong(5));
+        Building b = buildingDao.getBuilding(cursor.getLong(6));
         adf.setBuilding(b);
 
         return adf;
