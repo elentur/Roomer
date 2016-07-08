@@ -139,7 +139,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         db = new RoomerDB(this);
 
-        showLoadedADF.setText(uuid);
+
 
         deleteAllAdfFiles.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,6 +196,10 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
             }
 
         });
+
+
+        Log.d("DEBUGGER", db.getAllADFs() + "");
+
     }
 
     /**
@@ -276,7 +280,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         }
 
         // save the new ADFB to BD
-        db.createADF("Bauwesen",startingPointofADFyInAdfx,new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")),uuidSelected);
+        db.createADF("Bauwesen",startingPointofADFyInAdfx,new String(mTango.loadAreaDescriptionMetaData(uuidSelected).get("name")),uuidSelected);
 
     }
 
@@ -451,12 +455,14 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
 
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
 
 
                             if (i == 0){
+
+                                showLoadedADF.setText(new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")));
                                 adapter.addAll(adfNames);
                                 i = i+1;
                             }
