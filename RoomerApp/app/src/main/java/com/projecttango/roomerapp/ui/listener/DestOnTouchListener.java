@@ -8,6 +8,7 @@ import com.projecttango.DataStructure.Point;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
+import com.projecttango.roomerapp.ui.DestinationDialog;
 import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 import com.projecttango.roomerapp.ui.SetUpUI;
 
@@ -53,10 +54,11 @@ public class DestOnTouchListener implements View.OnTouchListener {
             imageButton.setEnabled(false);
 
             main.mRenderer.clear=true;
-            SetUpUI.getInstance(main).getDestinationDialog().show(main.getFragmentManager(), "Ziele");
+            DestinationDialog dialog = SetUpUI.getInstance(main).getDestinationDialog();
+            dialog.show(main.getFragmentManager(), "Ziele",false);
             main.firstTimeloaded = true;
             if (main.points.size() > 0) {
-                SetUpUI.getInstance(main).getDestinationDialog().connectAdapter(main.points);
+                dialog.connectAdapter(main.points);
             }
         }
         return false;
