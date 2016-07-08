@@ -183,15 +183,19 @@ public class ADFDataSource extends DAO{
      * @return
      */
     private ADF cursorToADF(Cursor cursor) {
-        ADF adf = new ADF();
-        adf.setId(cursor.getLong(0));
-        adf.setPosition(new Vector3(cursor.getDouble(1),cursor.getDouble(2),cursor.getDouble(3)));
-        adf.setName(cursor.getString(4));
-        adf.setUuid(cursor.getString(5));
+        ADF adf = null;
 
-        BuildingsDataSource buildingDao = new BuildingsDataSource(context);
-        Building b = buildingDao.getBuilding(cursor.getLong(6));
-        adf.setBuilding(b);
+        if(cursor.getCount() > 0) {
+            adf = new ADF();
+            adf.setId(cursor.getLong(0));
+            adf.setPosition(new Vector3(cursor.getDouble(1), cursor.getDouble(2), cursor.getDouble(3)));
+            adf.setName(cursor.getString(4));
+            adf.setUuid(cursor.getString(5));
+
+            BuildingsDataSource buildingDao = new BuildingsDataSource(context);
+            Building b = buildingDao.getBuilding(cursor.getLong(6));
+            adf.setBuilding(b);
+        }
 
         return adf;
     }

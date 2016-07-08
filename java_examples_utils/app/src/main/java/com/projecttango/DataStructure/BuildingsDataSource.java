@@ -137,9 +137,12 @@ public class BuildingsDataSource extends DAO{
      * @return
      */
     private Building cursorToBuilding(Cursor cursor) {
-        Building building = new Building();
-        building.setId(cursor.getLong(0));
-        building.setName(cursor.getString(1));
+        Building building = null;
+        if(cursor.getCount() > 0) {
+            building = new Building();
+            building.setId(cursor.getLong(0));
+            building.setName(cursor.getString(1));
+        }
         return building;
     }
 
