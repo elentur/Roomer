@@ -6,8 +6,10 @@ import android.util.Log;
 
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.rajawali.Pose;
 import com.projecttango.tangoutils.R;
 
+import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.loader.LoaderOBJ;
@@ -15,6 +17,7 @@ import org.rajawali3d.loader.ParsingException;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
+import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.primitives.ScreenQuad;
@@ -31,34 +34,64 @@ import java.util.Stack;
  */
 public class Visualize {
 
+    private final Sphere sphere;
     private ArrayList<Point> points = new ArrayList<Point>();
     private final Material material2 = new Material();
     private final Material material1 = new Material();
+    private final Material materialCompassArrow = new Material();
     private final Material materialTransparent = new Material();
+    private final Material materialDestination = new Material();
     private final Object3D debugObjects = new Object3D();
     private Vector3 arrowPosition = null;
     private Object3D arrow = null;
     private Object3D futureArrow = null;
+    private Object3D compassArrow = null;
+    private Object3D destination = null;
     private int nextPoint = 0;
     private static Visualize instance;
     private Vector3 futureArrowPosition = null;
+    private Vector3 destinationPosition = null;
+    private Vector3 compassArrowPosition = null;
 
     private Visualize(RajawaliRenderer renderer) {
-        renderer.getCurrentScene().addChild(debugObjects);
-        material2.setDiffuseMethod(new DiffuseMethod.Lambert());
-        material2.setSpecularMethod(new SpecularMethod.Phong());
+        //renderer.getCurrentScene().addChild(debugObjects);
         material2.setColor(Color.GREEN);
         material2.enableLighting(true);
-        materialTransparent.setDiffuseMethod(new DiffuseMethod.Lambert());
-        materialTransparent.setSpecularMethod(new SpecularMethod.Phong());
+        material2.setDiffuseMethod(new DiffuseMethod.Lambert());
+        material2.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 10));
+
+
         materialTransparent.setColor(Color.argb(50, 0, 255, 0));
         materialTransparent.enableLighting(true);
-        material1.setDiffuseMethod(new DiffuseMethod.Lambert());
-        material1.setSpecularMethod(new SpecularMethod.Phong());
+        materialTransparent.setDiffuseMethod(new DiffuseMethod.Lambert());
+        materialTransparent.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 60));
+
+
         material1.setColor(Color.YELLOW);
         material1.enableLighting(true);
+        material1.setDiffuseMethod(new DiffuseMethod.Lambert());
+        material1.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 60));
 
-        LoaderOBJ objParser = new LoaderOBJ(renderer, R.raw.arrow1);
+
+        materialCompassArrow.setColor(Color.RED);
+        materialCompassArrow.enableLighting(true);
+        materialCompassArrow.setDiffuseMethod(new DiffuseMethod.Lambert());
+        materialCompassArrow.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 60));
+
+
+        materialDestination.setColor(Color.rgb(231,76,60));
+        materialDestination.enableLighting(true);
+        materialDestination.setDiffuseMethod(new DiffuseMethod.Lambert());
+        materialDestination.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 60));
+
+
+        ///TEST
+        sphere = new Sphere(0.1f,20,20);
+        sphere.setMaterial(material1);
+
+        ////TEST
+
+        LoaderOBJ objParser = new LoaderOBJ(renderer, R.raw.arrow2);
         try {
             objParser.parse();
             Object3D ob = objParser.getParsedObject();
@@ -75,6 +108,35 @@ public class Visualize {
             futureArrow = new Object3D();
             futureArrow.addChild(ob);
             futureArrow.setTransparent(true);
+        } catch (ParsingException e) {
+            e.printStackTrace();
+        }
+        objParser = new LoaderOBJ(renderer, R.raw.arrow1);
+        try {
+            objParser.parse();
+            Object3D ob = objParser.getParsedObject();
+            ob.setRotation(0, -90, 0);
+            ob.setScale(0.2);
+            ob.setName("arrow");
+            ob.setDepthTestEnabled(false);
+            compassArrow = new Object3D();
+            ob.setMaterial(materialCompassArrow);
+            ob.getGeometry().getBoundingBox();
+
+            compassArrow.addChild(ob);
+
+        } catch (ParsingException e) {
+            e.printStackTrace();
+        }
+        objParser = new LoaderOBJ(renderer, R.raw.dest);
+        try {
+            objParser.parse();
+            Object3D ob = objParser.getParsedObject();
+            ob.setRotation(0, 0, 180);
+            ob.setMaterial(materialDestination);
+            ob.getGeometry().getBoundingBox();
+            destination = new Object3D();
+            destination.addChild(ob);
         } catch (ParsingException e) {
             e.printStackTrace();
         }
@@ -140,20 +202,14 @@ public class Visualize {
             }
 
             if (dist < 2.0) nextPoint++;
-            Log.d("DEBUGGER", "size: " + points.size());
             double d = 0;
             if (nextPoint < points.size() - 1) {
                 Vector3 p = points.get(nextPoint).getPosition();
-                Log.d("DEBUGGER", "p: " + p);
                 arrowPosition = new Vector3(p.x, p.y + 0.5, p.z);
                 arrow.enableLookAt();
                 Vector3 p2 = points.get(nextPoint + 1).getPosition();
-                Log.d("DEBUGGER", "p2: " + p2);
                 arrow.setLookAt(p2.x, p2.y + 0.5, p2.z);
 
-                Vector3 dir = Vector3.subtractAndCreate(p, camera.getPosition());
-                dir.normalize();
-                d = camera.getOrientation().getZAxis().dot(dir);
             }
             if (nextPoint < points.size() - 2) {
                 Vector3 p = points.get(nextPoint + 1).getPosition();
@@ -161,17 +217,25 @@ public class Visualize {
                 futureArrow.enableLookAt();
                 Vector3 p2 = points.get(nextPoint + 2).getPosition();
                 futureArrow.setLookAt(p2.x, p2.y + 0.5, p2.z);
+            }else if (destination != null) {
+                scene.addChild(destination);
+                Vector3 p = points.get(points.size()-1).getPosition();
+                destinationPosition = new Vector3(p.x, p.y + 0.5, p.z);
             }
 
 
-            if (d > 0.6) {
-                Log.d("DEBUGGER", " not in Focus");
-            }
-            //  Log.d("DEBUGGER", nextPoint +"");
 
-            // }
-            arrow.setPosition(arrowPosition);
-            futureArrow.setPosition(futureArrowPosition);
+
+           if(arrowPosition!=null){
+               arrow.setPosition(arrowPosition);
+
+
+
+               scene.addChild(compassArrow);
+
+           }
+            if(futureArrowPosition!=null) futureArrow.setPosition(futureArrowPosition);
+            if(destinationPosition!=null)destination.setPosition(destinationPosition);
         }
 
 
@@ -231,5 +295,19 @@ public class Visualize {
         if (renderer == null) return null;
         if (instance == null) instance = new Visualize(renderer);
         return instance;
+    }
+
+    public void setCompasArrow(Pose pose) {
+        compassArrow.setPosition( pose.getPosition());
+        compassArrow.setOrientation( pose.getOrientation());
+        compassArrow.moveForward(-1);
+        compassArrow.moveUp(-.2);
+        Object3D ob = compassArrow.getChildByName("arrow");
+                if(ob!= null && arrowPosition!=null){
+                    compassArrow.enableLookAt();
+                    compassArrow.setLookAt(arrowPosition);
+                    Log.d("DEBUGGER", ob.getRotY()+"");
+                }
+
     }
 }
