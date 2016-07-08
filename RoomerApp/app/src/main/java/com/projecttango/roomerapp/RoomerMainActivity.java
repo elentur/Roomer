@@ -37,6 +37,7 @@ import com.projecttango.roomerapp.ui.SetUpUI;
 import com.projecttango.utils.Constants;
 import com.projecttango.utils.Constants;
 import org.rajawali3d.surface.RajawaliSurfaceView;
+
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -52,7 +53,6 @@ public class RoomerMainActivity extends Activity {
     public static final String TAG = RoomerMainActivity.class.getSimpleName();
 
 
-
     public static TangoCoordinateFramePair FRAME_PAIR = new TangoCoordinateFramePair(
             TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
             TangoPoseData.COORDINATE_FRAME_DEVICE);
@@ -61,7 +61,6 @@ public class RoomerMainActivity extends Activity {
     public Tango mTango;
     public TangoUx mTangoUx;
     public RoomerRenderer mRenderer;
-
 
 
     public AtomicBoolean mIsConnected = new AtomicBoolean(false);
@@ -102,7 +101,7 @@ public class RoomerMainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-       onResume();
+        onResume();
     }
 
 
@@ -112,28 +111,19 @@ public class RoomerMainActivity extends Activity {
 
         //loadPreferences();
         setContentView(R.layout.activity_main_roomer);
-        if(!Tango.hasPermission(this,Tango.PERMISSIONTYPE_ADF_LOAD_SAVE)) {
+        if (!Tango.hasPermission(this, Tango.PERMISSIONTYPE_ADF_LOAD_SAVE)) {
             startActivityForResult(
-            Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
+                    Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
         }
-            ui = SetUpUI.getInstance(this);
-            //final Intent i = getIntent();
-            //uuid = i.getStringExtra("uuid");
+        ui = SetUpUI.getInstance(this);
 
-            mTangoUx = ui.setupTangoUxAndLayout();
+        //final Intent i = getIntent();
+        //uuid = i.getStringExtra("uuid");
 
-       /* db = new RoomerDB(this, uuid);
-        try {
-            db.importDB(getBaseContext());
-
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
-                    .show();
-        }*/
+        mTangoUx = ui.setupTangoUxAndLayout();
 
         mRenderer = setupGLViewAndRenderer();
     }
-
 
 
     /**
@@ -173,7 +163,7 @@ public class RoomerMainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(Tango.hasPermission(this,Tango.PERMISSIONTYPE_ADF_LOAD_SAVE)) {
+        if (Tango.hasPermission(this, Tango.PERMISSIONTYPE_ADF_LOAD_SAVE)) {
             if (mIsConnected.compareAndSet(false, true)) {
                 // Initialize Tango Service as a normal Android Service, since we call
                 // mTango.disconnect() in onPause, this will unbind Tango Service, so
@@ -184,12 +174,12 @@ public class RoomerMainActivity extends Activity {
                 mTango = new Tango(RoomerMainActivity.this, new ConnectRunnable(this));
 
             }
-           // mRenderer.setPoints(null);
+            // mRenderer.setPoints(null);
         }
     }
 
-    public void loadAreaDescription(String uuid){
-        if(uuid != null) {
+    public void loadAreaDescription(String uuid) {
+        if (uuid != null) {
             mTango.experimentalLoadAreaDescription(uuid);
             this.uuid = uuid;
             adf = new String(mTango.loadAreaDescriptionMetaData(uuid).get("name"));
@@ -202,16 +192,16 @@ public class RoomerMainActivity extends Activity {
     }
 
 
-    public void setDebug(View view){
+    public void setDebug(View view) {
         isDebug = !isDebug;
         mRenderer.isDebug = isDebug;
         mRenderer.debugRerender = true;
-        if(isDebug){
+        if (isDebug) {
             ui.getTxtFPS().setVisibility(View.VISIBLE);
-        }else{
+        } else {
             ui.getTxtFPS().setVisibility(View.VISIBLE);
         }
-        Log.d("DEBUGGER","Debugging:" +isDebug);
+        Log.d("DEBUGGER", "Debugging:" + isDebug);
 
     }
 }
