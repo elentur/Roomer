@@ -55,8 +55,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Position in ADF"
-            android:id="@+id/btnAddDestination"
+            android:text="Create POINT to Export"
+            android:id="@+id/btnStartofADFB"
             android:layout_gravity="bottom"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true" />
@@ -86,6 +86,15 @@
             android:id="@+id/delete_all_adf_files"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/showLoadedAdfName"
+            android:layout_alignTop="@+id/btnStartofADFB"
+            android:layout_toStartOf="@+id/btnStartofADFB"
+            android:layout_alignParentBottom="true" />
 
 
     </RelativeLayout>

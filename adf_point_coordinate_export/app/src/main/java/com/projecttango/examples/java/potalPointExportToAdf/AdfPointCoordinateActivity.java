@@ -36,7 +36,6 @@ import com.projecttango.DataStructure.RoomerDB;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -54,7 +53,6 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -88,6 +86,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     private LinearLayout lltSavePoint;
     private TextView txtLocalized;
+    private TextView showLoadedADF;
     private Button btnSaveCoordinates;
     private Button btnSaveToSelectedADF;
     private Button deleteAllAdfFiles;
@@ -113,7 +112,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_get_coordinate);
+        setContentView(R.layout.activity_point_coordinate_export);
         Intent i = getIntent();
         uuid = i.getStringExtra("uuid");
 
@@ -124,9 +123,10 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
         portalDataTextField = (TextView) findViewById(R.id.portalCoordinates);
-        btnSaveCoordinates =  (Button)findViewById(R.id.btnAddDestination);
+        btnSaveCoordinates =  (Button)findViewById(R.id.btnStartofADFB);
         btnSaveToSelectedADF = (Button) findViewById(R.id.btnSaveToSelectedADF);
         deleteAllAdfFiles = (Button) findViewById(R.id.delete_all_adf_files);
+        showLoadedADF = (TextView) findViewById(R.id.showLoadedAdfName);
 
         mRenderer = setupGLViewAndRenderer();
         mTangoUx = setupTangoUxAndLayout();
@@ -139,6 +139,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         db = new RoomerDB(this);
 
+        showLoadedADF.setText(uuid);
 
         deleteAllAdfFiles.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,7 +155,9 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
                     positionInADF = poseData.translation;
                     Log.d("DEBUGGER", "position" +Arrays.toString(positionInADF) );
-                    portalDataTextField.setText(Arrays.toString(positionInADF));
+
+
+                    portalDataTextField.setText(String.format("%.3f, %.3f, %.3f",positionInADF[0],positionInADF[1],positionInADF[2]));
 
                 }
                 return false;
@@ -257,7 +260,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         if (adfListFromDB.isEmpty()) {
 
-            db.createADF(new Vector3(0,0,0),"BAUWESEN",uuid);
+            db.createADF("Bauwesen",new Vector3(0,0,0),new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")),uuid);
             //make a new query to get the point of A
             adfListFromDB = db.getAllADF();
 
@@ -273,7 +276,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         }
 
         // save the new ADFB to BD
-        db.createADF(startingPointofADFyInAdfx,"BAUWESEN",uuidSelected);
+        db.createADF("Bauwesen",startingPointofADFyInAdfx,new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")),uuidSelected);
 
     }
 
