@@ -11,8 +11,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -41,10 +39,8 @@ import java.util.Collections;
  * This class represents a list view dialog of all destinations of the loaded adf file.
  * Is is possible to filter them with search strings.
  * With the selected point the navigation will be calculated.
- *
  */
-public class DestinationDialog extends DialogFragment  {
-
+public class DestinationDialog extends DialogFragment {
 
 
     private static Button cancel;
@@ -58,7 +54,7 @@ public class DestinationDialog extends DialogFragment  {
     private ArrayList<Point> allPoints;
     private ListView lstBuildings;
     private AutoCompleteTextView srcBuilding;
-    private boolean isBuilding =true;
+    private boolean isBuilding = true;
     private ArrayAdapter<String> adapterBuilding;
     private Button btnBuilding;
     private Button btnDestination;
@@ -70,14 +66,10 @@ public class DestinationDialog extends DialogFragment  {
     @Override
     public void onResume() {
         super.onResume();
-        getDialog().getWindow().setSoftInputMode(WindowManager.
-                LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         accept.setEnabled(false);
-
         lstDestinations.clearChoices();
     }
-
 
 
     @Override
@@ -90,7 +82,8 @@ public class DestinationDialog extends DialogFragment  {
 
         setTitel(main);
 
-       lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
+
+        lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
         srcDestination = (AutoCompleteTextView) destinationDialogView.findViewById(R.id.srcDestination);
 
         lstBuildings = (ListView) destinationDialogView.findViewById(R.id.lstBuilding);
@@ -107,34 +100,34 @@ public class DestinationDialog extends DialogFragment  {
         accept.setTypeface(robotoMedium);
 
 
-        ArrayList<String> fullUuidList =main.mTango.listAreaDescriptions();
+        ArrayList<String> fullUuidList = main.mTango.listAreaDescriptions();
         Collections.reverse(fullUuidList);
-        for(String uuid: fullUuidList){
+        for (String uuid : fullUuidList) {
             adfList.add(new String(main.mTango.loadAreaDescriptionMetaData(uuid).get("name")));
         }
 
-        adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialog);
-        adapterBuilding = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice,adfList);
+        adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice, pointsDialog);
+        adapterBuilding = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice, adfList);
         lstDestinations.setAdapter(adapter);
         ArrayAdapter<Point> adapterSrcDestination = new ArrayAdapter<Point>
-                (getActivity(),android.R.layout.select_dialog_item, pointsDialog);
+                (getActivity(), android.R.layout.select_dialog_item, pointsDialog);
         srcDestination.setAdapter(adapterSrcDestination);
         lstBuildings.setAdapter(adapterBuilding);
         ArrayAdapter<String> adapterSrcBuilding = new ArrayAdapter<String>
-                (getActivity(),android.R.layout.select_dialog_item, adfList);
+                (getActivity(), android.R.layout.select_dialog_item, adfList);
         srcBuilding.setAdapter(adapterSrcBuilding);
 
         selectedPoint = null;
         //srcDestination.setQueryHint("Search..");
 
-srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        Log.d("DEBUGGER",srcBuilding.getText().toString() );
-        lstBuildings.setFilterText(srcBuilding.getText().toString());
-        return false;
-    }
-});
+        srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Log.d("DEBUGGER", srcBuilding.getText().toString());
+                lstBuildings.setFilterText(srcBuilding.getText().toString());
+                return false;
+            }
+        });
 
 
         //listener for the accept button
@@ -156,7 +149,7 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                accept.setEnabled(lstDestinations.getCheckedItemPosition()>-1);
+                accept.setEnabled(lstDestinations.getCheckedItemPosition() > -1);
             }
         });
 
@@ -164,7 +157,7 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectADFFile(main,position);
+                selectADFFile(main, position);
             }
         });
 
@@ -173,8 +166,6 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
         btnDestination = (Button) destinationDialogView.findViewById(R.id.btnDestination);
 
-        btnBuilding.setTypeface(robotoMedium);
-        btnDestination.setTypeface(robotoMedium);
         btnBuilding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,31 +194,30 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
     }
 
     private void selectADFFile(RoomerMainActivity main, int position) {
-        String name  = adapterBuilding.getItem(position);
-        String uuid =null;
-        for(String adfID : main.mTango.listAreaDescriptions()){
-            if(new String(main.mTango.loadAreaDescriptionMetaData(adfID).get("name")).equals(name) ){
-                uuid=adfID;
+        String name = adapterBuilding.getItem(position);
+        String uuid = null;
+        for (String adfID : main.mTango.listAreaDescriptions()) {
+            if (new String(main.mTango.loadAreaDescriptionMetaData(adfID).get("name")).equals(name)) {
+                uuid = adfID;
                 break;
             }
         }
-        setTitel(main);
-        clickOnDestinationTab(main);
         main.loadAreaDescription(uuid);
-        RoomerDB db  =new RoomerDB(main,uuid);
+        RoomerDB db = new RoomerDB(main);
         try {
-            db.importDB(main.getBaseContext());
-            ArrayList<Point> points =  db.loadPoints();
-           // Log.d("DEBUGGER", points +"");
+            ArrayList<Point> points = db.getAllPoints();
+            // Log.d("DEBUGGER", points +"");
             connectAdapter(points);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        setTitel(main);
+        clickOnDestinationTab(main);
     }
 
     private void setTitel(RoomerMainActivity main) {
-        if (main.adf!=null) {
-            getDialog().setTitle("Ziele in "+main.adf);
+        if (main.adf != null) {
+            getDialog().setTitle("Ziele in " + main.adf);
         } else {
             getDialog().setTitle("Ziele in ihrer Umgebung ");
         }
@@ -236,11 +226,11 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
     public void show(FragmentManager manager, String tag, boolean onBuilding) {
         super.show(manager, tag);
         this.onBuilding = onBuilding;
-       // Log.d("DEBUGGER" , onBuilding +"");
+        // Log.d("DEBUGGER" , onBuilding +"");
     }
 
     public void clickOnDestinationTab(RoomerMainActivity main) {
-      //  Log.d("DEBUGGER","onDestination");
+        //  Log.d("DEBUGGER","onDestination");
         btnBuilding.setBackgroundColor(Color.TRANSPARENT);
         btnDestination.setBackgroundColor(main.getResources().getColor(R.color.light_blue_roomer));
         linDestinations.setVisibility(View.VISIBLE);
@@ -248,7 +238,7 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
     }
 
     public void clickOnBuildingTab(RoomerMainActivity main) {
-       // Log.d("DEBUGGER","onBuilding");
+        // Log.d("DEBUGGER","onBuilding");
         btnDestination.setBackgroundColor(Color.TRANSPARENT);
         btnBuilding.setBackgroundColor(main.getResources().getColor(R.color.light_blue_roomer));
         linBuilding.setVisibility(View.VISIBLE);
@@ -260,7 +250,7 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
     public void onDismiss(DialogInterface dialog) {
 
         //Enable the the destination button to secure that the user can reopen the DestinationDialog
-       if(Icon_Segment_Fragment.segDestinations != null) Icon_Segment_Fragment.segDestinations.setEnabled(true);
+        if (Icon_Segment_Fragment.segDestinations != null) Icon_Segment_Fragment.segDestinations.setEnabled(true);
         super.onDismiss(dialog);
     }
 
@@ -274,48 +264,47 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
     /**
      * This method fills the point list with direction points.
+     *
      * @param list
      */
     public void connectAdapter(ArrayList<Point> list) {
         allPoints = list;
         pointsDialog.clear();
 
-        for (Point p : list){
-            if (p instanceof DestinationPoint){
-
+        for (Point p : list) {
+            if (p instanceof DestinationPoint) {
+                //  Log.d("DEBUGGER", p.getClass().getSimpleName());
                 pointsDialog.add(p);
             }
         }
-        lstDestinations.setAdapter(adapter);
-       // Log.d("DEBUGGER", lstDestinations.getAdapter().getCount() +"");
+        // Log.d("DEBUGGER", lstDestinations.getAdapter().getCount() +"");
     }
 
     /**
      * This method renders the Path to the selected point.
      */
 
-    public void renderPath(){
+    public void renderPath() {
 
         {
-            Point destpoint =selectedPoint;
-                for (Point p : allPoints) {
-                    if (p.equals(selectedPoint)) {
-                        destpoint = p;
-                        break;
-                    }
+            Point destpoint = selectedPoint;
+            for (Point p : allPoints) {
+                if (p.equals(selectedPoint)) {
+                    destpoint = p;
+                    break;
                 }
-            RoomerRenderer mRenderer = SetUpUI.getInstance(null).getRenderer();
-                Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
-                        mRenderer.getCurrentCamera().getPosition().y - 1,
-                        mRenderer.getCurrentCamera().getPosition().z);
-                mRenderer.setPoints(
-                        VectorGraph.getPath(pos,
-                                destpoint,
-                                allPoints)
-                );
-            mRenderer.setAllPoints(allPoints);
             }
+            RoomerRenderer mRenderer = SetUpUI.getInstance(null).getRenderer();
+            Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
+                    mRenderer.getCurrentCamera().getPosition().y - 1,
+                    mRenderer.getCurrentCamera().getPosition().z);
+            mRenderer.setPoints(
+                    VectorGraph.getPath(pos,
+                            destpoint,
+                            allPoints)
+            );
         }
+    }
 
     @Override
     public String toString() {
@@ -324,7 +313,6 @@ srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 ", selectedPoint=" + selectedPoint +
                 '}';
     }
-
 
 
 }
