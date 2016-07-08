@@ -11,7 +11,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -69,8 +70,11 @@ public class DestinationDialog extends DialogFragment  {
     @Override
     public void onResume() {
         super.onResume();
+        getDialog().getWindow().setSoftInputMode(WindowManager.
+                LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         accept.setEnabled(false);
+
         lstDestinations.clearChoices();
     }
 
@@ -84,12 +88,9 @@ public class DestinationDialog extends DialogFragment  {
         final RoomerMainActivity main = SetUpUI.getInstance(null).main;
 
 
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        //setTitel(main);
+        setTitel(main);
 
-
-
-        lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
+       lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
         srcDestination = (AutoCompleteTextView) destinationDialogView.findViewById(R.id.srcDestination);
 
         lstBuildings = (ListView) destinationDialogView.findViewById(R.id.lstBuilding);
@@ -104,7 +105,6 @@ public class DestinationDialog extends DialogFragment  {
 
         cancel.setTypeface(robotoMedium);
         accept.setTypeface(robotoMedium);
-
 
 
         ArrayList<String> fullUuidList =main.mTango.listAreaDescriptions();
@@ -127,14 +127,14 @@ public class DestinationDialog extends DialogFragment  {
         selectedPoint = null;
         //srcDestination.setQueryHint("Search..");
 
-        srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                Log.d("DEBUGGER",srcBuilding.getText().toString() );
-                lstBuildings.setFilterText(srcBuilding.getText().toString());
-                return false;
-            }
-        });
+srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        Log.d("DEBUGGER",srcBuilding.getText().toString() );
+        lstBuildings.setFilterText(srcBuilding.getText().toString());
+        return false;
+    }
+});
 
 
         //listener for the accept button
@@ -175,7 +175,6 @@ public class DestinationDialog extends DialogFragment  {
 
         btnBuilding.setTypeface(robotoMedium);
         btnDestination.setTypeface(robotoMedium);
-
         btnBuilding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -212,6 +211,8 @@ public class DestinationDialog extends DialogFragment  {
                 break;
             }
         }
+        setTitel(main);
+        clickOnDestinationTab(main);
         main.loadAreaDescription(uuid);
         RoomerDB db  =new RoomerDB(main,uuid);
         try {
@@ -222,8 +223,6 @@ public class DestinationDialog extends DialogFragment  {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        setTitel(main);
-        clickOnDestinationTab(main);
     }
 
     private void setTitel(RoomerMainActivity main) {
@@ -283,10 +282,11 @@ public class DestinationDialog extends DialogFragment  {
 
         for (Point p : list){
             if (p instanceof DestinationPoint){
-              //  Log.d("DEBUGGER", p.getClass().getSimpleName());
+
                 pointsDialog.add(p);
             }
         }
+        lstDestinations.setAdapter(adapter);
        // Log.d("DEBUGGER", lstDestinations.getAdapter().getCount() +"");
     }
 
@@ -313,6 +313,7 @@ public class DestinationDialog extends DialogFragment  {
                                 destpoint,
                                 allPoints)
                 );
+            mRenderer.setAllPoints(allPoints);
             }
         }
 

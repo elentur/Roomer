@@ -239,8 +239,13 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     private void saveMetaDataToAdfB(String uuidInside) {
 
         // set starting point of second adf
-
+        
         String point = positionInADF[0]+";"+positionInADF[1] + ";" +positionInADF[2];
+
+        /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
+        Toast.makeText(AdfPointCoordinateActivity.this,"point to save:  " +  point , Toast.LENGTH_SHORT).show();
+        Log.d("DEBUGGER", "point to save:  " +  point  );
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // first i have to ask if there is any key/value with the loaded uuid...
         // so  search for uuid ==null if yes just save the point with the uuidInside else get the
@@ -248,6 +253,12 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         SharedPreferences prefs = getSharedPreferences(ROOMER_PREFS, MODE_PRIVATE);
 
         String loadedUUIDKeyString = prefs.getString(uuid,null);
+
+        /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
+        Toast.makeText(AdfPointCoordinateActivity.this,"loadedUUIDKeyString:  " +  loadedUUIDKeyString , Toast.LENGTH_SHORT).show();
+        Log.d("DEBUGGER", "loadedUUIDKeyString:  " +  loadedUUIDKeyString  );
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         // checks if there is a key saved to the prefs under the loaded uuid
         if (loadedUUIDKeyString!= null) {
@@ -257,12 +268,15 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
             String point_loaded_uuid = prefs.getString(uuid, "No point defined");
             Log.d("DEBUGGER","there is a point saved to the loaded uuid  "+ uuid + "  "  +  point_loaded_uuid);
 
+            /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
+            Toast.makeText(AdfPointCoordinateActivity.this,"there is a point saved to the loaded uuid  "+ uuid + "  "  +  point_loaded_uuid , Toast.LENGTH_SHORT).show();
+
             // convert the string to a double array
 
             double[] loaded_uuid_point_values = stringToDoubleArray(loadedUUIDKeyString);
 
             Log.d("DEBUGGER", "value of the point saved from another adf " + Arrays.toString(loaded_uuid_point_values) );
-
+            Toast.makeText(AdfPointCoordinateActivity.this,"value of the point saved from another adf " + Arrays.toString(loaded_uuid_point_values)  , Toast.LENGTH_SHORT).show();
 
             double x = positionInADF[0];
             double x1 = loaded_uuid_point_values[0];
@@ -288,6 +302,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         if (added_points_double_array!=null){
             point = added_points_double_array[0]+";"+added_points_double_array[1] + ";" +added_points_double_array[2];
             Log.d("DEBUGGER", "resultpoint: "  + Arrays.toString(added_points_double_array));
+            Toast.makeText(AdfPointCoordinateActivity.this,"resultpoint: "  + Arrays.toString(added_points_double_array)  , Toast.LENGTH_SHORT).show();
 
         }
 
@@ -306,14 +321,13 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
             Log.d("DEBUGGER","key" + name);
         }
 
-
-
-
-
     }
 
-
-
+    /**
+     * converts string to double array
+     * @param stringToConvert the string to convert
+     * @return The double array
+     */
     private double[] stringToDoubleArray(String stringToConvert) {
 
         String[] splittedString = stringToConvert.split(";");
@@ -335,9 +349,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         }
 
         Log.d("DEBUGGER","adfNames" + adfNames.toString());
-
-
-
 
     }
 

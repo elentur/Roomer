@@ -34,7 +34,7 @@ public class RoomerUIThread implements Runnable {
                 ui.getTxtLocalized().setVisibility(View.INVISIBLE);
                 //Show Distance
                 int distance = 0;
-                ArrayList<Point> points = Visualize.getPoints();
+                ArrayList<Point> points = main.mRenderer.vis.getPoints();
                 for (int i = 1; i < points.size(); i++) {
                     distance += Vector3.distanceTo2(
                             points.get(i - 1).getPosition(),
@@ -45,7 +45,7 @@ public class RoomerUIThread implements Runnable {
                         main.mRenderer.getCurrentCamera().getPosition().y - 1,
                         main.mRenderer.getCurrentCamera().getPosition().z);
                 if (!points.isEmpty()) distance += Vector3.distanceTo2(
-                        Visualize.getPoints().get(0).getPosition(),
+                        main.mRenderer.vis.getPoints().get(0).getPosition(),
                         cp);
 
                 TextView lblDistance = new TextView(main.getBaseContext());
@@ -73,5 +73,6 @@ public class RoomerUIThread implements Runnable {
 
             ui.getTxtFPS().setText("FPS: " + main.mRenderer.globalFPS);
         }
+
 
 }

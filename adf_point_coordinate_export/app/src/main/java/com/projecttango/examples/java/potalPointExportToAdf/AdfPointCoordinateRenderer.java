@@ -65,6 +65,8 @@ public class AdfPointCoordinateRenderer extends RajawaliRenderer {
 
     public boolean reloadList = false;
 
+
+
     private LinkedHashMap<Object3D,Point> points = new LinkedHashMap<Object3D, Point>();
     public boolean reDraw = false;
 
@@ -132,6 +134,7 @@ public class AdfPointCoordinateRenderer extends RajawaliRenderer {
         // Update the scene objects with the latest device position and orientation information.
         // Synchronize to avoid concurrent access from the Tango callback thread below.
         try {
+
             Grid grid = new Grid(100, 1, 1, 0xFFCCCCCC);
             grid.setPosition(0, -1.3f, 0);
 
@@ -176,6 +179,18 @@ public class AdfPointCoordinateRenderer extends RajawaliRenderer {
 
         // Perform the actual OpenGL rendering of the updated objects
         super.onRender(ellapsedRealtime, deltaTime);
+    }
+
+    private void addPortalPoint(double[] portalPosition) {
+
+        Vector3 position = new Vector3(portalPosition[0], portalPosition[1], portalPosition[2]);
+
+        Sphere s = new Sphere(0.1f, 20, 20);
+        s.setMaterial(mSphereMaterial);
+        getCurrentScene().addChild(s);
+        s.setPosition(position);
+
+
     }
 
     @Override

@@ -70,7 +70,8 @@
             android:choiceMode="singleChoice"
             android:listSelector="@color/light_blue_roomer"
             android:minHeight="75dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:headerDividersEnabled="true" />
 
     </LinearLayout>
 
