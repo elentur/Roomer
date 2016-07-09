@@ -1,8 +1,10 @@
 package com.projecttango.roomerapp.ui;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.projecttango.DataStructure.Point;
 import com.projecttango.Visualisation.Visualize;
@@ -59,6 +61,13 @@ public class RoomerUIThread implements Runnable {
                 relInfo.setLayoutParams(layoutParams);
                 String s = distance + "m";
                 lblDistance.setText(s);
+
+                //On arrive destination
+               if(main.mRenderer.destArrive) {
+                   Toast.makeText(main, "You have arrived at your Destination.", Toast.LENGTH_LONG).show();
+                   Log.d("DEBUGGER", "Arrived");
+                   main.mRenderer.destArrive = false;
+               }
 
             } else {
                 if (countRelocationPoints > 4) countRelocationPoints = 0;

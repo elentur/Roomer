@@ -17,44 +17,27 @@
 package com.projecttango.roomerapp;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
-import com.google.atap.tangoservice.TangoErrorException;
 import com.google.atap.tangoservice.TangoPoseData;
-import com.projecttango.DataStructure.DestinationPoint;
-import com.projecttango.DataStructure.NavigationPoint;
 import com.projecttango.DataStructure.Point;
-import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
-import com.projecttango.rajawali.renderables.Grid;
-import com.projecttango.tangosupport.TangoSupport;
 
-import org.rajawali3d.Object3D;
-import org.rajawali3d.lights.ALight;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.StreamingTexture;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.math.Quaternion;
-import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Stack;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -62,7 +45,9 @@ import javax.microedition.khronos.opengles.GL10;
  * This class implements the rendering logic for the Motion Tracking application using Rajawali.
  */
 public class RoomerRenderer extends RajawaliRenderer {
+
     private static final String TAG = RoomerRenderer.class.getSimpleName();
+
 
     private static final float CAMERA_NEAR = 0.01f;
     private static final float CAMERA_FAR = 200f;
@@ -84,6 +69,8 @@ public class RoomerRenderer extends RajawaliRenderer {
 
     public Visualize vis;
     public boolean isRelocated = false;
+    public boolean destArrive = false;
+    private PointLight light3;
 
     public RoomerRenderer(Context context) {
         super(context);
@@ -114,23 +101,12 @@ public class RoomerRenderer extends RajawaliRenderer {
             Log.e(TAG, "Exception creating texture for RGB camera contents", e);
         }
         getCurrentScene().addChildAt(backgroundQuad, 0);
-        DirectionalLight light = new DirectionalLight(1, 0.2, -1);
-        light.setColor(1, 1, 1);
-        light.setPower(0.8f);
-        light.setPosition(3, 2, 4);
-        getCurrentScene().addLight(light);
 
-        DirectionalLight light2 = new DirectionalLight(-1, 0.2, -1);
-        light2.setColor(1, 1, 1);
-        light2.setPower(0.8f);
-        light2.setPosition(3, 3, 3);
-        getCurrentScene().addLight(light2);
-
-        PointLight light3 = new PointLight();
+        light3 = new PointLight();
 
         light3.setColor(1, 1, 1);
-        light3.setPower(0.8f);
-        light3.setPosition(100, -100, 100);
+        light3.setPower(1.0f);
+        light3.setPosition(0, 2, 0);
         getCurrentScene().addLight(light3);
 
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
@@ -163,24 +139,23 @@ public class RoomerRenderer extends RajawaliRenderer {
             }
             //Redraw Scene
             if (reDraw && isRelocated) {
-                //Log.d("DEBUGGER","redraw");
-                vis.draw(getCurrentScene(),getCurrentCamera());
-                //Notwendig wegen GrafikBug
-                vis.debugDraw(allPoints);
-                vis.debugClear();
+                if (light3 != null) light3.setPosition(getCurrentCamera().getPosition());
+                destArrive = vis.draw(getCurrentScene(), getCurrentCamera(), RoomerMainActivity.context);
+                reDraw = !destArrive;
             }
 
             if (isDebug && debugRerender) {
 
                 debugRerender = false;
                 vis.debugDraw(allPoints);
+                reDraw=true;
             } else if (!isDebug && debugRerender) {
                 debugRerender = false;
                 vis.debugClear();
             }
 
         } catch (Exception e) {
-            Log.e("DEBUGGER", e.getMessage());
+            Log.e("DEBUGGER", "in onRender: " + e.getMessage());
         }
 
         // Perform the actual OpenGL rendering of the updated objects
@@ -234,8 +209,7 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentCamera().setRotation(cameraPose.getOrientation());
         getCurrentCamera().setPosition(cameraPose.getPosition());
 
-        vis.setCompasArrow(cameraPose);
-
+        vis.setCompassArrow(cameraPose);
 
 
     }

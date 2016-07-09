@@ -41,7 +41,7 @@ public class RoomerDB extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE);
             Log.d("DEBUGGER","Table created");
         }catch (SQLiteException e){
-            Log.e("DEBUGGER" , e.getMessage());
+            Log.e("DEBUGGER" , "onCreate: " + e.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class RoomerDB extends SQLiteOpenHelper {
             //Cursor c = db.query("Points",null,null,null,null,null,"ID DESC");
 
         }catch (SQLiteException e){
-                Log.e("DEBUGGER" , e.getMessage());
+                Log.e("DEBUGGER" ," SQL 74: " e.getMessage());
         }
 
 
@@ -153,7 +153,7 @@ public class RoomerDB extends SQLiteOpenHelper {
             Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
                     .show();
 
-            Log.e("DEBUGGER",  e.toString());
+            Log.e("DEBUGGER", "exportDB: " + e.toString());
 
         }
     }

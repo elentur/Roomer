@@ -50,7 +50,7 @@ public class RoomerMainActivity extends Activity {
 
 
     public static final String TAG = RoomerMainActivity.class.getSimpleName();
-
+public static RoomerMainActivity context;
 
 
     public static TangoCoordinateFramePair FRAME_PAIR = new TangoCoordinateFramePair(
@@ -66,8 +66,6 @@ public class RoomerMainActivity extends Activity {
 
     public AtomicBoolean mIsConnected = new AtomicBoolean(false);
 
-    private String uuid;
-    public RoomerDB db;
 
     public boolean mIsRelocalized;
 
@@ -98,6 +96,7 @@ public class RoomerMainActivity extends Activity {
     public String adf;
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -109,7 +108,7 @@ public class RoomerMainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        context = this;
         //loadPreferences();
         setContentView(R.layout.activity_main_roomer);
         if(!Tango.hasPermission(this,Tango.PERMISSIONTYPE_ADF_LOAD_SAVE)) {
@@ -117,19 +116,8 @@ public class RoomerMainActivity extends Activity {
             Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE), 0);
         }
             ui = SetUpUI.getInstance(this);
-            //final Intent i = getIntent();
-            //uuid = i.getStringExtra("uuid");
-
             mTangoUx = ui.setupTangoUxAndLayout();
 
-       /* db = new RoomerDB(this, uuid);
-        try {
-            db.importDB(getBaseContext());
-
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
-                    .show();
-        }*/
 
         mRenderer = setupGLViewAndRenderer();
     }
@@ -190,7 +178,6 @@ public class RoomerMainActivity extends Activity {
     public void loadAreaDescription(String uuid){
         if(uuid != null) {
             mTango.experimentalLoadAreaDescription(uuid);
-            this.uuid = uuid;
             adf = new String(mTango.loadAreaDescriptionMetaData(uuid).get("name"));
         }
     }
