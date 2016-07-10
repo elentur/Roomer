@@ -11,6 +11,7 @@ import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
@@ -31,6 +32,7 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
     private double mXyIjPreviousTimeStamp;
     private double mTimeToNextUpdate = UPDATE_INTERVAL_MS;
     private final Object mSharedLock = new Object();
+    private  RoomerDB db;
 
 
 
@@ -38,7 +40,7 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
 
     public RoomerTangoUpdateListener(RoomerMainActivity main) {
         this.main = main;
-
+        db = new RoomerDB(main.getBaseContext());
     }
 
     @Override
@@ -90,7 +92,7 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                             TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                             TangoPoseData.COORDINATE_FRAME_DEVICE);
                     try {
-                        main.points = main.db.getAllPoints();
+                        main.points = db.getAllPoints();
                         main.mRenderer.setAllPoints(main.points);
                     } catch (Exception e) {
                         e.printStackTrace();
