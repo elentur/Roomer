@@ -121,6 +121,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
 
         db = new RoomerDB(this);
+        db.importDB(getBaseContext());
 
         lstPoints.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -193,6 +194,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
         Collections.reverse(points);
 
         for (Point point : points) {
+            Log.d("DEBUGGER" ,"Point: " + point);
             db.updatePoint(point);
         }
         db.exportDB(getBaseContext());
@@ -201,9 +203,10 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
     private void loadPoints() {
         try {
             ArrayList<Point> points = db.getAllPoints(mRenderer.adf);
+            Log.d("DEBUGGER", points+"");
             mRenderer.setPoints(points);
         } catch (Exception e) {
-
+            Log.e("DEBUGGER", e.getMessage());
         }
     }
 
@@ -226,13 +229,14 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
                         connectTango();
                         mRenderer.onResume();
                         connectRenderer();
-                        loadPoints();
+
                         Log.d("DEBUGGER", db.getAllADFs().size() +"");
                         for(ADF a : db.getAllADFs()){
                             Log.d("DEBUGGER", a.getName() +"   " + a.getUuid());
                         }
                         ADF adf = db.getAdf(uuid);
                         mRenderer.adf = adf;
+                        loadPoints();
                     } catch (TangoOutOfDateException outDateEx) {
                         if (mTangoUx != null) {
                             mTangoUx.showTangoOutOfDate();
@@ -460,7 +464,7 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
             lltSavePoint.setVisibility(View.VISIBLE);
             ArrayList<Point> points = mRenderer.getPoints();
             Collections.reverse(points);
-            db.deletePoint(point);
+            //db.deletePoint(point);
             points.remove(point);
             ((TextView) findViewById(R.id.txtPointCord)).setText(point.toString());
             adapter.addAll(points);

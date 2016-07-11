@@ -12,6 +12,7 @@ import org.rajawali3d.math.vector.Vector3;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -59,6 +60,7 @@ public class PointsDataSource extends DAO{
 
         ContentValues values = setContentValues(position,properties,tag,adf);
 
+        Log.d("DEBUGGER", "values: "  + values);
         long insertId = database.insert(SQLiteHelper.TABLE_POINTS, null, values);
 
         Cursor cursor = database.query(
@@ -90,12 +92,15 @@ public class PointsDataSource extends DAO{
     private ContentValues setContentValues(Vector3 position, HashMap<PointProperties,PointProperties> properties,String tag, ADF adf) {
 
         ContentValues values = new ContentValues();
-
+        HashMap<String, String> propertiesToString = new HashMap<String, String>();
+        for(Map.Entry<PointProperties,PointProperties> e : properties.entrySet()) {
+            propertiesToString.put(e.getKey().name(),e.getValue().name());
+        }
         values.put(SQLiteHelper.POINTS_COLUMN_X, position.x);
         values.put(SQLiteHelper.POINTS_COLUMN_Y, position.y);
         values.put(SQLiteHelper.POINTS_COLUMN_Z, position.z);
         values.put(SQLiteHelper.POINTS_COLUMN_TAG, tag);
-        values.put(SQLiteHelper.POINTS_COLUMN_PROPERTIES, new JSONObject(properties).toString());
+        values.put(SQLiteHelper.POINTS_COLUMN_PROPERTIES, new JSONObject(propertiesToString).toString());
         values.put(SQLiteHelper.POINTS_COLUMN_ADF, adf.getId());
 
         return values;
@@ -156,6 +161,7 @@ public class PointsDataSource extends DAO{
      * @return
      */
     public ArrayList<Point> getAllPoints(ADF adf) {
+
         Cursor cursor = database.query(
                 SQLiteHelper.TABLE_POINTS,
                 allPointsColumns,
@@ -196,25 +202,30 @@ public class PointsDataSource extends DAO{
      */
     private Point cursorToPoint(Cursor cursor) {
         Point point = null;
+        Log.d("DEBUGGER", "Cursercount: " +cursor.getCount());
         if(cursor.getCount() > 0) {
             point = new Point();
             point.setId(cursor.getLong(0));
             point.setPosition(new Vector3(cursor.getDouble(1), cursor.getDouble(2), cursor.getDouble(3)));
             point.setTag(cursor.getString(4));
-            HashMap result = new HashMap<String, Object>();
+            HashMap<String, Object> result=null;
 
             try {
                 result = new ObjectMapper().readValue(cursor.getString(5), HashMap.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            point.setProperties(result);
+            HashMap<PointProperties,PointProperties> props = new HashMap<PointProperties, PointProperties>();
+            if(result!= null)
+                for(Map.Entry<String,Object> e: result.entrySet()){
+                    props.put(PointProperties.valueOf(e.getKey()), PointProperties.valueOf((String)e.getValue()));
+                }
+            point.setProperties(props);
 
             ADFDataSource adfDao = new ADFDataSource(context);
 
             ADF adf = adfDao.getADF(cursor.getLong(6));
-
+            point.setNeighbours(new HashMap<Point, Double>());
             point.setAdf(adf);
         }
 
@@ -227,6 +238,7 @@ public class PointsDataSource extends DAO{
      * @return
      */
     public int updatePoint(Point point) {
+
         ContentValues values = setContentValues(point.getPosition(),point.getProperties(),point.getTag(),point.getAdf());
         return database.update(SQLiteHelper.TABLE_POINTS, values,SQLiteHelper.POINTS_COLUMN_ID + " = " + point.getId(),null );
     }

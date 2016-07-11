@@ -265,6 +265,7 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
         properties.put(type,navigation);
 
         Point point = db.createPoint(p,properties,"NavPoint" +countNavPoints,adf);
+        Log.d("DEBUGGER", "addNavPoint: " +  point);
 
         countNavPoints++;
         points.put(s,point);
