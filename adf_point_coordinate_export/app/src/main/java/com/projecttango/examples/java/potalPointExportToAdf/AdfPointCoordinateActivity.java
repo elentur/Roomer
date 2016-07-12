@@ -69,7 +69,8 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     private static final int SECS_TO_MILLISECS = 1000;
     private static final double UPDATE_INTERVAL_MS = 100.0;
 
-    private double mXyIjPreviousTimeStamp;;
+    private double mXyIjPreviousTimeStamp;
+    ;
     private double mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
     private Tango mTango;
@@ -93,7 +94,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     private EditText txtName;
     private ListView lstPoints;
-    private  ArrayList<String> adfNames;
+    private ArrayList<String> adfNames;
     private ArrayAdapter<String> adapter;
     private TangoPoseData poseData = new TangoPoseData();
     private String uuid;
@@ -119,11 +120,11 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         Log.d("DEBUGGER", uuid);
 
 
-        lstPoints = (ListView)findViewById(R.id.lstPoints);
+        lstPoints = (ListView) findViewById(R.id.lstPoints);
 
         txtLocalized = (TextView) findViewById(R.id.txtLocalized);
         portalDataTextField = (TextView) findViewById(R.id.portalCoordinates);
-        btnSaveCoordinates =  (Button)findViewById(R.id.btnStartofADFB);
+        btnSaveCoordinates = (Button) findViewById(R.id.btnStartofADFB);
         btnSaveToSelectedADF = (Button) findViewById(R.id.btnSaveToSelectedADF);
         deleteAllAdfFiles = (Button) findViewById(R.id.delete_all_adf_files);
         showLoadedADF = (TextView) findViewById(R.id.showLoadedAdfName);
@@ -140,7 +141,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         db = new RoomerDB(this);
 
 
-
         deleteAllAdfFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,13 +151,12 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         btnSaveCoordinates.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction()==MotionEvent.ACTION_DOWN){
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
                     positionInADF = poseData.translation;
-                    Log.d("DEBUGGER", "position" +Arrays.toString(positionInADF) );
+                    Log.d("DEBUGGER", "position" + Arrays.toString(positionInADF));
 
 
-                    portalDataTextField.setText(String.format("%.3f, %.3f, %.3f",positionInADF[0],positionInADF[1],positionInADF[2]));
 
                 }
                 return false;
@@ -176,11 +175,11 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
                 Object selected = lstPoints.getAdapter().getItem(lstPoints.getCheckedItemPosition());
 
-                String searchedUUID="hull";
+                String searchedUUID = "hull";
 
                 searchedUUID = getUuidforSelectedName(selected.toString());
 
-                if (searchedUUID.equals("hull")){
+                if (searchedUUID.equals("hull")) {
                     throw new IllegalStateException();
                 } else {
                     saveMetaDataToAdfB(searchedUUID);
@@ -205,6 +204,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     /**
      * This method searches for the selected KEY_Name in the UUID list and
      * returns the UUID for the found name.
+     *
      * @param selected the name u want the UUID for.
      * @return the UUID. Is the passed String returned by the method the search was not successful.
      */
@@ -212,22 +212,22 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
 
         /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-        Toast.makeText(AdfPointCoordinateActivity.this,"Selected name:  " + selected , Toast.LENGTH_SHORT).show();
-        Log.d("DEBUGGER", "Selected name :  " + selected );
+        Toast.makeText(AdfPointCoordinateActivity.this, "Selected name:  " + selected, Toast.LENGTH_SHORT).show();
+        Log.d("DEBUGGER", "Selected name :  " + selected);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         for (String uuidSearched : fullUuidList) {
 
 
-           TangoAreaDescriptionMetaData meta = mTango.loadAreaDescriptionMetaData(uuidSearched);
+            TangoAreaDescriptionMetaData meta = mTango.loadAreaDescriptionMetaData(uuidSearched);
             byte[] nameBytes = meta.get(TangoAreaDescriptionMetaData.KEY_NAME);
             if (nameBytes != null) {
                 if (new String(nameBytes).equals(selected)) {
 
                     /////////////////////////////////////TESTING////////////////////////////////////////////////////////////////////////////////
-                    Toast.makeText(AdfPointCoordinateActivity.this,"UUID name(uuidSearched):  " + uuidSearched , Toast.LENGTH_SHORT).show();
-                    Log.d("DEBUGGER", "UUID name of the selected name from list :  " + uuidSearched );
+                    Toast.makeText(AdfPointCoordinateActivity.this, "UUID name(uuidSearched):  " + uuidSearched, Toast.LENGTH_SHORT).show();
+                    Log.d("DEBUGGER", "UUID name of the selected name from list :  " + uuidSearched);
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     return uuidSearched;
@@ -240,19 +240,16 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     /**
      * This method performs the save to the selected uuid from the list to his metadata.
+     *
      * @param uuidSelected The uuid name of the ADF where the position point from the local
-     *             system will be exported to
-
-
-
+     *                     system will be exported to
      */
     private void saveMetaDataToAdfB(String uuidSelected) {
 
 
-
         // define the position in adf a which we want ot save in adf b (the point is the starting position from adfb)
 
-        Vector3 startingPointofADFyInAdfx = new Vector3(positionInADF[0],positionInADF[1],positionInADF[2]);
+        Vector3 startingPointofADFyInAdfx = mRenderer.getCurrentCamera().getPosition().clone();
 
 
         // list with all ADF saved in the DB
@@ -261,25 +258,17 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
         // When no AFD is saved yet save ADF A
 
-        if (adfListFromDB.isEmpty()) {
-
-            db.createADF("Bauwesen",new Vector3(0,0,0),new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")),uuid);
-            //make a new query to get the point of A
-            adfListFromDB = db.getAllADF();
-
+        boolean hasFirstADF = false;
+        for (ADF a : adfListFromDB)
+            if (a.getUuid().equals(uuid)) {
+                hasFirstADF = true;
+                startingPointofADFyInAdfx.add(a.getPosition());
+            }
+        if (!hasFirstADF) {
+            db.createADF("Bauwesen", new Vector3(0, 0, 0), new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")), uuid);
         }
-
-        // get the uuid from the loaded ADF
-        for(ADF adf : adfListFromDB) {
-            if (adf.getUuid().equals(uuid));
-
-                // add the position of ADF A to ADF B
-                startingPointofADFyInAdfx.add(adf.getPosition());
-
-        }
-
         // save the new ADFB to BD
-        db.createADF("Bauwesen",startingPointofADFyInAdfx,new String(mTango.loadAreaDescriptionMetaData(uuidSelected).get("name")),uuidSelected);
+        db.createADF("Bauwesen", startingPointofADFyInAdfx, new String(mTango.loadAreaDescriptionMetaData(uuidSelected).get("name")), uuidSelected);
 
     }
 
@@ -289,11 +278,11 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
         fullUuidList = mTango.listAreaDescriptions();
         Collections.reverse(fullUuidList);
         adfNames = new ArrayList<String>();
-        for(String uuid: fullUuidList){
+        for (String uuid : fullUuidList) {
             adfNames.add(new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")));
         }
 
-        Log.d("DEBUGGER","adfNames" + adfNames.toString());
+        Log.d("DEBUGGER", "adfNames" + adfNames.toString());
 
     }
 
@@ -315,14 +304,13 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
 
     }
 
-    private void deleteAllAreaDescriptionFiles(){
+    private void deleteAllAreaDescriptionFiles() {
 
         for (String uuid : fullUuidList) {
             mTango.deleteAreaDescription(uuid);
         }
 
     }
-
 
 
     @Override
@@ -342,7 +330,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
             }
         }
     }
-
 
 
     @Override
@@ -366,7 +353,6 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
                         mRenderer.onResume();
                         connectRenderer();
                         setUpUUIDlist();
-
 
 
                     } catch (TangoOutOfDateException outDateEx) {
@@ -401,9 +387,8 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
                 TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
 
 
-
         //Set adf file
-        config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION,uuid);
+        config.putString(TangoConfig.KEY_STRING_AREADESCRIPTION, uuid);
 
         mTango.connect(config);
 
@@ -435,22 +420,21 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
                     mTimeToNextUpdate = UPDATE_INTERVAL_MS;
 
 
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-
-                            if (i == 0){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            positionInADF = poseData.translation;
+                            Vector3 v = mRenderer.getCurrentCamera().getPosition();
+                            portalDataTextField.setText(String.format("%.3f, %.3f, %.3f", v.x,v.y,v.z));
+                            if (i == 0) {
 
                                 showLoadedADF.setText(new String(mTango.loadAreaDescriptionMetaData(uuid).get("name")));
                                 adapter.addAll(adfNames);
-                                i = i+1;
+                                i = i + 1;
                             }
 
 
-
-                            if(mIsRelocalized)txtLocalized.setText( "Localized");
+                            if (mIsRelocalized) txtLocalized.setText("Localized");
 
 
                             //here i can do smthing when successfully localized
@@ -506,6 +490,7 @@ public class AdfPointCoordinateActivity extends Activity implements View.OnTouch
     protected void onDestroy() {
         super.onDestroy();
     }
+
     /**
      * Sets up TangoUX layout and sets its listener.
      */

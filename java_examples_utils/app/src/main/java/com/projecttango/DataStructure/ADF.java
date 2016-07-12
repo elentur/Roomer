@@ -72,4 +72,29 @@ public class ADF {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ADF adf = (ADF) o;
+
+        if (id != adf.id) return false;
+        if (!position.equals(adf.position)) return false;
+        if (!name.equals(adf.name)) return false;
+        if (!uuid.equals(adf.uuid)) return false;
+        return building.equals(adf.building);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + position.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + uuid.hashCode();
+        result = 31 * result + building.hashCode();
+        return result;
+    }
 }

@@ -87,7 +87,6 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
     public boolean reDraw = false;
 
     public boolean isRelocated = false;
-    private Sphere sphere =new Sphere(0.5f,20,20);
     private ObjectColorPicker mPicker;
     private Point selectetPoint;
 
@@ -184,8 +183,15 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
                     Point p = points.get(key);
                    for (Point n : p.getNeighbours().keySet()) {
                        Stack<Vector3> stack = new Stack<Vector3>();
-                       stack.add(p.getPosition());
-                       stack.add(n.getPosition());
+                       stack.add(key.getPosition());
+                       if(n.getAdf().equals(adf)){
+                           stack.add(n.getPosition());
+                       }else{
+                           Vector3 offset = Vector3.subtractAndCreate(n.getAdf().getPosition(),adf.getPosition());
+                           stack.add(Vector3.addAndCreate(n.getPosition(),offset));
+
+                       }
+
                        Line3D line = new Line3D(stack, 50, Color.RED);
                        Material m = new Material();
                        m.setColor(Color.RED);
@@ -341,13 +347,20 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
     }
 
     public void setPoints(ArrayList<Point> points) {
+        Log.d("DEBUGGER","PointSize: " + points.size());
         for (Point p : points) {
             Sphere s = new Sphere(0.1f, 20, 20);
             getCurrentScene().addChild(s);
-            s.setPosition(p.getPosition());
+           if(p.getAdf().equals(adf)){
+               s.setPosition(p.getPosition());
+           }else{
+               Vector3 offset = Vector3.subtractAndCreate(p.getAdf().getPosition(),adf.getPosition());
+               s.setPosition(Vector3.addAndCreate(p.getPosition(),offset));
+
+           }
             mPicker.registerObject(s);
             this.points.put(s, p);
-            if (p instanceof DestinationPoint) {
+            if (p.getProperties().get(PointProperties.type).equals(PointProperties.destination)) {
                 s.setMaterial(mSphereMaterialGreen);
                 countDestPoints++;
             } else {

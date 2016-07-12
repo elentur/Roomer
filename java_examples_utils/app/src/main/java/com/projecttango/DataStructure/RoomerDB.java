@@ -2,6 +2,8 @@ package com.projecttango.DataStructure;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -277,7 +279,7 @@ public class RoomerDB {
      * Exports the Database to a shared space
      * @param context
      */
-    public void exportDB(Context context) {
+    public void exportDB(final Context context) {
 
         File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
 
@@ -296,16 +298,25 @@ public class RoomerDB {
                 String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer.db";
                 String backupDBPath  = "/roomerDBBackups/roomer.db";
 
-                File currentDB = new File(data, currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
+                final File currentDB = new File(data, currentDBPath);
+                final File backupDB = new File(sd, backupDBPath);
                 Log.d("DEBUGGER", "BackupPath: " + backupDB.toString());
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                final FileChannel src = new FileInputStream(currentDB).getChannel();
+                final FileChannel dst = new FileOutputStream(backupDB).getChannel();
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
-                Toast.makeText(context, backupDB.toString(),
-                        Toast.LENGTH_LONG).show();
+                Handler handler = new Handler(Looper.getMainLooper());
+
+                handler.post(new Runnable() {
+                                 @Override
+                                 public void run() {
+                                     Toast.makeText(context, backupDB.toString(),
+                                             Toast.LENGTH_LONG).show();
+                                 }
+                             }
+                );
+
 
             }
         } catch (Exception e) {
@@ -320,7 +331,7 @@ public class RoomerDB {
      * Imports the Database for given ADF from shared space
      * @param context
      */
-    public void importDB(Context context) {
+    public void importDB(final Context context) {
         File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");
 
         if(!direct.exists())
@@ -338,15 +349,23 @@ public class RoomerDB {
             if (sd.canWrite()) {
                 String  currentDBPath= "/data/" + context.getPackageName() +"/databases/roomer.db";
                 String backupDBPath  = "/roomerDBBackups/roomer.db";
-                File  backupDB= new File(data, currentDBPath);
-                File currentDB  = new File(sd, backupDBPath);
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                final  File  backupDB= new File(data, currentDBPath);
+                final File currentDB  = new File(sd, backupDBPath);
+                final FileChannel src = new FileInputStream(currentDB).getChannel();
+                final FileChannel dst = new FileOutputStream(backupDB).getChannel();
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
-                Toast.makeText(context, backupDB.toString(),
-                        Toast.LENGTH_LONG).show();
+                Handler handler = new Handler(Looper.getMainLooper());
+
+                handler.post(new Runnable() {
+                                 @Override
+                                 public void run() {
+                                     Toast.makeText(context, backupDB.toString(),
+                                             Toast.LENGTH_LONG).show();
+                                 }
+                             }
+                       );
 
             }
         } catch (Exception e) {

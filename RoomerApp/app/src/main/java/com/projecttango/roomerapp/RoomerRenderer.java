@@ -226,7 +226,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
 
     public void setPoints(ArrayList<Point> points) {
-
+Log.d("DEBUGGER", "GraphPoints: " + points);
         this.points = points;
         vis.setPoints(points);
         reDraw = true;

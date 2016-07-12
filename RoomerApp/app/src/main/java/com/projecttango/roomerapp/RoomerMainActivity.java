@@ -30,7 +30,6 @@ import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoErrorException;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.projecttango.DataStructure.Point;
-import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.roomerapp.tango.ConnectRunnable;
 import com.projecttango.roomerapp.ui.SetUpUI;

@@ -55,6 +55,7 @@ import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static com.projecttango.DataStructure.PointProperties.*;
 
@@ -202,11 +203,24 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
 
     private void loadPoints() {
         try {
-            ArrayList<Point> points = db.getAllPoints(mRenderer.adf);
+            //ArrayList<Point> points = db.getAllPoints(mRenderer.adf.getBuilding());
+            ArrayList<Point> points = db.getAllPoints();
+
+            Iterator<Point> i = points.iterator();
+            while (i.hasNext()) {
+                Point p = i.next(); // must be called before you can call i.remove()
+                // Do something
+                Log.d("DEBUGGER", "p.adf: " + p.getAdf()+"p.building" + p.getAdf().getBuilding());
+                Log.d("DEBUGGER", "mRenderer.adf: " + mRenderer.adf+"mRenderer.building" + mRenderer.adf.getBuilding());
+
+                if(!p.getAdf().getBuilding().equals(mRenderer.adf.getBuilding())){
+                    i.remove();
+                }
+            }
             Log.d("DEBUGGER", points+"");
             mRenderer.setPoints(points);
         } catch (Exception e) {
-            Log.e("DEBUGGER", e.getMessage());
+           e.printStackTrace();
         }
     }
 

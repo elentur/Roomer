@@ -202,7 +202,7 @@ public class PointsDataSource extends DAO{
      */
     private Point cursorToPoint(Cursor cursor) {
         Point point = null;
-        Log.d("DEBUGGER", "Cursercount: " +cursor.getCount());
+        //Log.d("DEBUGGER", "Cursercount: " +cursor.getCount());
         if(cursor.getCount() > 0) {
             point = new Point();
             point.setId(cursor.getLong(0));

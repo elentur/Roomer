@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -20,8 +21,10 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.projecttango.DataStructure.DestinationPoint;
+import com.projecttango.DataStructure.ADF;
+
 import com.projecttango.DataStructure.Point;
+import com.projecttango.DataStructure.PointProperties;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.R;
@@ -33,6 +36,8 @@ import org.rajawali3d.math.vector.Vector3;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by Julian Dobrot on 01.06.2016.
@@ -50,7 +55,7 @@ public class DestinationDialog extends DialogFragment {
     private static ArrayAdapter<Point> adapter;
     private ArrayList<Point> pointsDialog = new ArrayList<Point>();
     private ArrayList<String> adfList = new ArrayList<String>();
-    private DestinationPoint selectedPoint = null;
+    private Point selectedPoint = null;
     private ArrayList<Point> allPoints;
     private ListView lstBuildings;
     private AutoCompleteTextView srcBuilding;
@@ -61,12 +66,15 @@ public class DestinationDialog extends DialogFragment {
     private boolean onBuilding;
     private LinearLayout linDestinations;
     private LinearLayout linBuilding;
+    private ArrayAdapter<Point> adapterSrcDestination;
+    private ArrayAdapter<String> adapterSrcBuilding;
 
 
     @Override
     public void onResume() {
         super.onResume();
-
+        getDialog().getWindow().setSoftInputMode(WindowManager.
+                LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         accept.setEnabled(false);
         lstDestinations.clearChoices();
     }
@@ -109,11 +117,11 @@ public class DestinationDialog extends DialogFragment {
         adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice, pointsDialog);
         adapterBuilding = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice, adfList);
         lstDestinations.setAdapter(adapter);
-        ArrayAdapter<Point> adapterSrcDestination = new ArrayAdapter<Point>
+        adapterSrcDestination = new ArrayAdapter<Point>
                 (getActivity(), android.R.layout.select_dialog_item, pointsDialog);
         srcDestination.setAdapter(adapterSrcDestination);
         lstBuildings.setAdapter(adapterBuilding);
-        ArrayAdapter<String> adapterSrcBuilding = new ArrayAdapter<String>
+        adapterSrcBuilding = new ArrayAdapter<String>
                 (getActivity(), android.R.layout.select_dialog_item, adfList);
         srcBuilding.setAdapter(adapterSrcBuilding);
 
@@ -136,7 +144,7 @@ public class DestinationDialog extends DialogFragment {
             public void onClick(View view) {
 
 
-                selectedPoint = (DestinationPoint) lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
+                selectedPoint = (Point)lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
                 //setSelectedPoint(selectedPoint);
                 renderPath();
                 dismiss();
@@ -203,9 +211,18 @@ public class DestinationDialog extends DialogFragment {
             }
         }
         main.loadAreaDescription(uuid);
+
         RoomerDB db = new RoomerDB(main);
+        ADF adf = db.getAdf(uuid);
+        Log.d("DEBUGGER", "Adf: " +adf);
         try {
             ArrayList<Point> points = db.getAllPoints();
+            Iterator<Point> i = points.iterator();
+            while (i.hasNext()) {
+                Point p = i.next();
+                if(!p.getAdf().getBuilding().equals(adf.getBuilding())) i.remove();
+            }
+            Log.d("DEBUGGER", "Points: " + points);
             // Log.d("DEBUGGER", points +"");
             connectAdapter(points);
         } catch (Exception e) {
@@ -254,11 +271,11 @@ public class DestinationDialog extends DialogFragment {
         super.onDismiss(dialog);
     }
 
-    public DestinationPoint getSelectedPoint() {
+    public Point getSelectedPoint() {
         return selectedPoint;
     }
 
-    public void setSelectedPoint(DestinationPoint selectedPoint) {
+    public void setSelectedPoint(Point selectedPoint) {
         this.selectedPoint = selectedPoint;
     }
 
@@ -272,12 +289,13 @@ public class DestinationDialog extends DialogFragment {
         pointsDialog.clear();
 
         for (Point p : list) {
-            if (p instanceof DestinationPoint) {
-                //  Log.d("DEBUGGER", p.getClass().getSimpleName());
+            if (p.getProperties().get(PointProperties.type).equals(PointProperties.destination)) {
+                 Log.d("DEBUGGER", p.toString());
                 pointsDialog.add(p);
             }
         }
-        // Log.d("DEBUGGER", lstDestinations.getAdapter().getCount() +"");
+        lstDestinations.setAdapter(adapter);
+
     }
 
     /**
@@ -287,21 +305,55 @@ public class DestinationDialog extends DialogFragment {
     public void renderPath() {
 
         {
-            Point destpoint = selectedPoint;
-            for (Point p : allPoints) {
-                if (p.equals(selectedPoint)) {
-                    destpoint = p;
-                    break;
-                }
-            }
+
             RoomerRenderer mRenderer = SetUpUI.getInstance(null).getRenderer();
             Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
                     mRenderer.getCurrentCamera().getPosition().y - 1,
                     mRenderer.getCurrentCamera().getPosition().z);
+
+
+            ArrayList<Point> points = new ArrayList<Point>();
+
+            for (Point p : allPoints){
+
+                Point newPoint = new Point(
+                        (int)p.getId(),
+                       Vector3.addAndCreate(p.getPosition(),p.getAdf().getPosition()),
+                        new HashMap<Point, Double>(),
+                        p.getTag(),
+                        p.getProperties(),
+                        p.getAdf()
+                        );
+                for(Point n: p.getNeighbours().keySet()){
+                    newPoint.addNeighbour(
+                            new Point(
+                                    (int)n.getId(),
+                                    Vector3.addAndCreate(n.getPosition(),n.getAdf().getPosition()),
+                                    new HashMap<Point, Double>(),
+                                    n.getTag(),
+                                    n.getProperties(),
+                                    n.getAdf()
+                            )
+                    );
+                }
+                points.add(newPoint);
+            }
+            Point destpoint = selectedPoint;
+            for (Point p : points) {
+                if (p.equals(selectedPoint)) {
+                    destpoint = p;
+                    Log.d("DEBUGGER", "DestPoint: " +destpoint);
+                    break;
+                }
+            }
+
+
+            Log.d("DEBUGGER", "BeforeGraph: " +points);
+
             mRenderer.setPoints(
                     VectorGraph.getPath(pos,
                             destpoint,
-                            allPoints)
+                            points)
             );
         }
     }

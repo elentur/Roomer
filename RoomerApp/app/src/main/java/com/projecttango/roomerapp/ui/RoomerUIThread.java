@@ -23,7 +23,7 @@ public class RoomerUIThread implements Runnable {
     private final SetUpUI ui;
     private final RoomerMainActivity main;
 
-    private int countRelocationPoints = 0;
+    private static int countRelocationPoints = 0;
 
     public RoomerUIThread(RoomerMainActivity main){
         this.main = main;
@@ -70,18 +70,23 @@ public class RoomerUIThread implements Runnable {
                }
 
             } else {
-                if (countRelocationPoints > 4) countRelocationPoints = 0;
+                if (countRelocationPoints > 4) {
+                    countRelocationPoints = 0;
+                }
                 String s = ".";
                 for (int i = 0; i < countRelocationPoints; i += 2) {
                     s += ".";
                 }
                 countRelocationPoints++;
+
                 final String showString = main.getString(R.string.tryToLocate) + s;
                 ui.getTxtLocalized().setText(showString);
             }
 
             ui.getTxtFPS().setText("FPS: " + main.mRenderer.globalFPS);
         }
+
+
 
 
 }
