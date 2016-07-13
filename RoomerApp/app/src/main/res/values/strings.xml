@@ -23,4 +23,10 @@
     <string name="zielbutton">Ziele</string>
     <string name="dismiss">Cancel</string>
     <string name="accept">Start</string>
+    <string name="main_content_text">Roomer is a indoor navigation application based
+        on Project Tango technology. The application was developed by Marcus Bätz, Julian Dobrot and Robert Dziuba for the
+        course Media Project 1 based in the fourth semester of our Media Computer Science studies at the Beuth University
+        of Applied Science. The course was instructed by Tim Gerhrmann and Sven Spielvogel in the summer term 2016.
+
+    </string>
 </resources>
