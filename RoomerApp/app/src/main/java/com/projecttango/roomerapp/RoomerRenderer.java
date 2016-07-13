@@ -148,7 +148,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
                 debugRerender = false;
                 vis.debugDraw(allPoints);
-                reDraw=true;
+                reDraw = true;
             } else if (!isDebug && debugRerender) {
                 debugRerender = false;
                 vis.debugClear();
@@ -226,7 +226,7 @@ public class RoomerRenderer extends RajawaliRenderer {
 
 
     public void setPoints(ArrayList<Point> points) {
-Log.d("DEBUGGER", "GraphPoints: " + points);
+        Log.d("DEBUGGER", "GraphPoints: " + points);
         this.points = points;
         vis.setPoints(points);
         reDraw = true;

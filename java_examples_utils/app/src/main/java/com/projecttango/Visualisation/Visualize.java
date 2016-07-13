@@ -142,7 +142,6 @@ public class Visualize {
     public void setPoints(ArrayList<Point> points) {
         this.points = points;
         nextPoint = 1;
-
     }
 
     public ArrayList<Point> getPoints() {
@@ -158,6 +157,7 @@ public class Visualize {
      */
     public boolean draw(RajawaliScene scene, Camera camera, Context context) {
 
+        Log.d("DEBUGGER", points.toString());
         //Save the Backscreenquad
         ScreenQuad sq = (ScreenQuad) scene.getChildrenCopy().get(0);
         //Clear all Elements from Scene

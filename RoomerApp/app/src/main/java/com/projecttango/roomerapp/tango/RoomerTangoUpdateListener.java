@@ -10,6 +10,7 @@ import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
+import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Visualisation.Visualize;
@@ -85,7 +86,7 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                     && pose.targetFrame == TangoPoseData
                     .COORDINATE_FRAME_START_OF_SERVICE) {
                 main.mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
-
+                main.mRenderer.isRelocated = main.mIsRelocalized;
                 if (main.mIsRelocalized) {
 
                     main.FRAME_PAIR = new TangoCoordinateFramePair(

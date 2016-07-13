@@ -31,7 +31,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      * COLUMNS ADFS
      */
-    public static final String BUILDINGS_COLUMN_ID = "_id";
+    public static final String BUILDINGS_COLUMN_ID =  TABLE_BUILDINGS + "_id";
     public static final String BUILDINGS_COLUMN_NAME = "name";
 
     // Database creation sql statement
@@ -43,7 +43,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      * COLUMNS ADFS
      */
-    public static final String ADFS_COLUMN_ID = "_id";
+    public static final String ADFS_COLUMN_ID = TABLE_ADFS + "_id";
     public static final String ADFS_COLUMN_X = "position_x";
     public static final String ADFS_COLUMN_Y = "position_y";
     public static final String ADFS_COLUMN_Z = "position_z";
@@ -66,7 +66,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      * COLUMNS POINTS
      */
-    public static final String POINTS_COLUMN_ID = "_id";
+    public static final String POINTS_COLUMN_ID = TABLE_POINTS + "_id";
     public static final String POINTS_COLUMN_X = "position_x";
     public static final String POINTS_COLUMN_Y = "position_y";
     public static final String POINTS_COLUMN_Z ="position_z";
