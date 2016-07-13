@@ -187,11 +187,11 @@ public class PointsDataSource extends DAO{
         while (!cursor.isAfterLast()) {
             Point point = cursorToPoint(cursor);
             points.add(point);
-            setAllEdgesToPoint(point);
             cursor.moveToNext();
         }
         // make sure to close the cursor
         cursor.close();
+        setAllEdgesToPoint(points);
         return points;
     }
 
@@ -245,31 +245,37 @@ public class PointsDataSource extends DAO{
 
     /**
      *
-     * @param p
+     * @param points list array
      */
-    public void setAllEdgesToPoint(Point p) {
+    public void setAllEdgesToPoint(ArrayList<Point> points) {
 
-        HashMap<Point, Double> edges = new HashMap<Point, Double>();
+        for(Point p : points) {
+            HashMap<Point, Double> edges = new HashMap<Point, Double>();
 
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+            SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        qb.setTables(SQLiteHelper.TABLE_POINTS +
-                " LEFT OUTER JOIN " + SQLiteHelper.TABLE_EDGES + " ON " +
-                SQLiteHelper.POINTS_COLUMN_ID + " = " + SQLiteHelper.EDGES_COLUMN_NEIGHBOUR_ID);
+            qb.setTables(SQLiteHelper.TABLE_POINTS +
+                    " LEFT OUTER JOIN " + SQLiteHelper.TABLE_EDGES + " ON " +
+                    SQLiteHelper.POINTS_COLUMN_ID + " = " + SQLiteHelper.EDGES_COLUMN_NEIGHBOUR_ID);
 
-        qb.appendWhere(SQLiteHelper.EDGES_COLUMN_POINT_ID + " = " + p.getId());
+            qb.appendWhere(SQLiteHelper.EDGES_COLUMN_POINT_ID + " = " + p.getId());
 
-        Cursor cursor = qb.query(dbHelper.getReadableDatabase(), allPointsColumns, null, null, null, null, null );
+            Cursor cursor = qb.query(dbHelper.getReadableDatabase(), allPointsColumns, null, null, null, null, null);
 
-        cursor.moveToFirst();
+            cursor.moveToFirst();
 
-        while (!cursor.isAfterLast()) {
-            Point neighbour = cursorToPoint(cursor);
-            p.addNeighbour(neighbour);
-            cursor.moveToNext();
+            while (!cursor.isAfterLast()) {
+                Point neighbour = cursorToPoint(cursor);
+                int index = points.indexOf(neighbour);
+
+                if(index > -1) {
+                    p.addNeighbour(points.get(index));
+                }
+                cursor.moveToNext();
+            }
+            // make sure to close the cursor
+            cursor.close();
         }
-        // make sure to close the cursor
-        cursor.close();
     }
 
 }

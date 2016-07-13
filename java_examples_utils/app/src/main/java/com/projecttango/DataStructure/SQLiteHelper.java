@@ -31,7 +31,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      * COLUMNS ADFS
      */
-    public static final String BUILDINGS_COLUMN_ID = "_id";
+    public static final String BUILDINGS_COLUMN_ID =  "_id";
     public static final String BUILDINGS_COLUMN_NAME = "name";
 
     // Database creation sql statement

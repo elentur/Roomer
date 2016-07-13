@@ -144,7 +144,7 @@ public class DestinationDialog extends DialogFragment {
             public void onClick(View view) {
 
 
-                selectedPoint = (Point)lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
+                selectedPoint = (Point) lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
                 //setSelectedPoint(selectedPoint);
                 renderPath();
                 dismiss();
@@ -214,13 +214,13 @@ public class DestinationDialog extends DialogFragment {
 
         RoomerDB db = new RoomerDB(main);
         ADF adf = db.getAdf(uuid);
-        Log.d("DEBUGGER", "Adf: " +adf);
+        Log.d("DEBUGGER", "Adf: " + adf);
         try {
             ArrayList<Point> points = db.getAllPoints();
             Iterator<Point> i = points.iterator();
             while (i.hasNext()) {
                 Point p = i.next();
-                if(!p.getAdf().getBuilding().equals(adf.getBuilding())) i.remove();
+                if (!p.getAdf().getBuilding().equals(adf.getBuilding())) i.remove();
             }
             Log.d("DEBUGGER", "Points: " + points);
             // Log.d("DEBUGGER", points +"");
@@ -290,7 +290,7 @@ public class DestinationDialog extends DialogFragment {
 
         for (Point p : list) {
             if (p.getProperties().get(PointProperties.type).equals(PointProperties.destination)) {
-                 Log.d("DEBUGGER", p.toString());
+                Log.d("DEBUGGER", p.toString());
                 pointsDialog.add(p);
             }
         }
@@ -304,58 +304,63 @@ public class DestinationDialog extends DialogFragment {
 
     public void renderPath() {
 
-        {
 
-            RoomerRenderer mRenderer = SetUpUI.getInstance(null).getRenderer();
-            Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
-                    mRenderer.getCurrentCamera().getPosition().y - 1,
-                    mRenderer.getCurrentCamera().getPosition().z);
-
-
-            ArrayList<Point> points = new ArrayList<Point>();
-
-            for (Point p : allPoints){
-
-                Point newPoint = new Point(
-                        (int)p.getId(),
-                       Vector3.addAndCreate(p.getPosition(),p.getAdf().getPosition()),
-                        new HashMap<Point, Double>(),
-                        p.getTag(),
-                        p.getProperties(),
-                        p.getAdf()
-                        );
-                for(Point n: p.getNeighbours().keySet()){
-                    newPoint.addNeighbour(
-                            new Point(
-                                    (int)n.getId(),
-                                    Vector3.addAndCreate(n.getPosition(),n.getAdf().getPosition()),
-                                    new HashMap<Point, Double>(),
-                                    n.getTag(),
-                                    n.getProperties(),
-                                    n.getAdf()
-                            )
-                    );
-                }
-                points.add(newPoint);
-            }
-            Point destpoint = selectedPoint;
-            for (Point p : points) {
-                if (p.equals(selectedPoint)) {
-                    destpoint = p;
-                    Log.d("DEBUGGER", "DestPoint: " +destpoint);
-                    break;
-                }
-            }
+        RoomerRenderer mRenderer = SetUpUI.getInstance(null).getRenderer();
+        Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
+                mRenderer.getCurrentCamera().getPosition().y - 1,
+                mRenderer.getCurrentCamera().getPosition().z);
 
 
-            Log.d("DEBUGGER", "BeforeGraph: " +points);
+        ArrayList<Point> points = new ArrayList<Point>();
 
-            mRenderer.setPoints(
-                    VectorGraph.getPath(pos,
-                            destpoint,
-                            points)
+        for (Point p : allPoints) {
+
+            Point newPoint = new Point(
+                    (int) p.getId(),
+                    Vector3.addAndCreate(p.getPosition(), p.getAdf().getPosition()),
+                    new HashMap<Point, Double>(),
+                    p.getTag(),
+                    p.getProperties(),
+                    p.getAdf()
             );
+
+            points.add(newPoint);
         }
+
+        for (Point p : allPoints) {
+
+            int index = points.indexOf(p);
+
+            if(index > -1) {
+
+                Point newPoint = points.get(index);
+
+                for (Point n : p.getNeighbours().keySet()) {
+                    int nIndex = points.indexOf(n);
+                    if(nIndex > -1)
+                        newPoint.addNeighbour(points.get(nIndex));
+                }
+            }
+        }
+
+        Point destpoint = selectedPoint;
+        for (Point p : points) {
+            if (p.equals(selectedPoint)) {
+                destpoint = p;
+                Log.d("DEBUGGER", "DestPoint: " + destpoint);
+                break;
+            }
+        }
+
+
+        Log.d("DEBUGGER", "BeforeGraph: " + points);
+
+        mRenderer.setPoints(
+                VectorGraph.getPath(pos,
+                        destpoint,
+                        points)
+        );
+
     }
 
     @Override

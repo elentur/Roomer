@@ -6,6 +6,7 @@ import android.opengl.GLES20;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.DestinationPoint;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.rajawali.Pose;
@@ -53,6 +54,8 @@ public class Visualize {
     private static Visualize instance;
     private Vector3 futureArrowPosition = null;
     private Vector3 destinationPosition = null;
+    public boolean changeADF;
+    public ADF adf;
 
     private Visualize(RajawaliRenderer renderer) {
         material2.setColor(Color.rgb(52, 152, 219));
@@ -142,7 +145,6 @@ public class Visualize {
     public void setPoints(ArrayList<Point> points) {
         this.points = points;
         nextPoint = 1;
-
     }
 
     public ArrayList<Point> getPoints() {
@@ -158,6 +160,7 @@ public class Visualize {
      */
     public boolean draw(RajawaliScene scene, Camera camera, Context context) {
 
+        Log.d("DEBUGGER", points.toString());
         //Save the Backscreenquad
         ScreenQuad sq = (ScreenQuad) scene.getChildrenCopy().get(0);
         //Clear all Elements from Scene
@@ -203,6 +206,10 @@ public class Visualize {
 
                 }
                 if (nextPoint < points.size() - 2) {
+                    if(!points.get(nextPoint-1).getAdf().equals(points.get(nextPoint).getAdf())){
+                        changeADF=true;
+                        adf = points.get(nextPoint).getAdf();
+                    }
                     scene.addChild(futureArrow);
                     Vector3 p = points.get(nextPoint + 1).getPosition();
                     futureArrowPosition = new Vector3(p.x, p.y + 0.5, p.z);

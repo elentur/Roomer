@@ -1,15 +1,19 @@
 package com.projecttango.roomerapp.tango;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
+import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Visualisation.Visualize;
@@ -85,7 +89,7 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                     && pose.targetFrame == TangoPoseData
                     .COORDINATE_FRAME_START_OF_SERVICE) {
                 main.mIsRelocalized = pose.statusCode == TangoPoseData.POSE_VALID;
-
+                main.mRenderer.isRelocated = main.mIsRelocalized;
                 if (main.mIsRelocalized) {
 
                     main.FRAME_PAIR = new TangoCoordinateFramePair(
@@ -97,7 +101,21 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    if(main.mRenderer.vis.changeADF){
+                        main.loadAreaDescription(main.mRenderer.vis.adf.getUuid());
+                        main.mRenderer.vis.changeADF=false;
+                        Handler handler = new Handler(Looper.getMainLooper());
 
+                        handler.post(new Runnable() {
+                                         @Override
+                                         public void run() {
+                                             Toast.makeText(main.getBaseContext(),"neues adf geladen: " + main.mRenderer.vis.adf.getName(),Toast.LENGTH_LONG);
+                                         }
+                                     }
+                        );
+
+
+                    }
 
                 }
 
