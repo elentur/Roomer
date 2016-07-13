@@ -1,9 +1,12 @@
 package com.projecttango.roomerapp.tango;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
@@ -98,7 +101,21 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    if(main.mRenderer.vis.changeADF){
+                        main.loadAreaDescription(main.mRenderer.vis.adf.getUuid());
+                        main.mRenderer.vis.changeADF=false;
+                        Handler handler = new Handler(Looper.getMainLooper());
 
+                        handler.post(new Runnable() {
+                                         @Override
+                                         public void run() {
+                                             Toast.makeText(main.getBaseContext(),"neues adf geladen: " + main.mRenderer.vis.adf.getName(),Toast.LENGTH_LONG);
+                                         }
+                                     }
+                        );
+
+
+                    }
 
                 }
 
