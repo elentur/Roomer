@@ -338,7 +338,13 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
                 Point p = points.remove(key);
                 for(Object3D key2 : points.keySet()){
                     points.get(key2).getNeighbours().remove(p);
+
                 }
+                for (Point n : p.getNeighbours().keySet()){
+                    db.deleteEdge(p,n);
+                    db.deleteEdge(n,p);
+                }
+                db.deletePoint(p);
                 selectetPoint =null;
                 reDraw =true;
                 return;
