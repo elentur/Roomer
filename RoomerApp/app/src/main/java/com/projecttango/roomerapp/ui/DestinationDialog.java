@@ -51,10 +51,19 @@ public class DestinationDialog extends DialogFragment {
     private static Button accept;
     private static ListView lstDestinations;
     private static AutoCompleteTextView srcDestination;
-    private static ArrayAdapter<Point> adapter;
+
+    /**
+     * The List of the Points as point objects to get the real selected point for the navigation.
+     */
     private ArrayList<Point> pointsDialog = new ArrayList<Point>();
+
+    /**
+     * The List of the Tags(names) of the destination points of the Building to display them in the ListView.
+     */
+    private ArrayList<String>pointsDialogTag  =  new ArrayList<String>();
     private ArrayList<String> adfList = new ArrayList<String>();
     private Point selectedPoint = null;
+    private String selectedPointTag = null;
     private ArrayList<Point> allPoints;
     private ListView lstBuildings;
     private AutoCompleteTextView srcBuilding;
@@ -67,6 +76,11 @@ public class DestinationDialog extends DialogFragment {
     private LinearLayout linBuilding;
     private ArrayAdapter<Point> adapterSrcDestination;
     private ArrayAdapter<String> adapterSrcBuilding;
+
+    /**
+     * The ArrayAdapter which holds the String tags of the destinations.
+     */
+    private ArrayAdapter<String> adapterDestinationTag;
 
 
     @Override
@@ -113,9 +127,9 @@ public class DestinationDialog extends DialogFragment {
             adfList.add(new String(main.mTango.loadAreaDescriptionMetaData(uuid).get("name")));
         }
 
-        adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice, pointsDialog);
+        adapterDestinationTag = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialogTag);
         adapterBuilding = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice, adfList);
-        lstDestinations.setAdapter(adapter);
+        lstDestinations.setAdapter(adapterDestinationTag);
         adapterSrcDestination = new ArrayAdapter<Point>
                 (getActivity(), android.R.layout.select_dialog_item, pointsDialog);
         srcDestination.setAdapter(adapterSrcDestination);
@@ -125,6 +139,7 @@ public class DestinationDialog extends DialogFragment {
         srcBuilding.setAdapter(adapterSrcBuilding);
 
         selectedPoint = null;
+        selectedPointTag = null;
         //srcDestination.setQueryHint("Search..");
 
         srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -142,9 +157,18 @@ public class DestinationDialog extends DialogFragment {
             @Override
             public void onClick(View view) {
 
+                // get the selected String from the destination ListView
+                selectedPointTag = (String) lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
 
-                selectedPoint = (Point) lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
-                //setSelectedPoint(selectedPoint);
+                // search in the List with all destination Points for the point with the selected TAG from the list.
+                for (Point p : pointsDialog) {
+                    if (p.getTag().equals(selectedPointTag)) {
+                        selectedPoint = p;
+                        break;
+                    }
+                }
+
+                // call the render path method with the selected point from the ListView
                 renderPath();
                 dismiss();
 
@@ -286,12 +310,15 @@ public class DestinationDialog extends DialogFragment {
 
         for (Point p : list) {
             if (p.getProperties().get(PointProperties.type).equals(PointProperties.destination)) {
-                Log.d("DEBUGGER", p.toString());
+                Log.d("DEBUGGER", p.toString() + "Point");
+
+                pointsDialogTag.add(p.getTag());
                 pointsDialog.add(p);
+
             }
         }
 
-        lstDestinations.setAdapter(adapter);
+        lstDestinations.setAdapter(adapterDestinationTag);
 
     }
 
