@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,7 +19,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.projecttango.DataStructure.ADF;
@@ -41,9 +41,8 @@ import java.util.Iterator;
 
 /**
  * Created by Julian Dobrot on 01.06.2016.
- * This class represents a list view dialog of all destinations of the loaded adf file.
- * Is is possible to filter them with search strings.
- * With the selected point the navigation will be calculated.
+ * This class represents the main dialog for selecting the building and the destination point for the
+ * navigation.
  */
 public class DestinationDialog extends DialogFragment {
 
@@ -52,10 +51,19 @@ public class DestinationDialog extends DialogFragment {
     private static Button accept;
     private static ListView lstDestinations;
     private static AutoCompleteTextView srcDestination;
-    private static ArrayAdapter<Point> adapter;
+
+    /**
+     * The List of the Points as point objects to get the real selected point for the navigation.
+     */
     private ArrayList<Point> pointsDialog = new ArrayList<Point>();
+
+    /**
+     * The List of the Tags(names) of the destination points of the Building to display them in the ListView.
+     */
+    private ArrayList<String>pointsDialogTag  =  new ArrayList<String>();
     private ArrayList<String> adfList = new ArrayList<String>();
     private Point selectedPoint = null;
+    private String selectedPointTag = null;
     private ArrayList<Point> allPoints;
     private ListView lstBuildings;
     private AutoCompleteTextView srcBuilding;
@@ -68,6 +76,11 @@ public class DestinationDialog extends DialogFragment {
     private LinearLayout linBuilding;
     private ArrayAdapter<Point> adapterSrcDestination;
     private ArrayAdapter<String> adapterSrcBuilding;
+
+    /**
+     * The ArrayAdapter which holds the String tags of the destinations.
+     */
+    private ArrayAdapter<String> adapterDestinationTag;
 
 
     @Override
@@ -88,8 +101,8 @@ public class DestinationDialog extends DialogFragment {
         final RoomerMainActivity main = SetUpUI.getInstance(null).main;
 
 
-        setTitel(main);
 
+        this.getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         lstDestinations = (ListView) destinationDialogView.findViewById(R.id.lstDestination);
         srcDestination = (AutoCompleteTextView) destinationDialogView.findViewById(R.id.srcDestination);
@@ -102,7 +115,7 @@ public class DestinationDialog extends DialogFragment {
 
         cancel = (Button) destinationDialogView.findViewById(R.id.cancel);
         accept = (Button) destinationDialogView.findViewById(R.id.accept);
-        Typeface robotoMedium = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Medium.ttf");
+        final Typeface robotoMedium = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Medium.ttf");
 
         cancel.setTypeface(robotoMedium);
         accept.setTypeface(robotoMedium);
@@ -114,9 +127,9 @@ public class DestinationDialog extends DialogFragment {
             adfList.add(new String(main.mTango.loadAreaDescriptionMetaData(uuid).get("name")));
         }
 
-        adapter = new ArrayAdapter<Point>(getActivity(), android.R.layout.select_dialog_singlechoice, pointsDialog);
+        adapterDestinationTag = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice,pointsDialogTag);
         adapterBuilding = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice, adfList);
-        lstDestinations.setAdapter(adapter);
+        lstDestinations.setAdapter(adapterDestinationTag);
         adapterSrcDestination = new ArrayAdapter<Point>
                 (getActivity(), android.R.layout.select_dialog_item, pointsDialog);
         srcDestination.setAdapter(adapterSrcDestination);
@@ -126,6 +139,7 @@ public class DestinationDialog extends DialogFragment {
         srcBuilding.setAdapter(adapterSrcBuilding);
 
         selectedPoint = null;
+        selectedPointTag = null;
         //srcDestination.setQueryHint("Search..");
 
         srcBuilding.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -143,9 +157,18 @@ public class DestinationDialog extends DialogFragment {
             @Override
             public void onClick(View view) {
 
+                // get the selected String from the destination ListView
+                selectedPointTag = (String) lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
 
-                selectedPoint = (Point) lstDestinations.getAdapter().getItem(lstDestinations.getCheckedItemPosition());
-                //setSelectedPoint(selectedPoint);
+                // search in the List with all destination Points for the point with the selected TAG from the list.
+                for (Point p : pointsDialog) {
+                    if (p.getTag().equals(selectedPointTag)) {
+                        selectedPoint = p;
+                        break;
+                    }
+                }
+
+                // call the render path method with the selected point from the ListView
                 renderPath();
                 dismiss();
 
@@ -201,6 +224,11 @@ public class DestinationDialog extends DialogFragment {
         return destinationDialogView;
     }
 
+    /**
+     * This method loads the ADF, creeates DB, loads point list and connects them to the adapter.
+     * @param main
+     * @param position
+     */
     private void selectADFFile(RoomerMainActivity main, int position) {
         String name = adapterBuilding.getItem(position);
         String uuid = null;
@@ -228,16 +256,8 @@ public class DestinationDialog extends DialogFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        setTitel(main);
-        clickOnDestinationTab(main);
-    }
 
-    private void setTitel(RoomerMainActivity main) {
-        if (main.adf != null) {
-            getDialog().setTitle("Ziele in " + main.adf);
-        } else {
-            getDialog().setTitle("Ziele in ihrer Umgebung ");
-        }
+        clickOnDestinationTab(main);
     }
 
     public void show(FragmentManager manager, String tag, boolean onBuilding) {
@@ -246,6 +266,10 @@ public class DestinationDialog extends DialogFragment {
         // Log.d("DEBUGGER" , onBuilding +"");
     }
 
+    /**
+     * This method performs all activities when the destination tab is selected.
+     * @param main
+     */
     public void clickOnDestinationTab(RoomerMainActivity main) {
         //  Log.d("DEBUGGER","onDestination");
         btnBuilding.setBackgroundColor(Color.TRANSPARENT);
@@ -254,6 +278,10 @@ public class DestinationDialog extends DialogFragment {
         linBuilding.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * This method performs all activities when the building tab is selected.
+     * @param main
+     */
     public void clickOnBuildingTab(RoomerMainActivity main) {
         // Log.d("DEBUGGER","onBuilding");
         btnDestination.setBackgroundColor(Color.TRANSPARENT);
@@ -271,30 +299,26 @@ public class DestinationDialog extends DialogFragment {
         super.onDismiss(dialog);
     }
 
-    public Point getSelectedPoint() {
-        return selectedPoint;
-    }
-
-    public void setSelectedPoint(Point selectedPoint) {
-        this.selectedPoint = selectedPoint;
-    }
-
     /**
-     * This method fills the point list with direction points.
-     *
+     * This methos adds all destinations to the point list and connect the adapter to the list view.
      * @param list
      */
     public void connectAdapter(ArrayList<Point> list) {
+
         allPoints = list;
         pointsDialog.clear();
 
         for (Point p : list) {
             if (p.getProperties().get(PointProperties.type).equals(PointProperties.destination)) {
-                Log.d("DEBUGGER", p.toString());
+                Log.d("DEBUGGER", p.toString() + "Point");
+
+                pointsDialogTag.add(p.getTag());
                 pointsDialog.add(p);
+
             }
         }
-        lstDestinations.setAdapter(adapter);
+
+        lstDestinations.setAdapter(adapterDestinationTag);
 
     }
 
