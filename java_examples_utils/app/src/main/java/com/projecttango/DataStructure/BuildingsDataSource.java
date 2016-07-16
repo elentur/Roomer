@@ -7,13 +7,15 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
+ * This class represents a Data Access Object.
+ * It is a object-oriented interface between the Building and the databases.
  * Created by
  * Roberto on 04.07.16.
  */
 public class BuildingsDataSource extends DAO{
 
     /**
-     *
+     * array af all accessible table columns
      */
     private String[] allColumns = {
             SQLiteHelper.BUILDINGS_COLUMN_ID,
@@ -21,17 +23,17 @@ public class BuildingsDataSource extends DAO{
     };
 
     /**
-     *
-     * @param context
+     * Instance of a BuildingsDataSource object.
+     * @param context from the activity
      */
     public BuildingsDataSource(Context context) {
         super(context);
     }
 
     /**
-     *
-     * @param name
-     * @return
+     * Returns a Building object and makes a new entry in the database
+     * @param name of the building
+     * @return Building object
      */
     public Building createBuilding(String name) {
 
@@ -54,8 +56,8 @@ public class BuildingsDataSource extends DAO{
 
 
     /**
-     *
-     * @param building
+     * deletes a Building from the database
+     * @param building to delete
      */
     public void deleteBuilding(Building building) {
         long id = building.getId();
@@ -64,8 +66,8 @@ public class BuildingsDataSource extends DAO{
     }
 
     /**
-     *
-     * @return
+     * returns a list of all Buildings.
+     * @return list of buildings
      */
     public ArrayList<Building> getAllBuildings() {
         ArrayList<Building> buildings = new ArrayList<Building>();
@@ -84,9 +86,10 @@ public class BuildingsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param id
-     * @return
+     * returns a single building according of the given id
+     * returns null if not exist
+     * @param id of the building
+     * @return building object
      */
     public Building getBuilding(long id){
         Building b;
@@ -108,9 +111,10 @@ public class BuildingsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param name
-     * @return
+     * returns a single building according of the given name
+     * returns null if not exist
+     * @param name of the building
+     * @return building object
      */
     public Building getBuilding(String name){
         Building b;
@@ -132,9 +136,9 @@ public class BuildingsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param cursor
-     * @return
+     * converts the database query into a object
+     * @param cursor of the database
+     * @return Building
      */
     private Building cursorToBuilding(Cursor cursor) {
         Building building = null;

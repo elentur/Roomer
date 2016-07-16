@@ -1,21 +1,40 @@
 package com.projecttango.DataStructure;
 
 /**
+ * This class represents an Building object. It saves its idand its name.
  * Created by
  * Roberto on 04.07.16.
  */
 public class Building {
+    /**
+     * buildung id for the database
+     */
     private long id;
+    /**
+     * building name
+     */
     private String name;
 
+    /**
+     * Creates a object of Building
+     */
     public Building(){
-
     }
 
+    /**
+     * Creates a object of Building
+     * @param id of the building for the database
+     * @param name of the building
+     */
     public Building(long id, String name) {
         this.id = id;
         this.name = name;
     }
+
+    /**
+     *
+     * GETTER AND SETTER
+     */
 
     public long getId() {
         return id;

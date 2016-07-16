@@ -7,18 +7,20 @@ import android.util.Log;
 import java.util.HashMap;
 
 /**
+ * This class represents a Data Access Object.
+ * It is a object-oriented interface between the Edges and the databases.
  * Created by
  * Roberto on 06.07.16.
  */
 public class EdgesDataSource extends DAO{
 
     /**
-     *
+     * context of the activity for other inner database accesses.
      */
     private Context context;
 
     /**
-     *
+     * array af all accessible table columns
      */
     private String[] allEdgesColumns = {
             SQLiteHelper.EDGES_COLUMN_POINT_ID,
@@ -26,8 +28,8 @@ public class EdgesDataSource extends DAO{
     };
 
     /**
-     *
-     * @param context
+     * Instance of a BuildingsDataSource object.
+     * @param context of the activity
      */
     public EdgesDataSource(Context context) {
         super(context);
@@ -36,9 +38,9 @@ public class EdgesDataSource extends DAO{
 
 
     /**
-     *
-     * @param p
-     * @param n
+     * Makes a new entry in the database.
+     * @param p source point
+     * @param n destination point
      */
     public void createEdge(Point p, Point n){
 
@@ -58,9 +60,9 @@ public class EdgesDataSource extends DAO{
     }
 
     /**
-     *
-     * @param p
-     * @param n
+     * Deletes a edge from the database
+     * @param p source point
+     * @param n destination point
      */
     public void deleteEdge(Point p, Point n){
         long p_id = p.getId();
@@ -72,8 +74,8 @@ public class EdgesDataSource extends DAO{
     }
 
     /**
-     *
-     * @param p
+     * Deletes all edges from the database which belongs to the given point
+     * @param p source point
      */
     public void deleteEdges(Point p){
         long p_id = p.getId();

@@ -16,13 +16,15 @@ import java.util.Map;
 
 
 /**
+ * This class represents a Data Access Object.
+ * It is a object-oriented interface between the Point and the databases.
  * Created by
  * Roberto on 04.07.16.
  */
 public class PointsDataSource extends DAO{
 
     /**
-     *
+     * array af all accessible table columns
      */
     private String[] allPointsColumns = {
             SQLiteHelper.POINTS_COLUMN_ID,
@@ -35,13 +37,13 @@ public class PointsDataSource extends DAO{
     };
 
     /**
-     *
+     * context of the activity for other inner database accesses.
      */
     Context context;
 
     /**
-     *
-     * @param context
+     * Instance of a BuildingsDataSource object.
+     * @param context of the activity
      */
     public PointsDataSource(Context context) {
         super(context);
@@ -49,12 +51,12 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param position
-     * @param properties
-     * @param tag
-     * @param adf
-     * @return
+     * Returns a Point object and makes a new entry in the database
+     * @param position of the point
+     * @param properties of the point
+     * @param tag of the point (name)
+     * @param adf of the point it belongs to
+     * @return point object
      */
     public Point createPoint(Vector3 position, HashMap<PointProperties,PointProperties> properties,String tag, ADF adf) {
 
@@ -82,12 +84,13 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param position
-     * @param properties
-     * @param tag
-     * @param adf
-     * @return
+     * Converts the the data in ContentValues.
+     * Needed for the database column
+     * @param position of the point
+     * @param properties of the point
+     * @param tag of the point (name)
+     * @param adf of the point it belongs to
+     * @return ContentValues
      */
     private ContentValues setContentValues(Vector3 position, HashMap<PointProperties,PointProperties> properties,String tag, ADF adf) {
 
@@ -107,8 +110,8 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param point
+     * deletes a point from the database
+     * @param point to delete
      */
     public void deletePoint(Point point) {
         long id = point.getId();
@@ -117,8 +120,8 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @return
+     * returns a list of all Points.
+     * @return list of points
      */
     public ArrayList<Point> getAllPoints() {
 
@@ -128,9 +131,8 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param building
-     * @return
+     * returns a list of all Points from the given building.
+     * @return list of points
      */
     public ArrayList<Point> getAllPoints(Building building) {
 
@@ -156,9 +158,8 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param adf
-     * @return
+     * returns a list of all Points of the given ADF.
+     * @return list of points
      */
     public ArrayList<Point> getAllPoints(ADF adf) {
 
@@ -176,9 +177,9 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param cursor
-     * @return
+     * converts the database query into a object
+     * @param cursor of the database
+     * @return list of points
      */
     private ArrayList<Point> cursorLoop(Cursor cursor){
 
@@ -196,9 +197,9 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param cursor
-     * @return
+     * converts the database query into a object and set all neighbour and properties
+     * @param cursor of the database
+     * @return point
      */
     private Point cursorToPoint(Cursor cursor) {
         Point point = null;
@@ -233,9 +234,9 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
-     * @param point
-     * @return
+     * updates the point in the database
+     * @param point to update
+     * @return int with the changed row id
      */
     public int updatePoint(Point point) {
 
@@ -244,7 +245,7 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     *
+     * Creates a new neighbour between 2 points and saves it in the database
      * @param points list array
      */
     public void setAllEdgesToPoint(ArrayList<Point> points) {

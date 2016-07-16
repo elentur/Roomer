@@ -51,22 +51,6 @@ public class RoomerDB {
 
     }
 
-    public Building getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(Building building) {
-        this.building = building;
-    }
-
-    public ADF getAdf() {
-        return adf;
-    }
-
-    public void setAdf(ADF adf) {
-        this.adf = adf;
-    }
-
     /**
      * Creates a Building object and saves it in the database.
      * If building already exist database will be replaced with new value!
@@ -401,5 +385,26 @@ public class RoomerDB {
 
         }
     }
+
+    /*
+    *   GETTER and SETTER
+    * */
+
+    public Building getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
+
+    public ADF getAdf() {
+        return adf;
+    }
+
+    public void setAdf(ADF adf) {
+        this.adf = adf;
+    }
+
 
 }
