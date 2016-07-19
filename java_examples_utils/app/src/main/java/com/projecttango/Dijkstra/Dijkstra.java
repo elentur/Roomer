@@ -3,6 +3,7 @@ package com.projecttango.Dijkstra;
 import java.io.*;
 import java.util.*;
 
+//Textclass
 public class Dijkstra {
     private static final Graph.Edge[] GRAPH = {
             new Graph.Edge("1", "2", 11),
