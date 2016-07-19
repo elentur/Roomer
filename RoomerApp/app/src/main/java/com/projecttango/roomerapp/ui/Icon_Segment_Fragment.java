@@ -19,14 +19,39 @@ import com.projecttango.roomerapp.R;
 public class Icon_Segment_Fragment extends Fragment {
 
 
+    /**
+     * The destination button
+     */
     public static ImageButton segDestinations;
+
+    /**
+     * The building button
+     */
     public static ImageButton segChangeBuilding;
+
+    /**
+     * THe favorite button
+     */
     public static ImageButton segFavorites;
+
+    /**
+     * The Restroom button
+     */
     public static ImageButton segRestroom;
+
+    /**
+     * The Emergency button
+     */
     public static ImageButton segEmergencyExit;
 
+    /**
+     * touch listener instance
+     */
     private View.OnTouchListener listener = null;
 
+    /**
+     * default constructor
+     */
     public Icon_Segment_Fragment(){
     }
 
@@ -44,6 +69,7 @@ public class Icon_Segment_Fragment extends Fragment {
 
         return icon_segment_fragment;
     }
+
 
     public void setDestinationDialogListener(View.OnTouchListener listener){
         this.listener =listener;

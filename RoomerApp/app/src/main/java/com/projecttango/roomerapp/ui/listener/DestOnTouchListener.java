@@ -25,6 +25,10 @@ public class DestOnTouchListener implements View.OnTouchListener {
      * The button representing the destination button.
      */
     private final ImageButton imageButton;
+
+    /**
+     * The instance of the RoomerMainActivitty
+     */
     private final RoomerMainActivity main;
 
     /**
@@ -34,9 +38,9 @@ public class DestOnTouchListener implements View.OnTouchListener {
 
     /**
      * This constructor creates a new DestOnTouchListener with params of the relationships.
-     * @param icon_segment_fragment
-     * @param thumbOnTouchListener
-     * @param main
+     * @param icon_segment_fragment the Icon_Segment_fragment
+     * @param thumbOnTouchListener the thumbOnTouchListener.
+     * @param main the RoomerMainActivity
      */
     public DestOnTouchListener(Icon_Segment_Fragment icon_segment_fragment,ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 

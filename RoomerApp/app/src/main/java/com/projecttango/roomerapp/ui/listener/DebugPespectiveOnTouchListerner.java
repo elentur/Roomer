@@ -30,6 +30,13 @@ public class DebugPespectiveOnTouchListerner implements View.OnTouchListener {
      */
     private final ThumbOnTouchListener thumbOnTouchListener;
 
+    /**
+     * This constructor creates a new DebugPerspectiveOnTouchLister with its parameters.
+     * @param icon_segment_fragment
+     * @param thumbOnTouchListener
+     * @param main
+     */
+
     public DebugPespectiveOnTouchListerner(Icon_Segment_Fragment icon_segment_fragment, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.imageButton = icon_segment_fragment.segEmergencyExit;

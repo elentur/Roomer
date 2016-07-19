@@ -18,16 +18,26 @@ import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
  */
 public class BuildingOnTouchListener implements View.OnTouchListener {
 
-
+    /**
+     * The button representing the building
+     */
     private final ImageButton imageButton;
+
+    /**
+     * RoomerMainActivity instance
+     */
     private final RoomerMainActivity main;
+
+    /**
+     * Thumb button instance
+     */
     private final ThumbOnTouchListener thumbOnTouchListener;
 
     /**
      * This constructor creates a new BuildingOnTouchListener with params of the relationships.
-     * @param icon_segment_fragment
-     * @param thumbOnTouchListener
-     * @param main
+     * @param icon_segment_fragment the Icon_Segment:Fragment
+     * @param thumbOnTouchListener the thumbOnTouchListener
+     * @param main the RoomerMainActivity
      */
 
     public BuildingOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
