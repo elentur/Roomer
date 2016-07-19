@@ -126,6 +126,11 @@ public class RoomerRenderer extends RajawaliRenderer {
         timeStamp = System.currentTimeMillis();
     }
 
+    /**
+     * OnREnder Method
+     * @param ellapsedRealtime
+     * @param deltaTime
+     */
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
 
@@ -243,14 +248,23 @@ public class RoomerRenderer extends RajawaliRenderer {
         return mTangoCameraTexture == null ? -1 : mTangoCameraTexture.getTextureId();
     }
 
-
+    /**
+     * Sets the Points for Calculation and the Destination Points
+     * @param points
+     * @param destpoint
+     */
     public void setPoints(ArrayList<Point> points, Point destpoint) {
         this.destPoint = destpoint;
         this.points = points;
         this.waitForCalcPath = true;
 
     }
-private void calcPath(){
+
+    /**
+     * Calculates the Points for  the route an gives it in the
+     * right direction
+     */
+    private void calcPath(){
     Vector3 pos = new Vector3(getCurrentCamera().getPosition().x,
             getCurrentCamera().getPosition().y - 1,
             getCurrentCamera().getPosition().z);
@@ -260,6 +274,11 @@ private void calcPath(){
     reDraw = true;
     Log.d("DEBUGGER", "calcPath");
 }
+
+    /**
+     * Set All Points for this Building
+     * @param points All points
+     */
     public void setAllPoints(ArrayList<Point> points)
     {
         Log.d("DEVUGGER", "setAllPoints");

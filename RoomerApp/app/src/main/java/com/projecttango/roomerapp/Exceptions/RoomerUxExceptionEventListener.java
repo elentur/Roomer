@@ -16,6 +16,10 @@ public class RoomerUxExceptionEventListener implements UxExceptionEventListener 
         this.TAG = tag;
     }
 
+    /**
+     * This Eventlistener for all Roomer UX Exceptions
+     * @param uxExceptionEvent
+     */
     @Override
     public void onUxExceptionEvent(UxExceptionEvent uxExceptionEvent) {
         if (uxExceptionEvent.getType() == UxExceptionEvent.TYPE_LYING_ON_SURFACE) {
