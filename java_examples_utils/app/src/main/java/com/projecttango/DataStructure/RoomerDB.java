@@ -86,7 +86,8 @@ public static RoomerDB db =null;
      * If ADF already exist with the same uuid in the database query will be fail and throw an exception!
      *
      * @param position of the ADF
-     * @param uuid     from the ADF.
+     * @param name of the ADF
+     * @param uuid from the ADF
      * @return ADF Object
      */
     public ADF createADF(Vector3 position, String name, String uuid) {
@@ -101,6 +102,7 @@ public static RoomerDB db =null;
      *
      * @param buildingName of the Building
      * @param position     of the ADF
+     * @param name         of the ADF
      * @param uuid         from the ADF.
      * @return ADF Object
      */
@@ -137,8 +139,10 @@ public static RoomerDB db =null;
     }
 
     /**
-     * @param uuid
-     * @return
+     * Returns a ADF object form the given uuid
+     *
+     * @param uuid of the ADF
+     * @return ADF object
      */
     public ADF getAdf(String uuid) {
         return adfDao.getADF(uuid);
@@ -282,7 +286,7 @@ public static RoomerDB db =null;
     /**
      * Exports the Database to a shared space
      *
-     * @param context
+     * @param context of the activity
      */
     public void exportDB(final Context context) {
 
@@ -334,7 +338,7 @@ public static RoomerDB db =null;
     /**
      * Imports the Database for given ADF from shared space
      *
-     * @param context
+     * @param context form the activity
      */
     public void importDB(final Context context) {
         File direct = new File(Environment.getExternalStorageDirectory() + "/Exam Creator");

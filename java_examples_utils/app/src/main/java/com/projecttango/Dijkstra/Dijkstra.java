@@ -44,10 +44,14 @@ public class Dijkstra {
     private static final String START = "1";
     private static final String END = "20";
 
+    /**
+     * Main Class for testing algorithm
+     * @param args parameter empty
+     */
     public static void main(String[] args) {
         Graph g = new Graph(GRAPH);
         g.dijkstra(START);
         g.printPath(END);
-        //g.printAllPaths();
+        g.printAllPaths();
     }
 }

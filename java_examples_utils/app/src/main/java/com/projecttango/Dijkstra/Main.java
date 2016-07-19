@@ -11,8 +11,12 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
+ * Class for testing the dijkstr algorithm.
+ * Not for public usage.
  * Created by roberto on 01.06.16.
  */
+
+
 public class Main {
 
     private static Point pZ;
