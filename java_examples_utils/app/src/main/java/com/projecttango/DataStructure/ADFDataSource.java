@@ -8,19 +8,21 @@ import org.rajawali3d.math.vector.Vector3;
 import java.util.ArrayList;
 
 /**
+ * This class represents a Data Access Object.
+ * It is a object-oriented interface between the ADF and the databases.
  * Created by 
  * Roberto on 04.07.16.
  */
 public class ADFDataSource extends DAO{
 
     /**
-     *
+     * the activity context
      */
     private Context context;
 
     /**
-     *
-     * @param context
+     * Instance of a ADFDataSource object.
+     * @param context from the activity
      */
     public ADFDataSource(Context context) {
         super(context);
@@ -28,7 +30,7 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     *
+     * array af all accessible table columns
      */
     private String[] allColumns = {
             SQLiteHelper.ADFS_COLUMN_ID,
@@ -41,7 +43,7 @@ public class ADFDataSource extends DAO{
     };
 
     /**
-     *
+     * Retruns a ADF object and makes a new entry in the database
      * @param position a Vector3 coordinate
      * @param name of the ADF
      * @param building in where the ADF is situated
@@ -72,8 +74,7 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     *
-     * @param ADF
+     * carry out the delete order for the givven ADF object
      */
     public void deleteADF(ADF ADF) {
         long id = ADF.getId();
@@ -82,8 +83,8 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     *
-     * @return
+     * gets all ADF form the database
+     * @return a list o ADFs
      */
     public ArrayList<ADF> getAllADFs() {
         ArrayList<ADF> ADFs = new ArrayList<ADF>();
@@ -102,8 +103,8 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     *
-     * @return
+     * returns all ADF form the database according of the given building it belongs to
+     * @return a list o ADFs
      */
     public ArrayList<ADF> getAllADFs(Building building) {
         ArrayList<ADF> ADFs = new ArrayList<ADF>();
@@ -130,9 +131,10 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     *
-     * @param id
-     * @return
+     * returns a singel ADF from database according to the given id.
+     * returns null if not exist.
+     * @param id from the ADF
+     * @return ADF
      */
     public ADF getADF(long id){
         ADF adf;
@@ -155,6 +157,7 @@ public class ADFDataSource extends DAO{
 
     /**
      * Returns ADF object containing the uuid.
+     * Returns null if not exist.
      * @param uuid is the uuid of the ADF
      * @return ADF
      */
@@ -178,9 +181,9 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     *
-     * @param cursor
-     * @return
+     * converts the database query into a object
+     * @param cursor of the database
+     * @return ADF
      */
     private ADF cursorToADF(Cursor cursor) {
         ADF adf = null;

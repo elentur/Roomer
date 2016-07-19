@@ -25,6 +25,7 @@ public class SetUpUI {
     private static SetUpUI instance;
     private ImageButton thumbButton;
     private final DestinationDialog destinationDialog;
+    private final HelpDialog helpDialog;
     private RelativeLayout relativeLayout;
     private ThumbOnTouchListener thumbOnTouchListener;
 
@@ -35,6 +36,7 @@ public class SetUpUI {
         txtFPS = (TextView)main.findViewById(R.id.txtFPS);
         relativeLayout = (RelativeLayout) main.findViewById(R.id.mainLayout);
         destinationDialog = new DestinationDialog();
+        helpDialog = new HelpDialog();
         setupThumbButton();
         setScreenOnTouchListener();
 
@@ -75,6 +77,7 @@ public class SetUpUI {
         if(thumbButton != null) thumbButton.setOnTouchListener(thumbOnTouchListener = new ThumbOnTouchListener(main));
     }
 
+    public HelpDialog getHelpDialog() {return helpDialog; }
     public DestinationDialog getDestinationDialog(){
         return destinationDialog;
     }

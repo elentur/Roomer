@@ -2,26 +2,21 @@ package com.projecttango.roomerapp.ui.listener;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Handler;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
 import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 
 /**
+ * This class represents the events and animations for the thumb button.
  * Created by Marcus Bätz on 10.06.2016.
  *
  */
@@ -33,10 +28,10 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
     public static boolean countClicks = false;
     private final ImageButton thumbButton;
     private Handler handler = new Handler();
-    public static boolean thumbButtonIsDisplayed=true;
+    public static boolean thumbButtonIsDisplayed = true;
 
     public ThumbOnTouchListener(RoomerMainActivity main){
-        this.main=main;
+        this.main = main;
         fragmentManager = main.getFragmentManager();
         thumbButton = (ImageButton) main.findViewById(R.id.thumb_button);
     }
@@ -53,7 +48,7 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
             icon_segment_fragment.setChangeBuildingListener(new BuildingOnTouchListener(icon_segment_fragment, this, main));
             icon_segment_fragment.setFavoritesListener(new FavoritesOnTouchListener(icon_segment_fragment,this, main ));
             icon_segment_fragment.setEmergenyExitListener(new EmergecyOnTouchListerner(icon_segment_fragment,this, main));
-            icon_segment_fragment.setRestroomListener(new RestroomOnTouchListener(icon_segment_fragment,this, main));
+            icon_segment_fragment.setRestroomListener(new HelpOnTouchListener(icon_segment_fragment,this, main));
 
             if (motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
 
@@ -77,6 +72,10 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
             return false;
         }
 
+    /**
+     * This method removes the fragment with the additional buttons
+     * and resets the states.
+     */
     public void clearFragment() {
         fragmentManager.beginTransaction().remove(
                 main.getFragmentManager().findFragmentById(R.id.fragment_holder)).commit();
@@ -93,13 +92,16 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
         handler.removeCallbacks(updateTimeTask);
         handler.postDelayed(updateTimeTask,10000);
     }
+
+    /**
+     * This method calls the task Thread.
+     */
     private Runnable updateTimeTask = new Runnable() {
         @Override
         public void run() {
             if (countClicks){
                 update();
             }
-
 
         }
     };

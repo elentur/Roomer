@@ -3,19 +3,47 @@ package com.projecttango.DataStructure;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
+ * This class represents an ADF object. It saves its id, a position regarded to its neighbour,
+ * name and UUID given by Tango. Also ut knows his building.
  * Created by
  * Roberto on 04.07.16.
  */
 public class ADF {
+    /**
+     * id for the database
+     */
     private long id;
+    /**
+     * position regarded to its neighbour ADF
+     */
     private Vector3 position;
+    /**
+     * name of the ADF object
+     */
     private String name;
+    /**
+     * UUDI from tango
+     */
     private String uuid;
+    /**
+     * a building it belongs to
+     */
     private Building building;
 
+    /**
+     * Creates a object of ADF
+     */
     public ADF() {
     }
 
+    /**
+     * Creates a object of ADF
+     * @param id for the database
+     * @param position regarded to its neighbour ADF in Vector3 format
+     * @param name of the ADF
+     * @param uuid of the ADF
+     * @param building it belongs to
+     */
     public ADF(long id, Vector3 position, String name,String uuid, Building building) {
         this.id = id;
         this.position = position;
@@ -23,6 +51,10 @@ public class ADF {
         this.uuid = uuid;
         this.building = building;
     }
+
+    /**
+     * GETTER AND SETTER
+     */
 
     public long getId() {
         return id;

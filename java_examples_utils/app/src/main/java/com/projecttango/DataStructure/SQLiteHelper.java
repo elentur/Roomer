@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
+ * Creates the database, set tables and columns. Manage the update and delete of the database
  * Created by
  * Roberto on 04.07.16.
  */

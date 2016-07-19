@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:minWidth="88dp"
             android:height="36dp"
-            android:typeface="monospace"
+            android:typeface="normal"
             android:text="Building"
             android:textSize="14pt"
             android:paddingLeft="8dp"
@@ -42,7 +42,8 @@
             android:textSize="14pt"
             android:layout_alignParentEnd="false"
             android:layout_toEndOf="@id/btnBuilding"
-            android:layout_marginLeft="8dp" />
+            android:layout_marginLeft="8dp"
+            android:typeface="normal" />
     </RelativeLayout>
 
     <LinearLayout
@@ -112,7 +113,8 @@
         android:id="@+id/linButtons"
         android:layout_alignParentBottom="true"
 
-        android:gravity="right">
+        android:gravity="right"
+        android:layout_marginTop="24dp">
 
         <Button
             android:id="@+id/cancel"
@@ -122,7 +124,8 @@
             android:minWidth="88dp"
             android:height="36dp"
             android:text="CANCEL"
-            android:textSize="12pt" />
+            android:textSize="12pt"
+            android:typeface="normal" />
 
         <Button
             android:id="@+id/accept"

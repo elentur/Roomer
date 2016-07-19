@@ -1,18 +1,14 @@
 package com.projecttango.DataStructure;
 
-import android.graphics.Color;
-import android.util.Log;
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
 /**
+ * This class represents an Point object.
+ * It knows all his neighbours on the base of the neighbours HashMap.
+ * It can save a properties in a HashMap. Please use the PointProperties enums for saving.
  * Created by
  * marcu_000 on 23.05.2016.
  */
@@ -198,6 +194,10 @@ public class Point implements Serializable{
         if(key.isEmpty()) throw new IllegalArgumentException("To get a property the key can not be empty!");
         this.properties.remove(key);
     }
+
+    /**
+     * GETTER AND SETTER
+     */
 
     public HashMap<PointProperties,PointProperties> getProperties() {
         return properties;
