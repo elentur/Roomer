@@ -67,6 +67,10 @@ public class Visualize {
     public int saveNextPoint= 0;
     public boolean needsNextPoint= false;
 
+    /**
+     * Build an ne Visualisation class and loads an build all 3d Objects
+     * @param renderer
+     */
     private Visualize(RajawaliRenderer renderer) {
         material2.setColor(Color.rgb(52, 152, 219));
         material2.enableLighting(true);
@@ -164,6 +168,11 @@ public class Visualize {
         }
     }
 
+    /**
+     * Distanz from User Position to destination in m
+     * @param camera user position camera
+     * @return distanz in m
+     */
     public int getDistance(Camera camera) {
         int distance = 0;
 
@@ -288,7 +297,10 @@ public class Visualize {
         return false;
     }
 
-
+    /**
+     * Clears the given scene
+     * @param scene the scene that have to be cleaned
+     */
     public void clear(RajawaliScene scene) {
         points.clear();
         arrow.setVisible(false);
@@ -305,6 +317,9 @@ public class Visualize {
     }
 
 
+    /**
+     or this Building Sets all Points f
+     */
     public void setAllPoints() {
         debugClear();
         Log.d("DEBUGGER", "DebugSize: " + allPoints.size());
@@ -334,6 +349,10 @@ public class Visualize {
         Log.d("DEBUGGER", "DebugSize: " + debugObjects.getNumChildren());
     }
 
+
+    /**
+     * Clears the Debug Object3D
+     */
     public void debugClear() {
 
         Log.d("DEBUGGER", "Debug clear");
@@ -344,12 +363,21 @@ public class Visualize {
 
     }
 
+    /**
+     * Returns an instanz of this class
+     * @param renderer the renerer where visualize works
+     * @return
+     */
     public static Visualize getInstance(RajawaliRenderer renderer) {
         if (renderer == null) return null;
         if (instance == null) instance = new Visualize(renderer);
         return instance;
     }
 
+    /**
+     * actualize the compass arrow synchrony to the camera
+     * @param pose The Posedata of the camera
+     */
     public void setCompassArrow(Pose pose) {
         if(pose !=null){
             compassArrow.setVisible(false);
@@ -372,6 +400,11 @@ public class Visualize {
         }
     }
 
+    /**
+     * Sets the nextPoint variable where the navigation has to run after
+     * relocalisation of the system
+     * @param nextPoint
+     */
     public void setNextPoint(int nextPoint) {
         this.nextPoint= nextPoint;
         this.needsNextPoint =false;
