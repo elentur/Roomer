@@ -8,6 +8,8 @@ import java.util.HashMap;
 /**
  * Created by marcu_000 on 23.05.2016.
  */
+
+@Deprecated
 public class NavigationPoint extends Point {
 
     public NavigationPoint(){}

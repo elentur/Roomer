@@ -46,6 +46,7 @@ public class ADFDataSource extends DAO{
      * Retruns a ADF object and makes a new entry in the database
      * @param position a Vector3 coordinate
      * @param name of the ADF
+     * @param uuid of the ADF
      * @param building in where the ADF is situated
      * @return ADF object
      */
@@ -74,7 +75,9 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     * carry out the delete order for the givven ADF object
+     * Deletes a ADF from the database.
+     *
+     * @param ADF which have to remove.
      */
     public void deleteADF(ADF ADF) {
         long id = ADF.getId();
@@ -103,7 +106,9 @@ public class ADFDataSource extends DAO{
     }
 
     /**
-     * returns all ADF form the database according of the given building it belongs to
+     * Returns all ADF form the database according of the given building it belongs to
+     *
+     * @param building where the ADFs belongs to.
      * @return a list o ADFs
      */
     public ArrayList<ADF> getAllADFs(Building building) {

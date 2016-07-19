@@ -84,11 +84,12 @@ public class Point implements Serializable{
 
     /**
      * Instance of a point object.
-     * @param id
+     * @param id unique id for database
      * @param position of the point represented by a vector3 object
      * @param neighbours HashMap of all other points which are in relation with this point
      * @param tag designation of the point
      * @param properties HashMap with all properties of the point, dynamically extensible. !IMPORTANT: all values have to be serializable!
+     * @param adf where the the point belongs to
      */
     public Point(int id, Vector3 position, HashMap<Point, Double> neighbours, String tag, HashMap<PointProperties,PointProperties> properties, ADF adf) {
         if(id == 0){

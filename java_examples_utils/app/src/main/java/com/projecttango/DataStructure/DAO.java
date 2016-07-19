@@ -24,7 +24,7 @@ public abstract class DAO {
 
     /**
      * initialize the SQLiteHelper and opens the the database
-     * @param context
+     * @param context from activity
      */
     public DAO(Context context) {
         dbHelper = new SQLiteHelper(context);
@@ -36,8 +36,9 @@ public abstract class DAO {
     }
 
     /**
-     * gets the database
-     * @throws SQLException
+     * Gets the database
+     *
+     * @throws SQLException if there is no Writable Database
      */
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
