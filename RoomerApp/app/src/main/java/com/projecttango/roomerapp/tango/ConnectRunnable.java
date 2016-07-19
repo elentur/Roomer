@@ -24,6 +24,11 @@ public class ConnectRunnable implements Runnable{
     private final RoomerMainActivity main;
     private  String uuid;
     private  Tango tango;
+
+    /**
+     * Creates a Runnable Object for roomer tango
+     * @param main activity where tango is initiate
+     */
     public ConnectRunnable( final RoomerMainActivity main){
         this.main =main;
 
