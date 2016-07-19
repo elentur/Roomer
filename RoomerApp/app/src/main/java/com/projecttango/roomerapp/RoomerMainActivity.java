@@ -29,7 +29,9 @@ import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoErrorException;
 import com.google.atap.tangoservice.TangoPoseData;
+import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.roomerapp.tango.ConnectRunnable;
 import com.projecttango.roomerapp.ui.SetUpUI;
@@ -92,7 +94,7 @@ public static RoomerMainActivity context;
 
 
     public String adf;
-
+    public String Destination ="";
 
 
     @Override
@@ -176,7 +178,18 @@ public static RoomerMainActivity context;
     public void loadAreaDescription(String uuid) {
         if (uuid != null) {
             mTango.experimentalLoadAreaDescription(uuid);
+            FRAME_PAIR = new TangoCoordinateFramePair(
+                    TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
+                    TangoPoseData.COORDINATE_FRAME_DEVICE);
+            Log.d("DEBUGGER" , "ADF geladen");
             adf = new String(mTango.loadAreaDescriptionMetaData(uuid).get("name"));
+            mIsRelocalized=false;
+            RoomerDB db = new RoomerDB(this);
+            mRenderer.adf = db.getAdf(uuid);
+            if(mRenderer.adf == null) {
+                points = db.getAllPoints();
+                mRenderer.setAllPoints(points);
+            }
         }
     }
 

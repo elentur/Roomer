@@ -58,7 +58,7 @@ public class SetUpUI {
     public void setScreenOnTouchListener() {
 
         setupThumbButton();
-        relativeLayout.setOnTouchListener(new ScreenOnTouchListener(thumbButton,thumbOnTouchListener));
+        relativeLayout.setOnTouchListener(new ScreenOnTouchListener(thumbButton,thumbOnTouchListener,main));
     }
 
     public TextView getTxtLocalized() {

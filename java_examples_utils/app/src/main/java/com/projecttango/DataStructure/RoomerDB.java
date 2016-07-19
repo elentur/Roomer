@@ -21,7 +21,7 @@ import java.util.*;
  * This Class is for loading, saving, import and export of roomer databases including NavPoints
  */
 public class RoomerDB {
-
+public static RoomerDB db =null;
     private static final String TAG = RoomerDB.class.getSimpleName();
     /**
      * All dao objects for the database interaction
@@ -47,6 +47,7 @@ public class RoomerDB {
         this.adfDao = new ADFDataSource(context);
         this.pointDao = new PointsDataSource(context);
         this.edgeDao = new EdgesDataSource(context);
+        if(db==null) db = this;
 
     }
 

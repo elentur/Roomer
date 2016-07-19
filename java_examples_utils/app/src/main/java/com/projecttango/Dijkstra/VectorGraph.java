@@ -24,8 +24,13 @@ public class VectorGraph {
      */
     public static ArrayList<Point> getPath(Vector3 pos, Point end, ArrayList<Point> points) {
         Edge[] edges = setNeighbours(points);
+
         VectorGraph g = new VectorGraph(edges);
         Point start = g.findNearestStartPoint(pos);
+       // Point start = null;
+        /*for(Point p: points){
+            if(p.getTag().equals("D224"))start = p;
+        }*/
         g.dijkstra(start);
         g.printPath(end);
         return path;
@@ -58,7 +63,6 @@ public class VectorGraph {
 
                 double distance;
 
-                HashMap<Point,Double> neighbours;
 
                 if(r < 0 ){
                     distance = Vector3.distanceTo(a,p);
@@ -90,12 +94,12 @@ public class VectorGraph {
             }
         }
 
-        Point point = new NavigationPoint(new Vector3(pos),new HashMap<Point, Double>(),"Start");
+        Point point = new Point(new Vector3(pos),new HashMap<Point, Double>(),"Start");
 
         for(Point candidate : pointList){
             point.addNeighbour(candidate);
         }
-
+        point.setAdf(pointList.get(0).getAdf());
         if (!graph.containsKey(point)) graph.put(point, new Vertex(point));
 
         for(Point neighbour : point.getNeighbours().keySet()){

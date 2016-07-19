@@ -1,5 +1,6 @@
 package com.projecttango.roomerapp.ui;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.projecttango.DataStructure.Point;
+import com.projecttango.Visualisation.ToastHandler;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
@@ -35,41 +37,20 @@ public class RoomerUIThread implements Runnable {
             if (main.mIsRelocalized) {
                 ui.getTxtLocalized().setVisibility(View.INVISIBLE);
                 //Show Distance
-                int distance = 0;
-                ArrayList<Point> points = main.mRenderer.vis.getPoints();
-                for (int i = 1; i < points.size(); i++) {
-                    distance += Vector3.distanceTo2(
-                            points.get(i - 1).getPosition(),
-                            points.get(i).getPosition());
+                if(!main.mRenderer.destArrive && !main.Destination.equals("")){
+
+
+                    //On arrive destination
+
+                }if (main.mRenderer.destArrive) {
+                    Toast.makeText(main, "You have arrived at your Destination.", Toast.LENGTH_LONG).show();
+                    Log.d("DEBUGGER", "Arrived");
+                    main.mRenderer.vis.clear(main.mRenderer.getCurrentScene());
+                    main.mRenderer.destArrive=false;
                 }
-                Vector3 cp = new Vector3(
-                        main.mRenderer.getCurrentCamera().getPosition().x,
-                        main.mRenderer.getCurrentCamera().getPosition().y - 1,
-                        main.mRenderer.getCurrentCamera().getPosition().z);
-                if (!points.isEmpty()) distance += Vector3.distanceTo2(
-                        main.mRenderer.vis.getPoints().get(0).getPosition(),
-                        cp);
-
-                TextView lblDistance = new TextView(main.getBaseContext());
-                RelativeLayout relInfo = (RelativeLayout) main.findViewById(R.id.relInfo);
-                relInfo.removeAllViews();
-                relInfo.addView(lblDistance);
-                RelativeLayout.LayoutParams layoutParams =
-                        (RelativeLayout.LayoutParams) relInfo.getLayoutParams();
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
-                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-                relInfo.setLayoutParams(layoutParams);
-                String s = distance + "m";
-                lblDistance.setText(s);
-
-                //On arrive destination
-               if(main.mRenderer.destArrive) {
-                   Toast.makeText(main, "You have arrived at your Destination.", Toast.LENGTH_LONG).show();
-                   Log.d("DEBUGGER", "Arrived");
-                   main.mRenderer.destArrive = false;
-               }
-
             } else {
+
+                ui.getTxtLocalized().setVisibility(View.VISIBLE);
                 if (countRelocationPoints > 4) {
                     countRelocationPoints = 0;
                 }
@@ -84,6 +65,35 @@ public class RoomerUIThread implements Runnable {
             }
 
             ui.getTxtFPS().setText("FPS: " + main.mRenderer.globalFPS);
+            if(main.mRenderer.vis.changeADF){
+                new ToastHandler(
+                        main,
+                        "neues adf geladen: " + main.mRenderer.vis.adf.getName()
+                        ,Toast.LENGTH_LONG);
+                main.mRenderer.vis.changeADF=false;
+                main.loadAreaDescription(main.mRenderer.vis.adf.getUuid());
+
+
+            }
+            if(main.mRenderer != null && main.mRenderer.vis !=null && main.mRenderer.adf!=null){
+            int distance = main.mRenderer.vis.getDistance(main.mRenderer.getCurrentCamera());
+
+            TextView lblDistance = new TextView(main.getBaseContext());
+            lblDistance.setTextSize(32);
+            lblDistance.setTextColor(Color.BLACK);
+            RelativeLayout relInfo = (RelativeLayout) main.findViewById(R.id.relInfo);
+            relInfo.removeAllViews();
+            relInfo.addView(lblDistance);
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams) relInfo.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            relInfo.setLayoutParams(layoutParams);
+            String s = "Destination: " + main.Destination + "  " + distance + "m"
+                    + " Nextpoint: " + main.mRenderer.vis.nextPoint + " ADF: " + main.mRenderer.adf.getName()
+                    + " SetNextPoint: " + main.mRenderer.nextPoint;
+            lblDistance.setText(s);
+                }
         }
 
 

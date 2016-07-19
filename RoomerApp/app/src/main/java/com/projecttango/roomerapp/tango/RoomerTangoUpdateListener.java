@@ -2,6 +2,7 @@ package com.projecttango.roomerapp.tango;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
+import com.projecttango.Visualisation.ToastHandler;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
@@ -95,29 +97,11 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
                     main.FRAME_PAIR = new TangoCoordinateFramePair(
                             TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                             TangoPoseData.COORDINATE_FRAME_DEVICE);
-                    try {
-                        main.points = db.getAllPoints();
-                        main.mRenderer.setAllPoints(main.points);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if(main.mRenderer.vis.changeADF){
-                        main.loadAreaDescription(main.mRenderer.vis.adf.getUuid());
-                        main.mRenderer.vis.changeADF=false;
-                        Handler handler = new Handler(Looper.getMainLooper());
-
-                        handler.post(new Runnable() {
-                                         @Override
-                                         public void run() {
-                                             Toast.makeText(main.getBaseContext(),"neues adf geladen: " + main.mRenderer.vis.adf.getName(),Toast.LENGTH_LONG);
-                                         }
-                                     }
-                        );
 
 
-                    }
 
                 }
+
 
             }
 

@@ -496,8 +496,9 @@ public class GetCoordinateActivity extends Activity implements View.OnTouchListe
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     Log.d("DEBUGGER", point + "  geht");
+                    if(!txtName.getText().toString().equals("")){
                     point.setTag(txtName.getText().toString());
-                    db.updatePoint(point);
+                    db.updatePoint(point);}
                     return false;
                 }
             });

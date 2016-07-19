@@ -25,6 +25,7 @@ import com.projecttango.DataStructure.ADF;
 
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.PointProperties;
+import com.projecttango.DataStructure.PosCalculator;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.roomerapp.R;
@@ -306,9 +307,7 @@ public class DestinationDialog extends DialogFragment {
 
 
         RoomerRenderer mRenderer = SetUpUI.getInstance(null).getRenderer();
-        Vector3 pos = new Vector3(mRenderer.getCurrentCamera().getPosition().x,
-                mRenderer.getCurrentCamera().getPosition().y - 1,
-                mRenderer.getCurrentCamera().getPosition().z);
+
 
 
         ArrayList<Point> points = new ArrayList<Point>();
@@ -317,7 +316,7 @@ public class DestinationDialog extends DialogFragment {
 
             Point newPoint = new Point(
                     (int) p.getId(),
-                    Vector3.addAndCreate(p.getPosition(), p.getAdf().getPosition()),
+                    PosCalculator.newPos(mRenderer.adf,p),
                     new HashMap<Point, Double>(),
                     p.getTag(),
                     p.getProperties(),
@@ -354,11 +353,10 @@ public class DestinationDialog extends DialogFragment {
 
 
         Log.d("DEBUGGER", "BeforeGraph: " + points);
-
+        final RoomerMainActivity main = SetUpUI.getInstance(null).main;
+        main.Destination = destpoint.getTag();
         mRenderer.setPoints(
-                VectorGraph.getPath(pos,
-                        destpoint,
-                        points)
+                points, destpoint
         );
 
     }

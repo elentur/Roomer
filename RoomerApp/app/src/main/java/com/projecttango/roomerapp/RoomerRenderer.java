@@ -22,11 +22,14 @@ import android.view.MotionEvent;
 
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoPoseData;
+import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
+import com.projecttango.Dijkstra.VectorGraph;
 import com.projecttango.Visualisation.Visualize;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
+import com.projecttango.roomerapp.ui.SetUpUI;
 
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.lights.PointLight;
@@ -34,6 +37,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.StreamingTexture;
 import org.rajawali3d.math.Matrix4;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
@@ -59,7 +63,7 @@ public class RoomerRenderer extends RajawaliRenderer {
     public ArrayList<Point> points = new ArrayList<Point>();
     private boolean reDraw = false;
     public boolean isDebug = false;
-    private ArrayList<Point> allPoints = new ArrayList<Point>();
+    protected ArrayList<Point> allPoints = new ArrayList<Point>();
     public boolean debugRerender = false;
     public boolean clear = false;
 
@@ -71,6 +75,10 @@ public class RoomerRenderer extends RajawaliRenderer {
     public boolean isRelocated = false;
     public boolean destArrive = false;
     private PointLight light3;
+    public ADF adf;
+    private boolean waitForCalcPath = false;
+    private Point destPoint;
+    public int nextPoint=0;
 
     public RoomerRenderer(Context context) {
         super(context);
@@ -113,6 +121,7 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentCamera().setFarPlane(CAMERA_FAR);
 
         vis = Visualize.getInstance(this);
+
         //vis.setPoints(null);
         timeStamp = System.currentTimeMillis();
     }
@@ -127,7 +136,7 @@ public class RoomerRenderer extends RajawaliRenderer {
             fps = 0;
             timeStamp = System.currentTimeMillis();
         }
-
+        nextPoint=vis.saveNextPoint;
         try {
             //Clear Scene
             if (clear) {
@@ -137,21 +146,27 @@ public class RoomerRenderer extends RajawaliRenderer {
 
 
             }
+            if(isRelocated && waitForCalcPath)calcPath();
+
             //Redraw Scene
             if (reDraw && isRelocated) {
+
                 if (light3 != null) light3.setPosition(getCurrentCamera().getPosition());
-                destArrive = vis.draw(getCurrentScene(), getCurrentCamera(), RoomerMainActivity.context);
+                if(vis.needsNextPoint&& adf.equals(vis.points.get(nextPoint).getAdf()))vis.setNextPoint(nextPoint);
+                destArrive = vis.draw(getCurrentScene(), getCurrentCamera());
                 reDraw = !destArrive;
             }
 
             if (isDebug && debugRerender) {
 
                 debugRerender = false;
-                vis.debugDraw(allPoints);
+                vis.isDebug=true;
+
+               //if(adf !=null) vis.debugDraw(allPoints );
                 reDraw = true;
             } else if (!isDebug && debugRerender) {
                 debugRerender = false;
-                vis.debugClear();
+                vis.isDebug=false;
             }
 
         } catch (Exception e) {
@@ -209,7 +224,11 @@ public class RoomerRenderer extends RajawaliRenderer {
         getCurrentCamera().setRotation(cameraPose.getOrientation());
         getCurrentCamera().setPosition(cameraPose.getPosition());
 
-        vis.setCompassArrow(cameraPose);
+        if(isRelocated){
+            vis.setCompassArrow(cameraPose);
+        }else{
+            vis.setCompassArrow(null);
+        }
 
 
     }
@@ -225,14 +244,27 @@ public class RoomerRenderer extends RajawaliRenderer {
     }
 
 
-    public void setPoints(ArrayList<Point> points) {
-        Log.d("DEBUGGER", "GraphPoints: " + points);
+    public void setPoints(ArrayList<Point> points, Point destpoint) {
+        this.destPoint = destpoint;
         this.points = points;
-        vis.setPoints(points);
-        reDraw = true;
-    }
+        this.waitForCalcPath = true;
 
-    public void setAllPoints(ArrayList<Point> points) {
+    }
+private void calcPath(){
+    Vector3 pos = new Vector3(getCurrentCamera().getPosition().x,
+            getCurrentCamera().getPosition().y - 1,
+            getCurrentCamera().getPosition().z);
+    waitForCalcPath=false;
+    vis.setPoints(VectorGraph.getPath(pos,destPoint,points));
+    vis.adf =adf;
+    reDraw = true;
+    Log.d("DEBUGGER", "calcPath");
+}
+    public void setAllPoints(ArrayList<Point> points)
+    {
+        Log.d("DEVUGGER", "setAllPoints");
+        vis.adf =adf;
         allPoints = points;
+        vis.allPoints = allPoints;
     }
 }

@@ -184,13 +184,8 @@ public class GetCoordinateRenderer extends RajawaliRenderer implements OnObjectP
                    for (Point n : p.getNeighbours().keySet()) {
                        Stack<Vector3> stack = new Stack<Vector3>();
                        stack.add(key.getPosition());
-                       if(n.getAdf().equals(adf)){
-                           stack.add(n.getPosition());
-                       }else{
-                           Vector3 offset = Vector3.subtractAndCreate(n.getAdf().getPosition(),adf.getPosition());
-                           stack.add(Vector3.addAndCreate(n.getPosition(),offset));
+                       stack.add(PosCalculator.newPos(adf,n));
 
-                       }
 
                        Line3D line = new Line3D(stack, 50, Color.RED);
                        Material m = new Material();

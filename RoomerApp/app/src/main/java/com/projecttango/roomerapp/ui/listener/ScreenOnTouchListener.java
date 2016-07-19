@@ -7,6 +7,7 @@ import android.widget.ImageButton;
 
 
 import com.projecttango.roomerapp.R;
+import com.projecttango.roomerapp.RoomerMainActivity;
 
 
 /**
@@ -14,14 +15,16 @@ import com.projecttango.roomerapp.R;
  */
 public class ScreenOnTouchListener implements View.OnTouchListener {
 
+    private final RoomerMainActivity main;
     private ImageButton thumbButton;
     private ThumbOnTouchListener thumbOnTouchListener;
     public static boolean onOff = false;
 
-    public ScreenOnTouchListener(ImageButton thumbButton, ThumbOnTouchListener thumbOnTouchListener) {
+    public ScreenOnTouchListener(ImageButton thumbButton, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.thumbButton = thumbButton;
         this.thumbOnTouchListener = thumbOnTouchListener;
+        this.main = main;
 
     }
     @Override
@@ -43,7 +46,7 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
             thumbOnTouchListener.countClicks=false;
         }
 
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+        if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 
 
             if (!thumbOnTouchListener.thumbButtonIsDisplayed){
