@@ -12,7 +12,7 @@ import com.projecttango.roomerapp.R;
 
 
 /**
- * This class represents the Help Dialog it basicly shows some information about the application.
+ * This class represents the Help Dialog it shows basic information about the application.
  * Created by Julian Dobrot on 13.07.2016.
  */
 public class HelpDialog extends DialogFragment {

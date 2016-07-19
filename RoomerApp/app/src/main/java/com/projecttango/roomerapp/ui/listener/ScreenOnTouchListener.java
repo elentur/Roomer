@@ -11,15 +11,35 @@ import com.projecttango.roomerapp.RoomerMainActivity;
 
 
 /**
+ * This class represents the events of the screen interactions.
+ * The thumbmenu appeas and disappears when touching the screen.
  * Created by Julian Dobrot on 19.06.2016.
  */
 public class ScreenOnTouchListener implements View.OnTouchListener {
 
     private final RoomerMainActivity main;
+
+    /**
+     * The thumb button.
+     */
     private ImageButton thumbButton;
+
+    /**
+     * The thumbOnListener instance.
+     */
     private ThumbOnTouchListener thumbOnTouchListener;
+
+    /**
+     * The state of the thumb button.
+     */
     public static boolean onOff = false;
 
+    /**
+     * This constructor represents a new ScreenOnTouchListener.
+     * @param thumbButton
+     * @param thumbOnTouchListener
+     * @param main
+     */
     public ScreenOnTouchListener(ImageButton thumbButton, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.thumbButton = thumbButton;
@@ -60,15 +80,6 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
             }
         }
 
-
         return false;
-    }
-
-    public boolean isOnOff() {
-        return onOff;
-    }
-
-    public void setOnOff(boolean onOff) {
-        this.onOff = onOff;
     }
 }

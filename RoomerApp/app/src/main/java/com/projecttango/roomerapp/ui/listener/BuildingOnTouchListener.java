@@ -12,6 +12,8 @@ import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
 
 
 /**
+ * The button is not used at the moment it just resets the the animation timer on the menu and changes the image
+ * This class hadles all ecents and activities related to the building button.
  * Created by Julian Dobrot on 10.06.2016.
  */
 public class BuildingOnTouchListener implements View.OnTouchListener {
@@ -20,6 +22,13 @@ public class BuildingOnTouchListener implements View.OnTouchListener {
     private final ImageButton imageButton;
     private final RoomerMainActivity main;
     private final ThumbOnTouchListener thumbOnTouchListener;
+
+    /**
+     * This constructor creates a new BuildingOnTouchListener with params of the relationships.
+     * @param icon_segment_fragment
+     * @param thumbOnTouchListener
+     * @param main
+     */
 
     public BuildingOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 

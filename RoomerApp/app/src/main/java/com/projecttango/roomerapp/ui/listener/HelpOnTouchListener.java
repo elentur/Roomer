@@ -21,7 +21,12 @@ public class HelpOnTouchListener implements View.OnTouchListener {
     private final RoomerMainActivity main;
     private final ThumbOnTouchListener thumbOnTouchListener;
 
-
+    /**
+     * This constructor creates a new HelpOntouchListener with its parameters.
+     * @param icon_segment_fragment
+     * @param thumbOnTouchListener
+     * @param main
+     */
     public HelpOnTouchListener(Icon_Segment_Fragment icon_segment_fragment, ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.imageButton = icon_segment_fragment.segRestroom ;

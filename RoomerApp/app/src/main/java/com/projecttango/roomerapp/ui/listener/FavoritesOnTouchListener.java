@@ -11,6 +11,8 @@ import com.projecttango.roomerapp.ui.SetUpUI;
 
 
 /**
+ * This class represets the events of the favorites button.
+ * This feature is not implemented yet. No usage except image and position changes for design.
  * Created by Julian Dobrot on 10.06.2016.
  */
 public class FavoritesOnTouchListener implements View.OnTouchListener {
@@ -19,6 +21,12 @@ public class FavoritesOnTouchListener implements View.OnTouchListener {
     private final RoomerMainActivity main;
     private final ThumbOnTouchListener thumbOnTouchListener;
 
+    /**
+     * This constructor creates a new favorite button with its parameters.
+     * @param icon_segment_fragment
+     * @param thumbOnTouchListener
+     * @param main
+     */
     public FavoritesOnTouchListener(Icon_Segment_Fragment icon_segment_fragment,ThumbOnTouchListener thumbOnTouchListener, RoomerMainActivity main) {
 
         this.imageButton = icon_segment_fragment.segFavorites;
@@ -34,8 +42,6 @@ public class FavoritesOnTouchListener implements View.OnTouchListener {
 
             imageButton.setImageResource(R.drawable.thumb_button_segment3_red);
             thumbOnTouchListener.upaDateUI();
-            Log.d("DEBUGGER", "debug");
-            SetUpUI.getInstance(null).main.setDebug(view);
 
         }
 

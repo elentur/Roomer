@@ -47,7 +47,7 @@ public class ThumbOnTouchListener implements View.OnTouchListener {
             icon_segment_fragment.setDestinationDialogListener(new DestOnTouchListener(icon_segment_fragment,this, main));
             icon_segment_fragment.setChangeBuildingListener(new BuildingOnTouchListener(icon_segment_fragment, this, main));
             icon_segment_fragment.setFavoritesListener(new FavoritesOnTouchListener(icon_segment_fragment,this, main ));
-            icon_segment_fragment.setEmergenyExitListener(new EmergecyOnTouchListerner(icon_segment_fragment,this, main));
+            icon_segment_fragment.setEmergenyExitListener(new DebugPespectiveOnTouchListerner(icon_segment_fragment,this, main));
             icon_segment_fragment.setRestroomListener(new HelpOnTouchListener(icon_segment_fragment,this, main));
 
             if (motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
