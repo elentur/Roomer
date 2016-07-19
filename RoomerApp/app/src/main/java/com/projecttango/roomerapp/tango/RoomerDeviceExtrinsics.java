@@ -20,6 +20,7 @@ public class RoomerDeviceExtrinsics extends DeviceExtrinsics{
     /**
      * Calculates and stores the fixed transformations between the device and
      * the various sensors to be used later for transformations between frames.
+     * @param tango from Roomer Device Extrinsic
      */
     public RoomerDeviceExtrinsics(Tango tango){
         super(tango.getPoseAtTime(0.0, deviceFramePair),
