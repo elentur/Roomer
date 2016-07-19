@@ -131,7 +131,9 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     * returns a list of all Points from the given building.
+     * Returns a list of all Points from the given building.
+     *
+     * @param building where the the points belong to.
      * @return list of points
      */
     public ArrayList<Point> getAllPoints(Building building) {
@@ -158,7 +160,8 @@ public class PointsDataSource extends DAO{
     }
 
     /**
-     * returns a list of all Points of the given ADF.
+     * Returns a list of all Points of the given ADF.
+     * @param adf where the points belongs to.
      * @return list of points
      */
     public ArrayList<Point> getAllPoints(ADF adf) {

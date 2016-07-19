@@ -18,6 +18,11 @@ public class RoomerSceneFrameCallBack extends ASceneFrameCallback {
         this.main = main;
     }
 
+    /**
+     * On PreFrame is Called from  OpenGL render Thread.
+     * @param sceneTime The actual SceneTime
+     * @param deltaTime
+     */
     @Override
         public void onPreFrame(long sceneTime, double deltaTime) {
             // NOTE: This is called from the OpenGL render thread, after all the renderer
@@ -71,16 +76,30 @@ public class RoomerSceneFrameCallBack extends ASceneFrameCallback {
             }
         }
 
+    /**
+     * not used
+     * @param sceneTime
+     * @param deltaTime
+     */
         @Override
         public void onPreDraw(long sceneTime, double deltaTime) {
 
         }
 
+    /**
+     * not used
+     * @param sceneTime
+     * @param deltaTime
+     */
         @Override
         public void onPostFrame(long sceneTime, double deltaTime) {
 
         }
 
+    /**
+     * not used
+     * @return
+     */
         @Override
         public boolean callPreFrame() {
             return true;

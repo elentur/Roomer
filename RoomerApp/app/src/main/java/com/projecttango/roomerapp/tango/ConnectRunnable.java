@@ -50,6 +50,9 @@ public class ConnectRunnable implements Runnable{
         }
     }
 
+    /**
+     * This Method is used for the connection procedure of the Tango
+     */
     private  void connectTango() {
         // Create a new Tango Configuration and enable the RoomerMainActivity API
         TangoConfig config;

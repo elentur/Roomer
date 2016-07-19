@@ -35,8 +35,6 @@ import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.roomerapp.tango.ConnectRunnable;
 import com.projecttango.roomerapp.ui.SetUpUI;
-import com.projecttango.utils.Constants;
-import com.projecttango.utils.Constants;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
@@ -104,7 +102,10 @@ public static RoomerMainActivity context;
         onResume();
     }
 
-
+    /**
+     * OnCreate Method of this Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,7 +136,9 @@ public static RoomerMainActivity context;
 
     }
 
-
+    /**
+     * OnPouse Metrhod of this Activity
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -157,6 +160,9 @@ public static RoomerMainActivity context;
         }
     }
 
+    /**
+     * On Resume Method of this Activity
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -175,6 +181,10 @@ public static RoomerMainActivity context;
         }
     }
 
+    /**
+     * This Method loads a new AreaDescriptionFile
+     * @param uuid The UUID for laoden an adf
+     */
     public void loadAreaDescription(String uuid) {
         if (uuid != null) {
             mTango.experimentalLoadAreaDescription(uuid);
@@ -193,12 +203,18 @@ public static RoomerMainActivity context;
         }
     }
 
+    /**
+     * On Destroy of this activity
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
 
-
+    /**
+     * Activates Debugmode
+     * @param view The Button View
+     */
     public void setDebug(View view) {
         isDebug = !isDebug;
         mRenderer.isDebug = isDebug;

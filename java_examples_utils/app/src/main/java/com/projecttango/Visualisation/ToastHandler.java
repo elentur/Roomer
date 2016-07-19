@@ -10,6 +10,12 @@ import android.widget.Toast;
  */
 public class ToastHandler extends Handler {
 
+    /**
+     * Needed for Toast messages everywhere in the project
+     * @param context needed context
+     * @param text needed Textmessage
+     * @param time needed showingtime
+     */
     public ToastHandler(final Context context, final String text, final int time){
         super(Looper.getMainLooper());
 

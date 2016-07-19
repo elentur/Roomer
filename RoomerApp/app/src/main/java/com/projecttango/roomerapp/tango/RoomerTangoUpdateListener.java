@@ -49,6 +49,10 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
         db = new RoomerDB(main.getBaseContext());
     }
 
+    /**
+     * This Method is run with a actual loaded Pointcloud data
+     * @param xyzij
+     */
     @Override
     public void onXyzIjAvailable(TangoXyzIjData xyzij) {
         final SetUpUI init = SetUpUI.getInstance(main);
@@ -67,6 +71,10 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
         }
     }
 
+    /**
+     * This method is run after a TnagoEvent is fired
+     * @param event
+     */
     @Override
     public void onTangoEvent(final TangoEvent event) {
         if (main.mTangoUx != null) {
@@ -108,6 +116,11 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
         }
     }
 
+    /**
+     * This Method is run after a new Camera Frame is availible
+     * maybe 25 times per second
+     * @param cameraId
+     */
     @Override
     public void onFrameAvailable(int cameraId) {
         // Check if the frame available is for the camera we want and update its frame
