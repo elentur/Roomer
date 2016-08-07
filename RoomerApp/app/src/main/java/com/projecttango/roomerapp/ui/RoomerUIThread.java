@@ -65,14 +65,18 @@ public class RoomerUIThread implements Runnable {
             }
 
             ui.getTxtFPS().setText("FPS: " + main.mRenderer.globalFPS);
-            if(main.mRenderer.vis.changeADF){
-                new ToastHandler(
-                        main,
-                        "neues adf geladen: " + main.mRenderer.vis.adf.getName()
-                        ,Toast.LENGTH_LONG);
-                main.mRenderer.vis.changeADF=false;
-                main.loadAreaDescription(main.mRenderer.vis.adf.getUuid());
+            try {
+                if (main.mRenderer.vis.changeADF) {
+                    new ToastHandler(
+                            main,
+                            "neues adf geladen: " + main.mRenderer.vis.adf.getName()
+                            , Toast.LENGTH_LONG);
+                    main.mRenderer.vis.changeADF = false;
+                    main.loadAreaDescription(main.mRenderer.vis.adf.getUuid());
 
+
+                }
+            }catch(Exception e){
 
             }
             if(main.mRenderer != null && main.mRenderer.vis !=null && main.mRenderer.adf!=null){

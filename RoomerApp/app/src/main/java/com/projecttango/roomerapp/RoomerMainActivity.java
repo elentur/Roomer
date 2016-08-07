@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 import com.google.atap.tango.ux.TangoUx;
@@ -33,8 +34,13 @@ import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.rajawali.DeviceExtrinsics;
+import com.projecttango.rajawali.ScenePoseCalculator;
 import com.projecttango.roomerapp.tango.ConnectRunnable;
 import com.projecttango.roomerapp.ui.SetUpUI;
+import com.projecttango.tangosupport.TangoPointCloudManager;
+import com.projecttango.tangosupport.TangoSupport;
+
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
@@ -93,6 +99,7 @@ public static RoomerMainActivity context;
 
     public String adf;
     public String Destination ="";
+    public  TangoPointCloudManager mPointCloudManager = new TangoPointCloudManager();
 
 
     @Override
@@ -190,7 +197,7 @@ public static RoomerMainActivity context;
             mTango.experimentalLoadAreaDescription(uuid);
             FRAME_PAIR = new TangoCoordinateFramePair(
                     TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
-                    TangoPoseData.COORDINATE_FRAME_DEVICE);
+                   TangoPoseData.COORDINATE_FRAME_DEVICE);
             Log.d("DEBUGGER" , "ADF geladen");
             adf = new String(mTango.loadAreaDescriptionMetaData(uuid).get("name"));
             mIsRelocalized=false;
@@ -227,4 +234,6 @@ public static RoomerMainActivity context;
         Log.d("DEBUGGER", "Debugging:" + isDebug);
 
     }
+
+
 }

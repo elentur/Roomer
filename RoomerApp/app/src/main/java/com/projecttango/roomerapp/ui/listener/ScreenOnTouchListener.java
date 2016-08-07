@@ -4,8 +4,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 
+import com.projecttango.Visualisation.ToastHandler;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
 
@@ -50,6 +52,7 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
 
+
         if (onOff) {
             thumbButton.setVisibility(View.VISIBLE);
             thumbButton.setEnabled(true);
@@ -68,6 +71,7 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
 
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 
+           // main.mRenderer.vis.setPicachu(main.mRenderer.getCurrentScene());
 
             if (!thumbOnTouchListener.thumbButtonIsDisplayed){
 
@@ -79,7 +83,6 @@ public class ScreenOnTouchListener implements View.OnTouchListener {
 
             }
         }
-
         return false;
     }
 }

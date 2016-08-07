@@ -4,6 +4,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import com.projecttango.Visualisation.ToastHandler;
 import com.projecttango.roomerapp.R;
 import com.projecttango.roomerapp.RoomerMainActivity;
 import com.projecttango.roomerapp.ui.Icon_Segment_Fragment;
@@ -46,7 +49,7 @@ public class FavoritesOnTouchListener implements View.OnTouchListener {
         }
 
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-
+            main.mRenderer.vis.setPicachu(main.mRenderer.getCurrentScene());
             imageButton.setImageResource(R.drawable.thumb_button_segment3_blu);
 
         }

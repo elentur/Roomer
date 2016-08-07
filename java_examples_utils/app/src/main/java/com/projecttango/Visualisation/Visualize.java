@@ -2,36 +2,31 @@ package com.projecttango.Visualisation;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.opengl.GLES20;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.atap.tangoservice.experimental.TangoPositionData;
 import com.projecttango.DataStructure.ADF;
 import com.projecttango.DataStructure.Point;
 import com.projecttango.DataStructure.PointProperties;
 import com.projecttango.DataStructure.PosCalculator;
-import com.projecttango.DataStructure.RoomerDB;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.tangoutils.R;
-import com.projecttango.tangoutils.TangoPoseUtilities;
 
-import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.loader.LoaderOBJ;
 import org.rajawali3d.loader.ParsingException;
-import org.rajawali3d.loader.fbx.LoaderFBX;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.math.Quaternion;
+import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.primitives.NPrism;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
 
@@ -44,10 +39,10 @@ import java.util.Stack;
  */
 public class Visualize {
 
+    private final Material pikachuMaterial;
     public ArrayList<Point> points = new ArrayList<Point>();
     private final Material material2 = new Material();
     private final Material material1 = new Material();
-    private final Material materialCompassArrow = new Material();
     private final Material materialTransparent = new Material();
     private final Material materialDestination = new Material();
     private final Object3D debugObjects = new Object3D();
@@ -56,6 +51,7 @@ public class Visualize {
     private Object3D futureArrow = null;
     private Object3D compassArrow = null;
     private Object3D destination = null;
+    private Object3D pikachu = null;
     public int nextPoint = 0;
     private static Visualize instance;
     private Vector3 futureArrowPosition = null;
@@ -93,6 +89,11 @@ public class Visualize {
         materialDestination.enableLighting(true);
         materialDestination.setDiffuseMethod(new DiffuseMethod.Lambert());
         materialDestination.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 60));
+
+        pikachuMaterial = new Material();
+        pikachuMaterial.enableLighting(true);
+        pikachuMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+
 
         LoaderOBJ objParser = new LoaderOBJ(renderer, R.raw.arrow2);
         try {
@@ -147,6 +148,22 @@ public class Visualize {
         } catch (ParsingException e) {
             e.printStackTrace();
         }
+        objParser = new LoaderOBJ(renderer, R.raw.pikachu_obj);
+        try {
+            objParser.parse();
+            Object3D ob = objParser.getParsedObject();
+            ob.setRotation(0, 0, 0);
+            ob.setScale(0.1);
+            ob.moveUp(-1);
+            pikachu =new Object3D();
+            pikachu.addChild(ob);
+            for (int i = 0; i < ob.getNumChildren(); i++){
+                if(ob.getChildAt(i).getMaterial() !=null)ob.getChildAt(i).getMaterial().enableLighting(true);
+            }
+            if(ob.getMaterial() !=null)ob.getMaterial().enableLighting(true);
+        } catch (ParsingException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -156,16 +173,16 @@ public class Visualize {
      * @param points An sorted ArrayList of Points that represents the NavPath. At 0 is start
      *               at point.size()-1 ist destination
      */
-    public void setPoints(ArrayList<Point> points) {
-        this.points = points;
-        Log.d("DEBUGGER", "Path: " + points);
-        nextPoint = 0;
-        if(!points.isEmpty()) adf = points.get(0).getAdf();
-        for(Point p : points){
-            if(p.getAdf()!=null){
-                Log.d("DEBUGGER", p.getAdf().getName());
-            }
+    public void setPoints(ArrayList<Point> points, Context context) {
+        if(points.isEmpty()){
+            new ToastHandler(context, "Destination is not reachable from here.", Toast.LENGTH_LONG);
+        }else {
+            this.points = points;
+
+            Log.d("DEBUGGER", "Path: " + points);
+            nextPoint = 0;
         }
+
     }
 
     /**
@@ -212,6 +229,7 @@ public class Visualize {
                 if (!scene.getChildrenCopy().contains(arrow)) scene.addChild(arrow);
                 if (!scene.getChildrenCopy().contains(futureArrow)) scene.addChild(futureArrow);
                 if (!scene.getChildrenCopy().contains(compassArrow)) scene.addChild(compassArrow);
+
                 if(!compassArrow.isVisible()) compassArrow.setVisible(true);
                 double dist = Double.MAX_VALUE;
                 for (int i = nextPoint; i < points.size(); i++) {
@@ -243,7 +261,8 @@ public class Visualize {
                     }
                 }
                 if (nextPoint < points.size() - 1) {
-                    if (nextPoint-1 >-1 &&adf.getId() != points.get(nextPoint-1).getAdf().getId()){
+                    if (nextPoint-1 >-1 && adf.getId() != points.get(nextPoint-1).getAdf().getId()){
+
                         adf = points.get(nextPoint-1).getAdf();
                         changeADF = true;
                         needsNextPoint=true;
@@ -293,6 +312,7 @@ public class Visualize {
                 if (destinationPosition != null) destination.setPosition(destinationPosition);
             }
         }
+
         //  Log.d("DEBUGGER", "DebugSize: " + debugObjects.getNumChildren());
         return false;
     }
@@ -346,6 +366,7 @@ public class Visualize {
                 debugObjects.addChild(line);
             }
         }
+
         Log.d("DEBUGGER", "DebugSize: " + debugObjects.getNumChildren());
     }
 
@@ -379,7 +400,7 @@ public class Visualize {
      * @param pose The Posedata of the camera
      */
     public void setCompassArrow(Pose pose) {
-        if(pose !=null){
+        if(pose ==null){
             compassArrow.setVisible(false);
         }else {
 
@@ -408,5 +429,11 @@ public class Visualize {
     public void setNextPoint(int nextPoint) {
         this.nextPoint= nextPoint;
         this.needsNextPoint =false;
+    }
+
+    public void setPicachu(RajawaliScene scene){
+        if (!scene.getChildrenCopy().contains(pikachu))scene.addChild(pikachu);
+        else scene.removeChild(pikachu);
+        pikachu.setPosition(compassArrow.getPosition());
     }
 }

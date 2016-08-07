@@ -69,6 +69,7 @@ public class RoomerTangoUpdateListener implements Tango.OnTangoUpdateListener {
 
             main.runOnUiThread(new RoomerUIThread(main));
         }
+        main.mPointCloudManager.updateXyzIj(xyzij);
     }
 
     /**

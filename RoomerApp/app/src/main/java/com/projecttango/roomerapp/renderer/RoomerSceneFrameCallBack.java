@@ -14,6 +14,7 @@ import org.rajawali3d.scene.ASceneFrameCallback;
  */
 public class RoomerSceneFrameCallBack extends ASceneFrameCallback {
     private final RoomerMainActivity main;
+    private final TangoCoordinateFramePair adfFramePair =null;
     public RoomerSceneFrameCallBack(RoomerMainActivity main) {
         this.main = main;
     }
@@ -66,7 +67,9 @@ public class RoomerSceneFrameCallBack extends ASceneFrameCallback {
                             main.FRAME_PAIR);
                     if (lastFramePose.statusCode == TangoPoseData.POSE_VALID) {
                         // Update the camera pose from the renderer
-                        main.mRenderer.updateRenderCameraPose(lastFramePose, main.mExtrinsics);
+
+                            main.mRenderer.updateRenderCameraPose(lastFramePose, main.mExtrinsics);
+
 
                         main.mCameraPoseTimestamp = lastFramePose.timestamp;
                     } else {

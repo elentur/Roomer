@@ -7,6 +7,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.projecttango.Visualisation.ToastHandler;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -21,7 +23,7 @@ import java.util.*;
  * This Class is for loading, saving, import and export of roomer databases including NavPoints
  */
 public class RoomerDB {
-public static RoomerDB db =null;
+    public static RoomerDB db = null;
     private static final String TAG = RoomerDB.class.getSimpleName();
     /**
      * All dao objects for the database interaction
@@ -39,6 +41,7 @@ public static RoomerDB db =null;
 
     /**
      * Creates a object of RoomerDB to access to the database methods
+     *
      * @param context for the database
      */
     public RoomerDB(Context context) {
@@ -47,7 +50,7 @@ public static RoomerDB db =null;
         this.adfDao = new ADFDataSource(context);
         this.pointDao = new PointsDataSource(context);
         this.edgeDao = new EdgesDataSource(context);
-        if(db==null) db = this;
+        if (db == null) db = this;
 
     }
 
@@ -86,8 +89,8 @@ public static RoomerDB db =null;
      * If ADF already exist with the same uuid in the database query will be fail and throw an exception!
      *
      * @param position of the ADF
-     * @param name of the ADF
-     * @param uuid from the ADF
+     * @param name     of the ADF
+     * @param uuid     from the ADF
      * @return ADF Object
      */
     public ADF createADF(Vector3 position, String name, String uuid) {
@@ -313,24 +316,15 @@ public static RoomerDB db =null;
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
-                Handler handler = new Handler(Looper.getMainLooper());
 
-                handler.post(new Runnable() {
-                                 @Override
-                                 public void run() {
-                                     Toast.makeText(context, backupDB.toString(),
-                                             Toast.LENGTH_LONG).show();
-                                 }
-                             }
-                );
+                new ToastHandler(context, backupDB.toString(),
+                        Toast.LENGTH_LONG);
 
 
             }
         } catch (Exception e) {
 
-            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
-                    .show();
-            Log.e(TAG, e.toString());
+            new ToastHandler(context, e.toString(), Toast.LENGTH_LONG);
 
         }
     }
@@ -363,28 +357,13 @@ public static RoomerDB db =null;
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
-                Handler handler = new Handler(Looper.getMainLooper());
-
-                handler.post(new Runnable() {
-                                 @Override
-                                 public void run() {
-                                     Toast.makeText(context, backupDB.toString(),
-                                             Toast.LENGTH_LONG).show();
-                                 }
-                             }
-                );
+                new ToastHandler(context, backupDB.toString(),
+                        Toast.LENGTH_SHORT);
 
             }
         } catch (final Exception e) {
-            Handler handler = new Handler(Looper.getMainLooper());
 
-            handler.post(new Runnable() {
-                             @Override
-                             public void run() {
-                                 Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
-                             }
-                         }
-            );
+            new ToastHandler(context, e.toString(), Toast.LENGTH_SHORT);
 
 
         }

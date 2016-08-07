@@ -216,6 +216,7 @@ public class RoomerRenderer extends RajawaliRenderer {
     @Override
     public void onTouchEvent(MotionEvent motionEvent) {
         // Unused, but needs to be declared to adhere to the IRajawaliSurfaceRenderer interface.
+
     }
 
     /**
@@ -269,7 +270,7 @@ public class RoomerRenderer extends RajawaliRenderer {
             getCurrentCamera().getPosition().y - 1,
             getCurrentCamera().getPosition().z);
     waitForCalcPath=false;
-    vis.setPoints(VectorGraph.getPath(pos,destPoint,points));
+    vis.setPoints(VectorGraph.getPath(pos,destPoint,points),getContext());
     vis.adf =adf;
     reDraw = true;
     Log.d("DEBUGGER", "calcPath");
@@ -281,7 +282,7 @@ public class RoomerRenderer extends RajawaliRenderer {
      */
     public void setAllPoints(ArrayList<Point> points)
     {
-        Log.d("DEVUGGER", "setAllPoints");
+        Log.d("DEBUGGER", "setAllPoints");
         vis.adf =adf;
         allPoints = points;
         vis.allPoints = allPoints;
